@@ -1,0 +1,20 @@
+{
+  "name": "prod-func-dust-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vtfk/dust-api.git"
+  },
+  "keywords": [],
+  "author": "Rune Moskvil Lyngås <rune.moskvil.lyngaas@vtfk.no> (https://github.com/runely)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/vtfk/dust-api/issues"
+  },
+  "homepage": "https://github.com/vtfk/dust-api#readme"
+}
