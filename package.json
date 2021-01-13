@@ -16,5 +16,10 @@
   "bugs": {
     "url": "https://github.com/vtfk/dust-api/issues"
   },
-  "homepage": "https://github.com/vtfk/dust-api#readme"
+  "homepage": "https://github.com/vtfk/dust-api#readme",
+  "dependencies": {
+    "@vtfk/logger": "2.4.0",
+    "axios": "0.21.1",
+    "azure-ad-verify-token": "1.1.1"
+  }
 }
