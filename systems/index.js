@@ -6,9 +6,9 @@ const getBodyParams = require('../lib/get-body-params')
 const getData = require('../lib/get-data')
 const { SCRIPT_SERVICE_URL } = require('../config')
 
-const handleData = async (method, fileName, args) => {
+const handleData = async (caller, method, fileName, args) => {
   logger('info', ['handle-data', 'method', method, 'url', SCRIPT_SERVICE_URL])
-  const data = await getData(method, SCRIPT_SERVICE_URL, {
+  const data = await getData(caller, method, SCRIPT_SERVICE_URL, {
     fileName,
     args
   })
@@ -24,6 +24,7 @@ const handleData = async (method, fileName, args) => {
 
 const handleSystem = async (context, req) => {
   const { system } = req.params
+  const user = req.token.upn
   
   try {
     // get parameters
@@ -40,7 +41,7 @@ const handleSystem = async (context, req) => {
 
       if (samAccountName !== undefined) {
         logger('info', ['handle-systems', 'system', system, 'samAccountName', samAccountName])
-        const data = await handleData(method, fileName, {
+        const data = await handleData(user, method, fileName, {
           samAccountName,
           domain,
           properties
@@ -51,7 +52,7 @@ const handleSystem = async (context, req) => {
 
       if (employeeNumber !== undefined) {
         logger('info', ['handle-systems', 'system', system, 'employeeNumber', employeeNumber])
-        const data = await handleData(method, fileName, {
+        const data = await handleData(user, method, fileName, {
           employeeNumber,
           domain,
           properties
@@ -62,7 +63,7 @@ const handleSystem = async (context, req) => {
 
       if (userPrincipalName !== undefined) {
         logger('info', ['handle-systems', 'system', system, 'userPrincipalName', userPrincipalName])
-        const data = await handleData(method, fileName, {
+        const data = await handleData(user, method, fileName, {
           userPrincipalName,
           domain,
           properties
@@ -73,7 +74,7 @@ const handleSystem = async (context, req) => {
 
       if (displayName !== undefined) {
         logger('info', ['handle-systems', 'system', system, 'displayName', displayName])
-        const data = await handleData(method, fileName, {
+        const data = await handleData(user, method, fileName, {
           displayName,
           domain,
           properties
@@ -99,7 +100,7 @@ const handleSystem = async (context, req) => {
 
       if (employeeNumber !== undefined) {
         logger('info', ['handle-systems', 'system', system, 'employeeNumber', employeeNumber])
-        const data = await handleData(method, fileName, {
+        const data = await handleData(user, method, fileName, {
           employeeNumber
         })
         logger('info', ['handle-systems', 'system', system, 'employeeNumber', employeeNumber, 'data', 'received'])
@@ -108,7 +109,7 @@ const handleSystem = async (context, req) => {
 
       if (firstName !== undefined && lastName !== undefined) {
         logger('info', ['handle-systems', 'system', system, 'firstName', firstName, 'lastName', lastName])
-        const data = await handleData(method, fileName, {
+        const data = await handleData(user, method, fileName, {
           firstName,
           lastName
         })
