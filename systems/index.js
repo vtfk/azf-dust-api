@@ -4,7 +4,7 @@ const HTTPError = require('../lib/http-error')
 const getResponse = require('../lib/get-response-object')
 const getBodyParams = require('../lib/get-body-params')
 const getData = require('../lib/get-data')
-const { SCRIPT_SERVICE_URL } = require('../config')
+const { SCRIPT_SERVICE_URL, DEFAULT_CALLER } = require('../config')
 
 const handleData = async (caller, method, fileName, args) => {
   logger('info', ['handle-data', 'method', method, 'url', SCRIPT_SERVICE_URL])
@@ -24,7 +24,7 @@ const handleData = async (caller, method, fileName, args) => {
 
 const handleSystem = async (context, req) => {
   const { system } = req.params
-  const user = req.token.upn
+  const user = (req.token && req.token.upn) || DEFAULT_CALLER
   
   try {
     // get parameters
