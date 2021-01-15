@@ -8,19 +8,19 @@ const HTTPError = require('../lib/http-error')
 const handleSystem = async (context, req) => {
   const { system } = req.params
   const { params } = req.body
-  const user = (req.token && req.token.upn) || DEFAULT_CALLER
+  const caller = (req.token && req.token.upn) || DEFAULT_CALLER
   
   try {
     // handle request for Active Directory
     if (system.toLowerCase() === 'ad') {
       logger('info', ['handle-system', 'system', system])
-      return await handleAD(user, params)
+      return await handleAD(caller, params)
     }
 
     // handle request for Visma
     if (system.toLowerCase() === 'visma') {
       logger('info', ['handle-system', 'system', system])
-      return await handleVisma(user, params)
+      return await handleVisma(caller, params)
     }
 
     throw new HTTPError(404, 'no matching system found', { system })
