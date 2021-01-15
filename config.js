@@ -8,8 +8,6 @@ module.exports = {
     audience: process.env.TOKEN_AUTH_AUD || CLIENT_ID || undefined // Application Client ID
   },
   SCRIPT_SERVICE_URL: process.env.SCRIPT_SERVICE_URL || 'http://localhost:3000',
-  PIFU_API_URL: process.env.PIFU_API_URL || 'https://pifu.api.no',
-  PIFU_API_JWT: process.env.PIFU_API_JWT || 'Super secret jwt secret',
   DUST_JWT_SECRET: process.env.DUST_JWT_SECRET || false,
   DEFAULT_CALLER: 'NoenAndré'
 }
