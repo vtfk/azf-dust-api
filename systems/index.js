@@ -1,6 +1,6 @@
 const withTokenAuth = require('../lib/with-token-auth')
-const { logger } = require('@vtfk/logger')
 const { DEFAULT_CALLER } = require('../config')
+const { logger } = require('@vtfk/logger')
 const handleAD = require('../handlers/ad')
 const handleVisma = require('../handlers/visma')
 const handleFeide = require('../handlers/feide')
