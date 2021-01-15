@@ -2,7 +2,6 @@
 const { logger } = require('@vtfk/logger')
 const HTTPError = require('../lib/http-error')
 const getResponse = require('../lib/get-response-object')
-const getBodyParams = require('../lib/get-body-params')
 const getData = require('../lib/get-data')
 const { SCRIPT_SERVICE_URL, DEFAULT_CALLER } = require('../config')
 
