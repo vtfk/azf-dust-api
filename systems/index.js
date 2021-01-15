@@ -12,21 +12,20 @@ const handleSystem = async (context, req) => {
   const caller = (req.token && req.token.upn) || DEFAULT_CALLER
   
   try {
+    logger('info', ['handle-system', 'system', system])
+
     // handle request for Active Directory
     if (system.toLowerCase() === 'ad') {
-      logger('info', ['handle-system', 'system', system])
       return await handleAD(caller, params)
     }
 
     // handle request for Visma
     if (system.toLowerCase() === 'visma') {
-      logger('info', ['handle-system', 'system', system])
       return await handleVisma(caller, params)
     }
 
     // handle request for FEIDE
     if (system.toLowerCase() === 'feide') {
-      logger('info', ['handle-system', 'system', system])
       return await handleFeide(caller, params)
     }
 
