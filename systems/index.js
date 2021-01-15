@@ -1,4 +1,4 @@
-//const withTokenAuth = require('../lib/with-token-auth')
+const withTokenAuth = require('../lib/with-token-auth')
 const { logger } = require('@vtfk/logger')
 const { DEFAULT_CALLER } = require('../config')
 const handleAD = require('../handlers/ad')
@@ -31,4 +31,4 @@ const handleSystem = async (context, req) => {
   }
 }
 
-module.exports = (context, req) => handleSystem(context, req)
+module.exports = (context, req) => withTokenAuth(context, req, handleSystem)
