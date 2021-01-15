@@ -24,62 +24,60 @@ const handleData = async (caller, method, fileName, args) => {
 
 const handleSystem = async (context, req) => {
   const { system } = req.params
+  const { params } = req.body
   const user = (req.token && req.token.upn) || DEFAULT_CALLER
   
   try {
-    // get parameters
-    getBodyParams(req.body)
-
     // handle request for Active Directory
     if (system.toLowerCase() === 'ad') {
       const method = 'get'
       const fileName = 'Get-DUSTUser.ps1'
       
-      if (domain === undefined) {
+      if (params.domain === undefined) {
         throw new HTTPError(422, `Missing required paramater 'Domain'`)
       }
 
-      if (samAccountName !== undefined) {
-        logger('info', ['handle-systems', 'system', system, 'samAccountName', samAccountName])
+      if (params.samAccountName !== undefined) {
+        logger('info', ['handle-systems', 'system', system, 'samAccountName', params.samAccountName])
         const data = await handleData(user, method, fileName, {
-          samAccountName,
-          domain,
-          properties
+          samAccountName: params.samAccountName,
+          domain: params.domain,
+          properties: params.properties
         })
-        logger('info', ['handle-systems', 'system', system, 'samAccountName', samAccountName, 'data', 'received'])
+        logger('info', ['handle-systems', 'system', system, 'samAccountName', params.samAccountName, 'data', 'received'])
         return getResponse(data)
       }
 
-      if (employeeNumber !== undefined) {
-        logger('info', ['handle-systems', 'system', system, 'employeeNumber', employeeNumber])
+      if (params.employeeNumber !== undefined) {
+        logger('info', ['handle-systems', 'system', system, 'employeeNumber', params.employeeNumber])
         const data = await handleData(user, method, fileName, {
-          employeeNumber,
-          domain,
-          properties
+          employeeNumber: params.employeeNumber,
+          domain: params.domain,
+          properties: params.properties
         })
-        logger('info', ['handle-systems', 'system', system, 'employeeNumber', employeeNumber, 'data', 'received'])
+        logger('info', ['handle-systems', 'system', system, 'employeeNumber', params.employeeNumber, 'data', 'received'])
         return getResponse(data)
       }
 
-      if (userPrincipalName !== undefined) {
-        logger('info', ['handle-systems', 'system', system, 'userPrincipalName', userPrincipalName])
+      if (params.userPrincipalName !== undefined) {
+        logger('info', ['handle-systems', 'system', system, 'userPrincipalName', params.userPrincipalName])
         const data = await handleData(user, method, fileName, {
-          userPrincipalName,
-          domain,
-          properties
+          userPrincipalName: params.userPrincipalName,
+          domain: params.domain,
+          properties: params.properties
         })
-        logger('info', ['handle-systems', 'system', system, 'userPrincipalName', userPrincipalName, 'data', 'received'])
+        logger('info', ['handle-systems', 'system', system, 'userPrincipalName', params.userPrincipalName, 'data', 'received'])
         return getResponse(data)
       }
 
-      if (displayName !== undefined) {
-        logger('info', ['handle-systems', 'system', system, 'displayName', displayName])
+      if (params.displayName !== undefined) {
+        logger('info', ['handle-systems', 'system', system, 'displayName', params.displayName])
         const data = await handleData(user, method, fileName, {
-          displayName,
-          domain,
-          properties
+          displayName: params.displayName,
+          domain: params.domain,
+          properties: params.properties
         })
-        logger('info', ['handle-systems', 'system', system, 'displayName', displayName, 'data', 'received'])
+        logger('info', ['handle-systems', 'system', system, 'displayName', params.displayName, 'data', 'received'])
         return getResponse(data)
       }
 
@@ -98,22 +96,22 @@ const handleSystem = async (context, req) => {
       const method = 'get'
       const fileName = 'Get-DUSTVisma.ps1'
 
-      if (employeeNumber !== undefined) {
-        logger('info', ['handle-systems', 'system', system, 'employeeNumber', employeeNumber])
+      if (params.employeeNumber !== undefined) {
+        logger('info', ['handle-systems', 'system', system, 'employeeNumber', params.employeeNumber])
         const data = await handleData(user, method, fileName, {
-          employeeNumber
+          employeeNumber: params.employeeNumber
         })
-        logger('info', ['handle-systems', 'system', system, 'employeeNumber', employeeNumber, 'data', 'received'])
+        logger('info', ['handle-systems', 'system', system, 'employeeNumber', params.employeeNumber, 'data', 'received'])
         return getResponse(data)
       }
 
-      if (firstName !== undefined && lastName !== undefined) {
-        logger('info', ['handle-systems', 'system', system, 'firstName', firstName, 'lastName', lastName])
+      if (params.firstName !== undefined && params.lastName !== undefined) {
+        logger('info', ['handle-systems', 'system', system, 'firstName', params.firstName, 'lastName', params.lastName])
         const data = await handleData(user, method, fileName, {
-          firstName,
-          lastName
+          firstName: params.firstName,
+          lastName: params.lastName
         })
-        logger('info', ['handle-systems', 'system', system, 'firstName', firstName, 'lastName', lastName, 'data', 'received'])
+        logger('info', ['handle-systems', 'system', system, 'firstName', params.firstName, 'lastName', params.lastName, 'data', 'received'])
         return getResponse(data)
       }
 
