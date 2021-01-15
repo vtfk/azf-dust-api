@@ -3,6 +3,7 @@ const { logger } = require('@vtfk/logger')
 const { DEFAULT_CALLER } = require('../config')
 const handleAD = require('../handlers/ad')
 const handleVisma = require('../handlers/visma')
+const handleFeide = require('../handlers/feide')
 const HTTPError = require('../lib/http-error')
 
 const handleSystem = async (context, req) => {
@@ -21,6 +22,12 @@ const handleSystem = async (context, req) => {
     if (system.toLowerCase() === 'visma') {
       logger('info', ['handle-system', 'system', system])
       return await handleVisma(caller, params)
+    }
+
+    // handle request for FEIDE
+    if (system.toLowerCase() === 'feide') {
+      logger('info', ['handle-system', 'system', system])
+      return await handleFeide(caller, params)
     }
 
     throw new HTTPError(404, 'no matching system found', { system })
