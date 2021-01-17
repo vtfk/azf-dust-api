@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "standard",
+    "standard-fix": "standard --fix"
   },
   "repository": {
     "type": "git",
@@ -22,5 +23,8 @@
     "axios": "0.21.1",
     "azure-ad-verify-token": "1.1.1",
     "jsonwebtoken": "8.5.1"
+  },
+  "devDependencies": {
+    "standard": "16.0.3"
   }
 }
