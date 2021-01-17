@@ -34,5 +34,5 @@ module.exports = async (caller, params) => {
       'firstName',
       'lastName'
     ]
-  });
+  })
 }

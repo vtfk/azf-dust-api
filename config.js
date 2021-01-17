@@ -10,7 +10,7 @@ module.exports = {
   SCRIPT_SERVICE_URL: process.env.SCRIPT_SERVICE_URL || 'http://localhost:3000',
   DUST_JWT_SECRET: process.env.DUST_JWT_SECRET || false,
   DEFAULT_CALLER: 'NoenAndré',
-  DEMO: (process.env.DEMO === 'true' ? true : false) || false,
+  DEMO: (process.env.DEMO === 'true') || false,
   DEMO_USER: process.env.DEMO_USER || undefined,
   PAPERTRAIL_HOST: process.env.PAPERTRAIL_HOST || undefined,
   PAPERTRAIL_PORT: process.env.PAPERTRAIL_PORT || undefined,

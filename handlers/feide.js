@@ -20,5 +20,5 @@ module.exports = async (caller, params) => {
     params: [
       'samAccountName'
     ]
-  });
+  })
 }

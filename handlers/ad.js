@@ -6,9 +6,9 @@ const HTTPError = require('../lib/http-error')
 module.exports = async (caller, params) => {
   const method = 'get'
   const fileName = 'Get-DUSTUser.ps1'
-  
+
   if (params.domain === undefined) {
-    throw new HTTPError(422, `Missing required paramater 'Domain'`)
+    throw new HTTPError(422, 'Missing required paramater \'Domain\'')
   }
 
   if (params.samAccountName !== undefined) {

@@ -10,7 +10,7 @@ const handleSystem = async (context, req) => {
   const { system } = req.params
   const { params } = req.body
   const caller = (req.token && req.token.upn) || DEFAULT_CALLER
-  
+
   try {
     logger('info', ['handle-system', 'system', system])
 
