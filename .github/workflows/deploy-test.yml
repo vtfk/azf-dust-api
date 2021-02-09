@@ -2,7 +2,6 @@ name: Deploy DUST API to test function app
 
 on:
   push:
-    branches: [ '*' ]
     branches-ignore: [ main ]
 
 env:
