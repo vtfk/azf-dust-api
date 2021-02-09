@@ -5,7 +5,7 @@
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
-      "route": "systems/{system?}",
+      "route": "system/{system?}",
       "methods": [
         "get",
         "post"

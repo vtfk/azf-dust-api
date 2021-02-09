@@ -12,7 +12,7 @@ const handleSystem = async (context, req) => {
   const caller = (req.token && req.token.upn) || DEFAULT_CALLER
 
   try {
-    logger('info', ['handle-system', 'system', system])
+    logger('info', ['handle-system', 'system', system, 'start'])
 
     // handle request for Active Directory
     if (system.toLowerCase() === 'ad') {
