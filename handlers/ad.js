@@ -22,7 +22,7 @@ module.exports = async (caller, params) => {
       domain: params.domain,
       properties: params.properties
     })
-    logger('info', ['ad', 'samAccountName', params.samAccountName, 'data', 'received', data.length || 1])
+    logger('info', ['ad', 'samAccountName', params.samAccountName, 'data', 'received', Array.isArray(data) ? data.length : 1])
     return getResponse(data)
   }
 
@@ -33,7 +33,7 @@ module.exports = async (caller, params) => {
       domain: params.domain,
       properties: params.properties
     })
-    logger('info', ['ad', 'employeeNumber', params.employeeNumber, 'data', 'received', data.length || 1])
+    logger('info', ['ad', 'employeeNumber', params.employeeNumber, 'data', 'received', Array.isArray(data) ? data.length : 1])
     return getResponse(data)
   }
 
@@ -44,7 +44,7 @@ module.exports = async (caller, params) => {
       domain: params.domain,
       properties: params.properties
     })
-    logger('info', ['ad', 'userPrincipalName', params.userPrincipalName, 'data', 'received', data.length || 1])
+    logger('info', ['ad', 'userPrincipalName', params.userPrincipalName, 'data', 'received', Array.isArray(data) ? data.length : 1])
     return getResponse(data)
   }
 
@@ -55,7 +55,7 @@ module.exports = async (caller, params) => {
       domain: params.domain,
       properties: params.properties
     })
-    logger('info', ['ad', 'displayName', params.displayName, 'data', 'received', data.length || 1])
+    logger('info', ['ad', 'displayName', params.displayName, 'data', 'received', Array.isArray(data) ? data.length : 1])
     return getResponse(data)
   }
 

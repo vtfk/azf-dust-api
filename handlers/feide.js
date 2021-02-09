@@ -16,7 +16,7 @@ module.exports = async (caller, params) => {
     const data = await getData(caller, {
       samAccountName: params.samAccountName
     })
-    logger('info', ['feide', 'samAccountName', params.samAccountName, 'data', 'received', data.length || 1])
+    logger('info', ['feide', 'samAccountName', params.samAccountName, 'data', 'received', Array.isArray(data) ? data.length : 1])
     return getResponse(data)
   }
 

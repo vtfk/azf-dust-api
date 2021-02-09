@@ -16,7 +16,7 @@ module.exports = async (caller, params) => {
     const data = await getData(caller, {
       employeeNumber: params.employeeNumber
     })
-    logger('info', ['visma', 'employeeNumber', params.employeeNumber, 'data', 'received', data.length || 1])
+    logger('info', ['visma', 'employeeNumber', params.employeeNumber, 'data', 'received', Array.isArray(data) ? data.length : 1])
     return getResponse(data)
   }
 
@@ -26,7 +26,7 @@ module.exports = async (caller, params) => {
       firstName: params.firstName,
       lastName: params.lastName
     })
-    logger('info', ['visma', 'firstName', params.firstName, 'lastName', params.lastName, 'data', 'received', data.length || 1])
+    logger('info', ['visma', 'firstName', params.firstName, 'lastName', params.lastName, 'data', 'received', Array.isArray(data) ? data.length : 1])
     return getResponse(data)
   }
 
