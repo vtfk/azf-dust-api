@@ -4,11 +4,7 @@ on:
   push:
     branches:
       - '*'
-      - '!main'
-  pull_request:
-    branches:
-      - '*'
-      - '!main'
+      - !main
 
 env:
   AZURE_FUNCTIONAPP_NAME: test-func-dust-api-v1    # set this to your application's name
