@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "standard",
-    "standard-fix": "standard --fix"
+    "standard-fix": "standard --fix",
+    "refresh": "rm -rf node_modules && rm package-lock.json && npm install"
   },
   "repository": {
     "type": "git",
