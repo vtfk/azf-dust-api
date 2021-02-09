@@ -2,9 +2,12 @@ name: Deploy DUST API to test function app
 
 on:
   pull_request:
-    branches-ignore: [ main ]
+    branches:
+      - /refs/heads/*
   push:
-    branches-ignore: [ main ]
+    branches:
+      - /refs/heads/*
+      - !main
 
 env:
   AZURE_FUNCTIONAPP_NAME: test-func-dust-api-v1    # set this to your application's name
