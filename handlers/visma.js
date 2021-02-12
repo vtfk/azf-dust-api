@@ -11,22 +11,24 @@ const getData = async (caller, data) => {
 }
 
 module.exports = async (caller, params) => {
-  if (params.employeeNumber !== undefined) {
-    logger('info', ['visma', 'employeeNumber', params.employeeNumber])
+  const { employeeNumber, firstName, lastName } = params
+
+  if (employeeNumber !== undefined) {
+    logger('info', ['visma', 'employeeNumber', employeeNumber])
     const data = await getData(caller, {
-      employeeNumber: params.employeeNumber
+      employeeNumber
     })
-    logger('info', ['visma', 'employeeNumber', params.employeeNumber, 'data', 'received', Array.isArray(data) ? data.length : 1])
+    logger('info', ['visma', 'employeeNumber', employeeNumber, 'data', 'received', Array.isArray(data) ? data.length : 1])
     return getResponse(data)
   }
 
-  if (params.firstName !== undefined && params.lastName !== undefined) {
-    logger('info', ['visma', 'firstName', params.firstName, 'lastName', params.lastName])
+  if (firstName !== undefined && lastName !== undefined) {
+    logger('info', ['visma', 'firstName', firstName, 'lastName', lastName])
     const data = await getData(caller, {
-      firstName: params.firstName,
-      lastName: params.lastName
+      firstName,
+      lastName
     })
-    logger('info', ['visma', 'firstName', params.firstName, 'lastName', params.lastName, 'data', 'received', Array.isArray(data) ? data.length : 1])
+    logger('info', ['visma', 'firstName', firstName, 'lastName', lastName, 'data', 'received', Array.isArray(data) ? data.length : 1])
     return getResponse(data)
   }
 

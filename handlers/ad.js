@@ -11,51 +11,53 @@ const getData = async (caller, data) => {
 }
 
 module.exports = async (caller, params) => {
-  if (params.domain === undefined) {
+  const { domain, properties, samAccountName, employeeNumber, userPrincipalName, displayName } = params
+
+  if (domain === null || domain === undefined) {
     throw new HTTPError(422, 'Missing required paramater \'Domain\'')
   }
 
-  if (params.samAccountName !== undefined) {
-    logger('info', ['ad', 'samAccountName', params.samAccountName])
+  if (samAccountName !== undefined) {
+    logger('info', ['ad', 'samAccountName', samAccountName])
     const data = await getData(caller, {
-      samAccountName: params.samAccountName,
-      domain: params.domain,
-      properties: params.properties
+      samAccountName,
+      domain,
+      properties
     })
-    logger('info', ['ad', 'samAccountName', params.samAccountName, 'data', 'received', Array.isArray(data) ? data.length : 1])
+    logger('info', ['ad', 'samAccountName', samAccountName, 'data', 'received', Array.isArray(data) ? data.length : 1])
     return getResponse(data)
   }
 
-  if (params.employeeNumber !== undefined) {
-    logger('info', ['ad', 'employeeNumber', params.employeeNumber])
+  if (employeeNumber !== undefined) {
+    logger('info', ['ad', 'employeeNumber', employeeNumber])
     const data = await getData(caller, {
-      employeeNumber: params.employeeNumber,
-      domain: params.domain,
-      properties: params.properties
+      employeeNumber,
+      domain,
+      properties
     })
-    logger('info', ['ad', 'employeeNumber', params.employeeNumber, 'data', 'received', Array.isArray(data) ? data.length : 1])
+    logger('info', ['ad', 'employeeNumber', employeeNumber, 'data', 'received', Array.isArray(data) ? data.length : 1])
     return getResponse(data)
   }
 
-  if (params.userPrincipalName !== undefined) {
-    logger('info', ['ad', 'userPrincipalName', params.userPrincipalName])
+  if (userPrincipalName !== undefined) {
+    logger('info', ['ad', 'userPrincipalName', userPrincipalName])
     const data = await getData(caller, {
-      userPrincipalName: params.userPrincipalName,
-      domain: params.domain,
-      properties: params.properties
+      userPrincipalName,
+      domain,
+      properties
     })
-    logger('info', ['ad', 'userPrincipalName', params.userPrincipalName, 'data', 'received', Array.isArray(data) ? data.length : 1])
+    logger('info', ['ad', 'userPrincipalName', userPrincipalName, 'data', 'received', Array.isArray(data) ? data.length : 1])
     return getResponse(data)
   }
 
-  if (params.displayName !== undefined) {
-    logger('info', ['ad', 'displayName', params.displayName])
+  if (displayName !== undefined) {
+    logger('info', ['ad', 'displayName', displayName])
     const data = await getData(caller, {
-      displayName: params.displayName,
-      domain: params.domain,
-      properties: params.properties
+      displayName,
+      domain,
+      properties
     })
-    logger('info', ['ad', 'displayName', params.displayName, 'data', 'received', Array.isArray(data) ? data.length : 1])
+    logger('info', ['ad', 'displayName', displayName, 'data', 'received', Array.isArray(data) ? data.length : 1])
     return getResponse(data)
   }
 

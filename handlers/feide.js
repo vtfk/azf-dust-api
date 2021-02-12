@@ -11,12 +11,14 @@ const getData = async (caller, data) => {
 }
 
 module.exports = async (caller, params) => {
-  if (params.samAccountName !== undefined) {
-    logger('info', ['feide', 'samAccountName', params.samAccountName])
+  const { samAccountName } = params
+
+  if (samAccountName !== undefined) {
+    logger('info', ['feide', 'samAccountName', samAccountName])
     const data = await getData(caller, {
-      samAccountName: params.samAccountName
+      samAccountName
     })
-    logger('info', ['feide', 'samAccountName', params.samAccountName, 'data', 'received', Array.isArray(data) ? data.length : 1])
+    logger('info', ['feide', 'samAccountName', samAccountName, 'data', 'received', Array.isArray(data) ? data.length : 1])
     return getResponse(data)
   }
 
