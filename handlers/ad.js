@@ -14,8 +14,8 @@ module.exports = async (caller, params) => {
   const { domain, properties, samAccountName, employeeNumber, userPrincipalName, displayName } = params
 
   if (domain === null || domain === undefined) {
-    throw new HTTPError(422, {
-      message: 'Missing required paramater',
+    throw new HTTPError(422, 'Missing required parameter', {
+      message: 'Missing required parameter',
       params: [
         'Domain'
       ]
@@ -66,7 +66,7 @@ module.exports = async (caller, params) => {
     return getResponse(data)
   }
 
-  throw new HTTPError(422, {
+  throw new HTTPError(422, 'Missing required parameters', {
     message: 'Missing required parameters. One of the following parameters are required',
     params: [
       'samAccountName',

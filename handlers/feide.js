@@ -22,7 +22,7 @@ module.exports = async (caller, params) => {
     return getResponse(data)
   }
 
-  throw new HTTPError(422, {
+  throw new HTTPError(422, 'Missing required parameter', {
     message: 'Missing required parameter',
     params: [
       'samAccountName'
