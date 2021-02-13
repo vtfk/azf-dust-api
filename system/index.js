@@ -29,7 +29,7 @@ const handleSystem = async (context, req) => {
       return await handleFeide(caller, body)
     }
 
-    throw new HTTPError(404, {
+    throw new HTTPError(404, 'no matching system found', {
       message: 'no matching system found',
       system
     })
