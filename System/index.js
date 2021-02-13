@@ -12,7 +12,7 @@ const handleSystem = async (context, req) => {
   const caller = (req.token && req.token.upn) || DEFAULT_CALLER
 
   try {
-    logger('info', ['handle-system', 'system', system, 'start'])
+    logger('info', ['handle-system', system, 'start'])
 
     // handle request for Active Directory
     if (system.toLowerCase() === 'ad') {
@@ -34,7 +34,7 @@ const handleSystem = async (context, req) => {
       system
     })
   } catch (error) {
-    logger('error', ['handle-systems', 'system', system, 'error', error.message])
+    logger('error', ['handle-system', system, 'error', error.message])
     if (error instanceof HTTPError) return error.toJSON()
     return new HTTPError(500, 'An unknown error occured', error).toJSON()
   }
