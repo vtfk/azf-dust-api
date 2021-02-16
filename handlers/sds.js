@@ -23,22 +23,22 @@ module.exports = async (caller, params) => {
   }
 
   if (samAccountName !== undefined) {
-    logger('info', ['sds', 'samAccountName', samAccountName, 'type', type])
+    logger('info', ['sds', 'samAccountName', samAccountName, type])
     const data = await getData(caller, {
       samAccountName,
       type
     })
-    logger('info', ['sds', 'samAccountName', samAccountName, 'type', type, 'data', 'received', Array.isArray(data) ? data.length : 1])
+    logger('info', ['sds', 'samAccountName', samAccountName, type, 'data', 'received', Array.isArray(data) ? data.length : 1])
     return getResponse(data)
   }
 
   if (userPrincipalName !== undefined) {
-    logger('info', ['sds', 'userPrincipalName', userPrincipalName, 'type', type])
+    logger('info', ['sds', 'userPrincipalName', userPrincipalName, type])
     const data = await getData(caller, {
       userPrincipalName,
       type
     })
-    logger('info', ['sds', 'userPrincipalName', userPrincipalName, 'type', type, 'data', 'received', Array.isArray(data) ? data.length : 1])
+    logger('info', ['sds', 'userPrincipalName', userPrincipalName, type, 'data', 'received', Array.isArray(data) ? data.length : 1])
     return getResponse(data)
   }
 
