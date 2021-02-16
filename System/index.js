@@ -1,9 +1,10 @@
-const withTokenAuth = require('../lib/with-token-auth')
 const { DEFAULT_CALLER } = require('../config')
 const { logger } = require('@vtfk/logger')
+const withTokenAuth = require('../lib/with-token-auth')
 const handleAD = require('../handlers/ad')
 const handleVisma = require('../handlers/visma')
 const handleFeide = require('../handlers/feide')
+const handleSDS = require('../handlers/sds')
 const HTTPError = require('../lib/http-error')
 
 const handleSystem = async (context, req) => {
@@ -27,6 +28,11 @@ const handleSystem = async (context, req) => {
     // handle request for FEIDE
     if (system.toLowerCase() === 'feide') {
       return await handleFeide(caller, body)
+    }
+
+    // handle request for School Data Sync
+    if (system.toLowerCase() === 'sds') {
+      return await handleSDS(caller, body)
     }
 
     throw new HTTPError(404, 'no matching system found', {
