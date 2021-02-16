@@ -23,7 +23,7 @@ module.exports = async (caller, params) => {
   }
 
   if (samAccountName !== undefined) {
-    logger('info', ['sds', 'samAccountName', samAccountName, , 'type', type])
+    logger('info', ['sds', 'samAccountName', samAccountName, 'type', type])
     const data = await getData(caller, {
       samAccountName,
       type
