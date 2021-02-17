@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/vtfk/dust-api#readme",
   "dependencies": {
-    "@vtfk/logger": "2.4.1",
+    "@vtfk/logger": "2.5.0",
     "axios": "0.21.1",
     "azure-ad-verify-token": "1.1.1",
     "jsonwebtoken": "8.5.1"
