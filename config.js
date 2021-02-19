@@ -14,5 +14,6 @@ module.exports = {
   DEMO_USER: process.env.DEMO_USER || undefined,
   PAPERTRAIL_HOST: process.env.PAPERTRAIL_HOST || undefined,
   PAPERTRAIL_PORT: process.env.PAPERTRAIL_PORT || undefined,
-  PAPERTRAIL_HOSTNAME: process.env.PAPERTRAIL_HOSTNAME || undefined
+  PAPERTRAIL_HOSTNAME: process.env.PAPERTRAIL_HOSTNAME || undefined,
+  PAPERTRAIL_DISABLE_LOGGING: process.env.PAPERTRAIL_DISABLE_LOGGING || false
 }
