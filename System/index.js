@@ -46,7 +46,7 @@ const handleSystem = async (context, req) => {
       system
     })
   } catch (error) {
-    logger('error', ['handle-system', system, 'error', error.message])
+    logger('error', ['handle-system', system, 'error', error.statusCode, error.name])
     if (error instanceof HTTPError) return error.toJSON()
     return new HTTPError(500, 'An unknown error occured', error).toJSON()
   }
