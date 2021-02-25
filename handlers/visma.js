@@ -32,7 +32,7 @@ module.exports = async (caller, params) => {
     return getResponse(data)
   }
 
-  throw new HTTPError(422, 'Missing required parameter(s)', {
+  throw new HTTPError(400, 'Missing required parameter(s)', {
     message: 'Missing required parameter(s). One of the following parameter sets are required',
     params: {
       paramSetOne: [
