@@ -6,6 +6,7 @@ const handleVisma = require('../handlers/visma')
 const handleFeide = require('../handlers/feide')
 const handleSDS = require('../handlers/sds')
 const handlePIFU = require('../handlers/pifu')
+const handleAAD = require('../handlers/aad')
 const HTTPError = require('../lib/http-error')
 
 const handleSystem = async (context, req) => {
@@ -39,6 +40,11 @@ const handleSystem = async (context, req) => {
     // handle request for PIFU
     if (system.toLowerCase() === 'pifu') {
       return await handlePIFU(caller, body)
+    }
+
+    // handle request for Azure AD
+    if (system.toLowerCase() === 'aad') {
+      return await handleAAD(body)
     }
 
     throw new HTTPError(404, 'no matching system found', {

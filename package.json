@@ -23,7 +23,9 @@
     "@vtfk/logger": "2.5.1",
     "axios": "0.21.1",
     "azure-ad-verify-token": "1.1.1",
-    "jsonwebtoken": "8.5.1"
+    "jsonwebtoken": "8.5.1",
+    "node-cache": "5.1.2",
+    "qs": "6.9.6"
   },
   "devDependencies": {
     "standard": "16.0.3"
