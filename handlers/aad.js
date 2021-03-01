@@ -13,13 +13,14 @@ module.exports = async (params) => {
   logger('info', ['aad', 'graph-user', graphOptions.url])
   const graphUser = await getGraphData(graphOptions, token)
 
-  const graphOptionsMFA = getGraphOptions({ ...params,
+  const graphOptionsMFA = getGraphOptions({
+    ...params,
     subQuery: 'authentication/methods',
     properties: undefined,
     expand: undefined
   })
   logger('info', ['aad', 'graph-user-mfa', graphOptionsMFA.url])
   const graphAuth = await getGraphData(graphOptionsMFA, token)
-  
-  return getResponse({ ...graphUser, ...graphAuth})
+
+  return getResponse({ ...graphUser, ...graphAuth })
 }
