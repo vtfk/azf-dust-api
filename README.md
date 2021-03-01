@@ -121,12 +121,11 @@ Get raw info for user
 
 ## `/systems/aad`
 
-Get Azure Active Directory user account
+Get Azure Active Directory user account + authentication methods
 
 ### userPrincipalName
 ```json
 {
-	"query": "users",
-	"userPrincipalName": "bjarne.betjent@vtfk.no"
+  "userPrincipalName": "bjarne.betjent@vtfk.no"
 }
 ```

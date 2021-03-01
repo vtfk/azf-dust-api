@@ -15,7 +15,7 @@ module.exports = {
       GRANT_TYPE: process.env.GRAPH_GRANT_TYPE || 'client_credentials',
       SCOPE: process.env.GRAPH_SCOPE || 'https://graph.microsoft.com/.default'
     },
-    URL: process.env.GRAPH_API || 'https://graph.microsoft.com/v1.0',
+    URL: process.env.GRAPH_API || 'https://graph.microsoft.com/v1.0/users',
     DEFAULT_USER_PROPERTIES: (process.env.GRAPH_USER_PROPERTIES && process.env.GRAPH_USER_PROPERTIES.split(',')) || '*',
     DEFAULT_USER_EXPANDS: (process.env.GRAPH_USER_EXPANDS && process.env.GRAPH_USER_EXPANDS.split(',')) || null
   },
