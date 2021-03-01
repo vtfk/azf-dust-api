@@ -1,5 +1,5 @@
 {
-  "name": "prod-func-dust-api",
+  "name": "azf-dust-api",
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
@@ -10,15 +10,15 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/vtfk/dust-api.git"
+    "url": "git+https://github.com/vtfk/azf-dust-api.git"
   },
   "keywords": [],
   "author": "Rune Moskvil Lyngås <rune.moskvil.lyngaas@vtfk.no> (https://github.com/runely)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/vtfk/dust-api/issues"
+    "url": "https://github.com/vtfk/azf-dust-api/issues"
   },
-  "homepage": "https://github.com/vtfk/dust-api#readme",
+  "homepage": "https://github.com/vtfk/azf-dust-api#readme",
   "dependencies": {
     "@vtfk/logger": "2.5.1",
     "axios": "0.21.1",

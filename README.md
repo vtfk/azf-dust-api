@@ -1,4 +1,4 @@
-# dust-api
+# azf-dust-api
 
 All calls needs an active Azure AD Token
 
