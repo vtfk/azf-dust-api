@@ -9,8 +9,8 @@ Get OnPremises Active Directory user account
 ### displayName (properties is optional)
 ```json
 {
-	"displayName": "Bjarne Betjent",
-	"domain": "login|skole",
+  "displayName": "Bjarne Betjent",
+  "domain": "login|skole",
   "properties": [
     "title",
     "memberOf",
@@ -22,8 +22,8 @@ Get OnPremises Active Directory user account
 ### userPrincipalName (properties is optional)
 ```json
 {
-	"userPrincipalName": "bjarne.betjent@vtfk.no",
-	"domain": "login|skole",
+  "userPrincipalName": "bjarne.betjent@vtfk.no",
+  "domain": "login|skole",
   "properties": [
     "title",
     "memberOf",
@@ -35,8 +35,8 @@ Get OnPremises Active Directory user account
 ### empoloyeeNumber (properties is optional)
 ```json
 {
-	"employeeNumber": "01010101011",
-	"domain": "login|skole",
+  "employeeNumber": "01010101011",
+  "domain": "login|skole",
   "properties": [
     "title",
     "memberOf",
@@ -48,8 +48,8 @@ Get OnPremises Active Directory user account
 ### samAccountName (properties is optional)
 ```json
 {
-	"samAccountName": "bja0101",
-	"domain": "login|skole",
+  "samAccountName": "bja0101",
+  "domain": "login|skole",
   "properties": [
     "title",
     "memberOf",
@@ -65,15 +65,15 @@ Get Visma HRM user account
 ### firstName and lastName
 ```json
 {
-	"firstName": "Bjarne",
-	"lastName": "Betjent"
+  "firstName": "Bjarne",
+  "lastName": "Betjent"
 }
 ```
 
 ### employeeNumber
 ```json
 {
-	"employeeNumber": "01010101011"
+  "employeeNumber": "01010101011"
 }
 ```
 
@@ -84,7 +84,7 @@ Get OnPremises FEIDE user account
 ### samAccountName
 ```json
 {
-	"samAccountName": "bja0101"
+  "samAccountName": "bja0101"
 }
 ```
 
@@ -95,16 +95,16 @@ Get person object(s) and membership(s) for user account
 ### samAccountName
 ```json
 {
-	"samAccountName": "bja0101",
-	"type": "Student|Teacher"
+  "samAccountName": "bja0101",
+  "type": "Student|Teacher"
 }
 ```
 
 ### userPrincipalName
 ```json
 {
-	"userPrincipalName": "bjarne.betjent@vtfk.no",
-	"type": "Student|Teacher"
+  "userPrincipalName": "bjarne.betjent@vtfk.no",
+  "type": "Student|Teacher"
 }
 ```
 
@@ -115,7 +115,7 @@ Get raw info for user
 ### employeeNumber
 ```json
 {
-	"employeeNumber": "01010101011"
+  "employeeNumber": "01010101011"
 }
 ```
 
