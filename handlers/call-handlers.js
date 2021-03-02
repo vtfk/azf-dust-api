@@ -1,3 +1,4 @@
+const { logger } = require('@vtfk/logger')
 const handleAD = require('./ad')
 const handleVisma = require('./visma')
 const handleFeide = require('./feide')

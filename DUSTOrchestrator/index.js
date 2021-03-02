@@ -7,7 +7,7 @@ module.exports = df.orchestrator(function * (context) {
 
   // create a new request in the db
   yield context.df.callActivity('NewRequestActivity', { instanceId, systems })
-  
+
   // start all system requests
   systems.forEach(system => {
     parallelTasks.push(context.df.callActivity('DUSTActivity', { instanceId, system, token }))
