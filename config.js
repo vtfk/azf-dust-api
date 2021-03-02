@@ -19,6 +19,16 @@ module.exports = {
     DEFAULT_USER_PROPERTIES: (process.env.GRAPH_USER_PROPERTIES && process.env.GRAPH_USER_PROPERTIES.split(',')) || '*',
     DEFAULT_USER_EXPANDS: (process.env.GRAPH_USER_EXPANDS && process.env.GRAPH_USER_EXPANDS.split(',')) || null
   },
+  RETRY_WAIT: (process.env.RETRY_WAIT && Number.parseInt(process.env.RETRY_WAIT)) || 10000,
+  STATUS_PAGE: {
+    URL: process.env.STATUS_URL,
+    ENDPOINT: process.env.STATUS_ENDPOINT || 'api/status'
+  },
+  MONGO: {
+    CONNECTION: process.env.MONGODB_CONNECTION,
+    COLLECTION: process.env.MONGODB_COLLECTION,
+    NAME: process.env.MONGODB_NAME
+  },
   SCRIPT_SERVICE_URL: process.env.SCRIPT_SERVICE_URL || 'http://localhost:3000',
   DUST_JWT_SECRET: process.env.DUST_JWT_SECRET || false,
   DEFAULT_CALLER: 'NoenAndré',

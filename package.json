@@ -23,7 +23,9 @@
     "@vtfk/logger": "2.5.1",
     "axios": "0.21.1",
     "azure-ad-verify-token": "1.1.1",
+    "durable-functions": "1.4.6",
     "jsonwebtoken": "8.5.1",
+    "mongodb": "3.6.4",
     "node-cache": "5.1.2",
     "qs": "6.9.6"
   },
