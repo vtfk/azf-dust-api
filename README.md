@@ -2,11 +2,34 @@
 
 All calls needs an active Azure AD Token
 
-## `/systems/ad`
+## `/start`
+
+Calls executes in parallel. When a call has retrieved it's data it will be saved to a MongoDB. Then there will be tests executed on the data retrieved.
+
+When all calls are finished, tests across all retrieved data will be executed.
+
+```json
+{
+  "systems": [
+    {
+      "name": "aad",
+      "params": {
+        "userPrincipalName": "bjarne.betjent@vtfk.no"
+      }
+    }
+  ]
+}
+```
+
+## `/system/{system}`
+
+Call individual systems without updating db
+
+### `/systems/ad`
 
 Get OnPremises Active Directory user account
 
-### displayName (properties is optional)
+#### displayName (properties is optional)
 ```json
 {
   "displayName": "Bjarne Betjent",
@@ -19,7 +42,7 @@ Get OnPremises Active Directory user account
 }
 ```
 
-### userPrincipalName (properties is optional)
+#### userPrincipalName (properties is optional)
 ```json
 {
   "userPrincipalName": "bjarne.betjent@vtfk.no",
@@ -32,7 +55,7 @@ Get OnPremises Active Directory user account
 }
 ```
 
-### empoloyeeNumber (properties is optional)
+#### empoloyeeNumber (properties is optional)
 ```json
 {
   "employeeNumber": "01010101011",
@@ -45,7 +68,7 @@ Get OnPremises Active Directory user account
 }
 ```
 
-### samAccountName (properties is optional)
+#### samAccountName (properties is optional)
 ```json
 {
   "samAccountName": "bja0101",
@@ -58,11 +81,11 @@ Get OnPremises Active Directory user account
 }
 ```
 
-## `/systems/visma`
+### `/systems/visma`
 
 Get Visma HRM user account
 
-### firstName and lastName
+#### firstName and lastName
 ```json
 {
   "firstName": "Bjarne",
@@ -70,29 +93,29 @@ Get Visma HRM user account
 }
 ```
 
-### employeeNumber
+#### employeeNumber
 ```json
 {
   "employeeNumber": "01010101011"
 }
 ```
 
-## `/systems/feide`
+### `/systems/feide`
 
 Get OnPremises FEIDE user account
 
-### samAccountName
+#### samAccountName
 ```json
 {
   "samAccountName": "bja0101"
 }
 ```
 
-## `/systems/sds`
+### `/systems/sds`
 
 Get person object(s) and membership(s) for user account
 
-### samAccountName
+#### samAccountName
 ```json
 {
   "samAccountName": "bja0101",
@@ -100,7 +123,7 @@ Get person object(s) and membership(s) for user account
 }
 ```
 
-### userPrincipalName
+#### userPrincipalName
 ```json
 {
   "userPrincipalName": "bjarne.betjent@vtfk.no",
@@ -108,24 +131,68 @@ Get person object(s) and membership(s) for user account
 }
 ```
 
-## `/systems/pifu`
+### `/systems/pifu`
 
 Get raw info for user
 
-### employeeNumber
+#### employeeNumber
 ```json
 {
   "employeeNumber": "01010101011"
 }
 ```
 
-## `/systems/aad`
+### `/systems/aad`
 
 Get Azure Active Directory user account + authentication methods
 
-### userPrincipalName
+#### userPrincipalName
 ```json
 {
   "userPrincipalName": "bjarne.betjent@vtfk.no"
 }
 ```
+
+## Local development
+
+1. Create a `local.settings.json`
+    ```json
+    {
+      "IsEncrypted": false,
+      "Values": {
+        "FUNCTIONS_WORKER_RUNTIME": "node",
+        "AzureWebJobsStorage": "",
+        "CLIENT_ID": "0000000-0000-0000-0000-000000000000",
+        "CLIENT_SECRET": "ljngbølnbljkdafsbløjkadbhpiuaergpiuearwhgpuiøo",
+        "SCRIPT_SERVICE_URL": "https://localhost/dust/invoke",
+        "DEFAULT_CALLER": "noen.andre@vtfk.no",
+        "DUST_JWT_SECRET": "Very very secret secret",
+        "DEMO": false,
+        "DEMO_USER": "noen.andre@vtfk.no",
+        "GRAPH_USER_PROPERTIES": "accountEnabled,assignedLicenses,birthday,businessPhones,companyName,createdDateTime,deletedDateTime,department,displayName,jobTitle,lastPasswordChangeDateTime,mail,mobilePhone,onPremisesDistinguishedName,onPremisesExtensionAttributes,onPremisesLastSyncDateTime,onPremisesProvisioningErrors,onPremisesSamAccountName,onPremisesSyncEnabled,proxyAddresses,signInSessionsValidFromDateTime,userPrincipalName",
+        "GRAPH_USER_EXPANDS": "memberOf",
+        "RETRY_WAIT": 10000,
+        "STATUS_URL": "http://localhost:7071/api",
+        "STATUS_ENDPOINT": "status",
+        "MONGODB_CONNECTION": "mongodb+srv://<user>:<password>@cluster0.jlu5j.azure.mongodb.net?retryWrites=true&w=majority",
+        "MONGODB_COLLECTION": "collection",
+        "MONGODB_NAME": "db",
+        "PAPERTRAIL_HOST": "papertrail-log-url",
+        "PAPERTRAIL_PORT": 100,
+        "PAPERTRAIL_HOSTNAME": "hostname",
+        "PAPERTRAIL_DISABLE_LOGGING": true,
+        "NODE_ENV": "production"
+      },
+      "Host": {
+        "CORS": "*"
+      }
+    }
+    ```
+1. Create a new Azure Function in [Azure portal](https://portal.azure.com)
+1. Copy `AzureWebJobsStorage` setting from *Configuration* and update `local.settings.json`
+1. Create a new `Enterprise application`
+    1. Copy `CLIENT_ID` and update `local.settings.json`
+    1. Copy `CLIENT_SECRET` and update `local.settings.json`
+1. Create a database in Mongo and update `local.settings.json`
+1. npm i
+1. func start
