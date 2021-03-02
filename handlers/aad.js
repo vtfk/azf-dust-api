@@ -22,5 +22,8 @@ module.exports = async (params) => {
   logger('info', ['aad', 'graph-user-mfa', graphOptionsMFA.url])
   const graphAuth = await getGraphData(graphOptionsMFA, token)
 
-  return getResponse({ ...graphUser, ...graphAuth })
+  return getResponse({
+    ...graphUser,
+    authenticationMethods: graphAuth.value
+  })
 }
