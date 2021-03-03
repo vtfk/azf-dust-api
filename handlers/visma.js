@@ -11,7 +11,7 @@ const getData = async (caller, data) => {
 }
 
 module.exports = async (caller, params) => {
-  const { employeeNumber, firstName, lastName } = params
+  const { employeeNumber, givenName, surName } = params
 
   if (employeeNumber !== undefined) {
     logger('info', ['visma', 'employeeNumber', employeeNumber])
@@ -22,13 +22,13 @@ module.exports = async (caller, params) => {
     return getResponse(data)
   }
 
-  if (firstName !== undefined && lastName !== undefined) {
-    logger('info', ['visma', 'firstName', firstName, 'lastName', lastName])
+  if (givenName !== undefined && surName !== undefined) {
+    logger('info', ['visma', 'givenName', givenName, 'surName', surName])
     const data = await getData(caller, {
-      firstName,
-      lastName
+      givenName,
+      surName
     })
-    logger('info', ['visma', 'firstName', firstName, 'lastName', lastName, 'data', 'received', Array.isArray(data) ? data.length : 1])
+    logger('info', ['visma', 'givenName', givenName, 'surName', surName, 'data', 'received', Array.isArray(data) ? data.length : 1])
     return getResponse(data)
   }
 
@@ -39,8 +39,8 @@ module.exports = async (caller, params) => {
         'employeeNumber'
       ],
       paramSetTwo: [
-        'firstName',
-        'lastName'
+        'givenName',
+        'surName'
       ]
     }
   })

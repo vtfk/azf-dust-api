@@ -11,13 +11,12 @@ When all calls are finished, tests across all retrieved data will be executed.
 ```json
 {
   "systems": [
-    {
-      "name": "aad",
-      "params": {
-        "userPrincipalName": "bjarne.betjent@vtfk.no"
-      }
-    }
-  ]
+    "aad"
+  ],
+  "user": {
+    "userPrincipalName": "bjarne.betjent@vtfk.no",
+    ...userProps
+  }
 }
 ```
 
@@ -85,11 +84,11 @@ Get OnPremises Active Directory user account
 
 Get Visma HRM user account
 
-#### firstName and lastName
+#### givenName and surName
 ```json
 {
-  "firstName": "Bjarne",
-  "lastName": "Betjent"
+  "givenName": "Bjarne",
+  "surName": "Betjent"
 }
 ```
 
@@ -169,7 +168,7 @@ Get Azure Active Directory user account + authentication methods
         "DUST_JWT_SECRET": "Very very secret secret",
         "DEMO": false,
         "DEMO_USER": "noen.andre@vtfk.no",
-        "GRAPH_USER_PROPERTIES": "accountEnabled,assignedLicenses,birthday,businessPhones,companyName,createdDateTime,deletedDateTime,department,displayName,jobTitle,lastPasswordChangeDateTime,mail,mobilePhone,onPremisesDistinguishedName,onPremisesExtensionAttributes,onPremisesLastSyncDateTime,onPremisesProvisioningErrors,onPremisesSamAccountName,onPremisesSyncEnabled,proxyAddresses,signInSessionsValidFromDateTime,userPrincipalName",
+        "GRAPH_USER_PROPERTIES": "accountEnabled,assignedLicenses,birthday,businessPhones,companyName,createdDateTime,deletedDateTime,department,displayName,givenName,jobTitle,lastPasswordChangeDateTime,mail,mobilePhone,onPremisesDistinguishedName,onPremisesExtensionAttributes,onPremisesLastSyncDateTime,onPremisesProvisioningErrors,onPremisesSamAccountName,onPremisesSyncEnabled,proxyAddresses,signInSessionsValidFromDateTime,surname,userPrincipalName",
         "GRAPH_USER_EXPANDS": "memberOf",
         "RETRY_WAIT": 10000,
         "STATUS_URL": "http://localhost:7071/api",
