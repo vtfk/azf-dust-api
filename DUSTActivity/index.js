@@ -7,7 +7,7 @@ const { updateRequest } = require('../lib/mongo/handle-mongo')
 module.exports = async function (context) {
   const { instanceId, system, user, token } = context.bindings.request
   const caller = (token && token.upn) || DEFAULT_CALLER
-  const result = { name: system, user }
+  const result = { name: system }
 
   try {
     result.query = generateUserQuery(system, user)
