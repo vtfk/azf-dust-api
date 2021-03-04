@@ -19,6 +19,8 @@ module.exports = df.orchestrator(function * (context) {
 
   // determine if enough data is present to call all systems at once, or if extens and visma needs to be called first
   const systemsValidation = validate(systems, user)
+  let updatedUser = null
+
   if (systemsValidation.filter(validation => !validation.execute).length === 0) {
     console.log('Start all systems')
     // start all system requests
@@ -38,11 +40,11 @@ module.exports = df.orchestrator(function * (context) {
         token
       }))
     })
-    
+
     // wait for validated system requests to finish
     yield context.df.Task.all(parallelTasks)
 
-    const updatedUser = updateUser(parallelTasks.map(task => task.result), user)
+    updatedUser = updateUser(parallelTasks.map(task => task.result), user)
 
     systemsValidation.filter(validation => !validation.execute).forEach(validation => {
       parallelTasks.push(context.df.callActivity('DUSTActivity', {
@@ -63,7 +65,8 @@ module.exports = df.orchestrator(function * (context) {
     type: 'update',
     query: {
       instanceId,
-      finishTimestamp: timestamp
+      finishTimestamp: timestamp,
+      user: updatedUser || user
     }
   })
 
