@@ -103,6 +103,27 @@ Get Visma HRM user account
 
 Get OnPremises FEIDE user account
 
+#### displayName
+```json
+{
+  "displayName": "Bjarne Betjent"
+}
+```
+
+#### userPrincipalName
+```json
+{
+  "userPrincipalName": "bjarne.betjent@vtfk.no"
+}
+```
+
+#### empoloyeeNumber
+```json
+{
+  "employeeNumber": "01010101011"
+}
+```
+
 #### samAccountName
 ```json
 {
