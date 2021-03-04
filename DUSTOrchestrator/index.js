@@ -18,6 +18,7 @@ module.exports = df.orchestrator(function * (context) {
 
   return {
     user,
+    data: parallelTasks.map(task => {
       return {
         name: task.result.name,
         data: task.result.data,
