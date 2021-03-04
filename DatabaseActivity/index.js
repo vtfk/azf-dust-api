@@ -1,5 +1,7 @@
-const { newRequest } = require('../lib/mongo/handle-mongo')
+const { newRequest, updateRequest } = require('../lib/mongo/handle-mongo')
 
 module.exports = async function (context) {
-  return await newRequest(context.bindings.request)
+  const { type, query } = context.bindings.request
+
+  return await (type === 'new' ? newRequest(query) : updateRequest(query))
 }

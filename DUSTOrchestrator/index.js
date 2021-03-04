@@ -6,7 +6,14 @@ module.exports = df.orchestrator(function * (context) {
   const parallelTasks = []
 
   // create a new request in the db
-  yield context.df.callActivity('NewRequestActivity', { instanceId, user, systems })
+  yield context.df.callActivity('DatabaseActivity', {
+    type: 'new',
+    query: {
+      instanceId,
+      user,
+      systems
+    }
+  })
 
   // start all system requests
   systems.forEach(system => {
@@ -15,6 +22,16 @@ module.exports = df.orchestrator(function * (context) {
 
   // wait for all system requests to finish
   yield context.df.Task.all(parallelTasks)
+
+  // update request with a finish timestamp
+  const timestamp = new Date().toISOString()
+  yield context.df.callActivity('DatabaseActivity', {
+    type: 'update',
+    query: {
+      instanceId,
+      finishTimestamp: timestamp
+    }
+  })
 
   return {
     user,
