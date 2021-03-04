@@ -17,11 +17,9 @@ module.exports = df.orchestrator(function * (context) {
   yield context.df.Task.all(parallelTasks)
 
   return {
-    status: 200,
-    body: parallelTasks.map(task => {
+    user,
       return {
         name: task.result.name,
-        user: task.result.user,
         data: task.result.data,
         statusCode: task.result.status || 200,
         error: task.result.error || undefined,
