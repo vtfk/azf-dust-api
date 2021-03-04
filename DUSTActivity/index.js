@@ -1,6 +1,6 @@
 const { logger } = require('@vtfk/logger')
 const { DEFAULT_CALLER } = require('../config')
-const generateUserQuery = require('../lib/generate-user-query')
+const { generate } = require('../lib/user-query')
 const callHandler = require('../handlers/call-handlers')
 const { updateRequest } = require('../lib/mongo/handle-mongo')
 
@@ -10,7 +10,7 @@ module.exports = async function (context) {
   const result = { name: system }
 
   try {
-    result.query = generateUserQuery(system, user)
+    result.query = generate(system, user)
 
     logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || `${user.givenName} ${user.surName}`, 'start'])
     const { body } = await callHandler(caller, result.query, system)
