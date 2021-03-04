@@ -11,7 +11,7 @@ const getData = async (caller, data) => {
 }
 
 module.exports = async (caller, params) => {
-  const { samAccountName } = params
+  const { samAccountName, employeeNumber, userPrincipalName, displayName } = params
 
   if (samAccountName !== undefined) {
     logger('info', ['feide', 'samAccountName', samAccountName])
@@ -22,10 +22,40 @@ module.exports = async (caller, params) => {
     return getResponse(data)
   }
 
-  throw new HTTPError(400, 'Missing required parameter', {
-    message: 'Missing required parameter',
+  if (employeeNumber !== undefined) {
+    logger('info', ['feide', 'employeeNumber', employeeNumber])
+    const data = await getData(caller, {
+      employeeNumber
+    })
+    logger('info', ['feide', 'employeeNumber', employeeNumber, 'data', 'received', Array.isArray(data) ? data.length : 1])
+    return getResponse(data)
+  }
+
+  if (userPrincipalName !== undefined) {
+    logger('info', ['feide', 'userPrincipalName', userPrincipalName])
+    const data = await getData(caller, {
+      userPrincipalName
+    })
+    logger('info', ['feide', 'userPrincipalName', userPrincipalName, 'data', 'received', Array.isArray(data) ? data.length : 1])
+    return getResponse(data)
+  }
+
+  if (displayName !== undefined) {
+    logger('info', ['feide', 'displayName', displayName])
+    const data = await getData(caller, {
+      displayName
+    })
+    logger('info', ['feide', 'displayName', displayName, 'data', 'received', Array.isArray(data) ? data.length : 1])
+    return getResponse(data)
+  }
+
+  throw new HTTPError(400, 'Missing required parameters', {
+    message: 'Missing required parameters. One of the following parameters are required',
     params: [
-      'samAccountName'
+      'samAccountName',
+      'employeeNumber',
+      'userPrincipalName',
+      'displayName'
     ]
   })
 }
