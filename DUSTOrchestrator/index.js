@@ -1,6 +1,4 @@
 const df = require('durable-functions')
-const { validate } = require('../lib/user-query')
-const updateUser = require('../lib/update-user')
 
 module.exports = df.orchestrator(function * (context) {
   const { body: { systems, user }, token } = context.df.getInput()
@@ -8,8 +6,9 @@ module.exports = df.orchestrator(function * (context) {
   const parallelTasks = []
 
   // create a new request in the db
-  yield context.df.callActivity('DatabaseActivity', {
-    type: 'new',
+  yield context.df.callActivity('WorkerActivity', {
+    type: 'db',
+    variant: 'new',
     query: {
       instanceId,
       user,
@@ -17,22 +16,27 @@ module.exports = df.orchestrator(function * (context) {
     }
   })
 
-  // determine if enough data is present to call all systems at once, or if extens and visma needs to be called first
-  const systemsValidation = validate(systems, user)
+  // determine if enough data is present to call all systems at once
+  const systemsValidation = yield context.df.callActivity('WorkerActivity', {
+    type: 'user',
+    variant: 'validate',
+    query: {
+      systems,
+      user
+    }
+  })
+  const failValidated = systemsValidation.filter(validation => !validation.execute)
+  const successValidated = systemsValidation.filter(validation => validation.execute)
   let updatedUser = null
 
-  if (systemsValidation.filter(validation => !validation.execute).length === 0) {
-    console.log('Start all systems')
+  if (failValidated.length === 0) {
     // start all system requests
     systems.forEach(system => {
       parallelTasks.push(context.df.callActivity('DUSTActivity', { instanceId, system, user, token }))
     })
-
-    // wait for all system requests to finish
-    yield context.df.Task.all(parallelTasks)
   } else {
-    // start validate systems first, wait for them to finish and update user object with missing properties
-    systemsValidation.filter(validation => validation.execute).forEach(validation => {
+    // start validated systems first
+    successValidated.forEach(validation => {
       parallelTasks.push(context.df.callActivity('DUSTActivity', {
         instanceId,
         system: validation.system,
@@ -44,9 +48,18 @@ module.exports = df.orchestrator(function * (context) {
     // wait for validated system requests to finish
     yield context.df.Task.all(parallelTasks)
 
-    updatedUser = updateUser(parallelTasks.map(task => task.result), user)
+    // update user object with missing properties
+    updatedUser = yield context.df.callActivity('WorkerActivity', {
+      type: 'user',
+      variant: 'update',
+      query: {
+        results: parallelTasks.map(task => task.result),
+        user
+      }
+    })
 
-    systemsValidation.filter(validation => !validation.execute).forEach(validation => {
+    // start systems which fail-validated
+    failValidated.forEach(validation => {
       parallelTasks.push(context.df.callActivity('DUSTActivity', {
         instanceId,
         system: validation.system,
@@ -54,15 +67,16 @@ module.exports = df.orchestrator(function * (context) {
         token
       }))
     })
-
-    // wait for non-validated system requests to finish
-    yield context.df.Task.all(parallelTasks)
   }
 
-  // update request with a finish timestamp
+  // wait for all system requests to finish
+  yield context.df.Task.all(parallelTasks)
+
+  // update request with a finish timestamp and update user object with updatedUser
   const timestamp = new Date().toISOString()
-  yield context.df.callActivity('DatabaseActivity', {
-    type: 'update',
+  yield context.df.callActivity('WorkerActivity', {
+    type: 'db',
+    variant: 'update',
     query: {
       instanceId,
       finishTimestamp: timestamp,
