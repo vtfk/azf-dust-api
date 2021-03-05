@@ -12,9 +12,9 @@ module.exports = async function (context) {
   try {
     result.query = generate(system, user)
 
-    logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || `${user.givenName} ${user.surName}`, 'start'])
+    logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || `${user.givenName} ${user.surName}`, 'data', 'start'])
     const { body } = await callHandler(caller, result.query, system)
-    logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || `${user.givenName} ${user.surName}`, 'finish'])
+    logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || `${user.givenName} ${user.surName}`, 'data', 'finish'])
     result.data = body
   } catch (error) {
     result.status = error.statusCode || 400
