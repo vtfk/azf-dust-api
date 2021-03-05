@@ -24,9 +24,11 @@ module.exports = async function (context) {
   }
 
   try {
+    logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || `${user.givenName} ${user.surName}`, 'request-update', result.data ? 'data' : 'error', 'start'])
     await updateRequest({ instanceId, ...result })
+    logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || `${user.givenName} ${user.surName}`, 'request-update', result.data ? 'data' : 'error', 'finish'])
   } catch (error) {
-    logger('error', ['dust-activity', system, 'request-update', 'error', error.message])
+    logger('error', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || `${user.givenName} ${user.surName}`, 'request-update', 'error', error.message])
     result.status = 500
     result.error = error.message
     result.innerError = error.stack
