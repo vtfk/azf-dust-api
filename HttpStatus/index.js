@@ -1,6 +1,7 @@
 const df = require('durable-functions')
 const withTokenAuth = require('../lib/auth/with-token-auth')
 const getStatusResponse = require('../lib/get-status-response')
+const { RETRY_WAIT } = require('../config')
 
 const status = async function (context, req) {
   const client = df.getClient(context)
@@ -29,7 +30,7 @@ const status = async function (context, req) {
   // orchestrator is pending or running - return 202
   if (status && ['Running', 'Pending'].includes(status.runtimeStatus)) {
     res = {
-      ...getStatusResponse(req, client, instanceId),
+      ...getStatusResponse(client, instanceId, RETRY_WAIT),
       body: status
     }
   }
