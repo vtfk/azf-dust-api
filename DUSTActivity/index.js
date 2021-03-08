@@ -1,4 +1,4 @@
-const { logger } = require('@vtfk/logger')
+const { logger, logConfig } = require('@vtfk/logger')
 const { DEFAULT_CALLER } = require('../config')
 const { generate } = require('../lib/user-query')
 const callHandler = require('../handlers/call-handlers')
@@ -8,6 +8,13 @@ module.exports = async function (context) {
   const { instanceId, system, user, token } = context.bindings.request
   const caller = (token && token.upn) || DEFAULT_CALLER
   const result = { name: system }
+
+  logConfig({
+    azure: {
+      context,
+      excludeInvocationId: true
+    }
+  })
 
   try {
     result.query = generate(system, user)
