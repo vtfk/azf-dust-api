@@ -1,4 +1,5 @@
 const df = require('durable-functions')
+const { SOURCE_DATA_SYSTEMS } = require('../config')
 
 const callSystems = (context, instanceId, systems, user, token) => {
   return systems.map(system => {
@@ -10,11 +11,20 @@ const callSystems = (context, instanceId, systems, user, token) => {
     })
   })
 }
+
 module.exports = df.orchestrator(function * (context) {
   const { token } = context.df.getInput()
   let { body: { systems, user } } = context.df.getInput()
   const instanceId = context.df.instanceId
   const parallelTasks = []
+
+  // lowercase all system names
+  systems = systems.map(system => system.toLowerCase())
+
+  // add source data systems to systems if not already present
+  SOURCE_DATA_SYSTEMS.forEach(system => {
+    if (!systems.includes(system.toLowerCase())) systems.push(system.toLowerCase())
+  })
 
   // create a new request in the db
   yield context.df.callActivity('WorkerActivity', {
