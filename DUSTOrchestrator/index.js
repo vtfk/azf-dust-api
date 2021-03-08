@@ -11,7 +11,8 @@ const callSystems = (context, instanceId, systems, user, token) => {
   })
 }
 module.exports = df.orchestrator(function * (context) {
-  const { body: { systems, user }, token } = context.df.getInput()
+  const { token } = context.df.getInput()
+  let { body: { systems, user } } = context.df.getInput()
   const instanceId = context.df.instanceId
   const parallelTasks = []
 
@@ -35,9 +36,7 @@ module.exports = df.orchestrator(function * (context) {
       user
     }
   })
-  const failValidated = systemsValidation.filter(validation => !validation.execute)
-  const successValidated = systemsValidation.filter(validation => validation.execute)
-  let updatedUser = null
+  const succeededValidation = systemsValidation.filter(validation => validation.execute).map(validation => validation.system)
 
   if (failValidated.length === 0) {
     // start all system requests
@@ -51,7 +50,7 @@ module.exports = df.orchestrator(function * (context) {
     yield context.df.Task.all(parallelTasks)
 
     // update user object with missing properties
-    updatedUser = yield context.df.callActivity('WorkerActivity', {
+    user = yield context.df.callActivity('WorkerActivity', {
       type: 'user',
       variant: 'update',
       query: {
@@ -74,8 +73,7 @@ module.exports = df.orchestrator(function * (context) {
     variant: 'update',
     query: {
       instanceId,
-      finishTimestamp: timestamp,
-      user: updatedUser || user
+      user
     }
   })
 
