@@ -1,3 +1,4 @@
+const { logger } = require('@vtfk/logger')
 const df = require('durable-functions')
 const { SOURCE_DATA_SYSTEMS } = require('../config')
 
