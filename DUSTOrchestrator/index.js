@@ -66,13 +66,14 @@ module.exports = df.orchestrator(function * (context) {
   // wait for all system requests to finish
   yield context.df.Task.all(parallelTasks)
 
-  // update request with a finish timestamp and update user object with updatedUser
+  // update request with a finish timestamp and user object
   const timestamp = new Date().toISOString()
   yield context.df.callActivity('WorkerActivity', {
     type: 'db',
     variant: 'update',
     query: {
       instanceId,
+      timestamp,
       user
     }
   })
