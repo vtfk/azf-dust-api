@@ -1,4 +1,3 @@
-const { logger } = require('@vtfk/logger')
 const df = require('durable-functions')
 const { SOURCE_DATA_SYSTEMS } = require('../config')
 
@@ -52,11 +51,19 @@ module.exports = df.orchestrator(function * (context) {
 
   if (failedValidation.length === 0) {
     // start all system requests
-    logger('info', ['orchestrator', 'All systems succeeded validation', 'Starting all systems', systems])
+    yield context.df.callActivity('WorkerActivity', {
+      type: 'logger',
+      variant: 'info',
+      query: ['orchestrator', 'All systems succeeded validation', 'Starting all systems', systems]
+    })
     parallelTasks.push(...callSystems(context, instanceId, systems, user, token))
   } else if (succeededValidation.length > 0) {
     // start validated systems first
-    logger('info', ['orchestrator', 'Some systems failed validation', 'Starting validated systems first and then the failed validation systems afterwards'])
+    yield context.df.callActivity('WorkerActivity', {
+      type: 'logger',
+      variant: 'info',
+      query: ['orchestrator', 'Some systems failed validation', 'Starting validated systems first and then the failed validation systems afterwards', succeededValidation, failedValidation]
+    })
     parallelTasks.push(...callSystems(context, instanceId, succeededValidation, user, token))
 
     // wait for validated system requests to finish

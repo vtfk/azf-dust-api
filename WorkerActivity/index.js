@@ -1,9 +1,17 @@
+const { logger, logConfig } = require('@vtfk/logger')
 const { newRequest, updateRequest } = require('../lib/mongo/handle-mongo')
 const { validate } = require('../lib/user-query')
 const updateUser = require('../lib/update-user')
 
 module.exports = async function (context) {
   const { type, variant, query } = context.bindings.request
+
+  logConfig({
+    azure: {
+      context,
+      excludeInvocationId: true
+    }
+  })
 
   if (type === 'db' && variant === 'new') {
     return await newRequest(query)
@@ -13,5 +21,7 @@ module.exports = async function (context) {
     return validate(query.systems, query.user)
   } else if (type === 'user' && variant === 'update') {
     return updateUser(query.results, query.user)
+  } else if (type === 'logger') {
+    logger(variant, query)
   }
 }
