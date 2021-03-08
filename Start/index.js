@@ -8,7 +8,7 @@ const start = async function (context, req) {
   const instanceId = await client.startNew('DUSTOrchestrator', context.invocationId, req)
 
   return {
-    body: getStatusResponse(req, client, instanceId, RETRY_WAIT),
+    body: getStatusResponse(client, instanceId, RETRY_WAIT),
     headers: {
       'Content-Type': 'application/json; charset=utf-8'
     }
