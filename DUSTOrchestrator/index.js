@@ -47,9 +47,10 @@ module.exports = df.orchestrator(function * (context) {
       user
     }
   })
+  const failedValidation = systemsValidation.filter(validation => !validation.execute).map(validation => validation.system)
   const succeededValidation = systemsValidation.filter(validation => validation.execute).map(validation => validation.system)
 
-  if (failValidated.length === 0) {
+  if (failedValidation.length === 0) {
     // start all system requests
     logger('info', ['orchestrator', 'All systems succeeded validation', 'Starting all systems', systems])
     parallelTasks.push(...callSystems(context, instanceId, systems, user, token))
