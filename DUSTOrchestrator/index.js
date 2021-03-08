@@ -1,5 +1,15 @@
 const df = require('durable-functions')
 
+const callSystems = (context, instanceId, systems, user, token) => {
+  return systems.map(system => {
+    return context.df.callActivity('DUSTActivity', {
+      instanceId,
+      system,
+      user,
+      token
+    })
+  })
+}
 module.exports = df.orchestrator(function * (context) {
   const { body: { systems, user }, token } = context.df.getInput()
   const instanceId = context.df.instanceId
@@ -31,19 +41,11 @@ module.exports = df.orchestrator(function * (context) {
 
   if (failValidated.length === 0) {
     // start all system requests
-    systems.forEach(system => {
-      parallelTasks.push(context.df.callActivity('DUSTActivity', { instanceId, system, user, token }))
-    })
-  } else {
+    logger('info', ['orchestrator', 'All systems succeeded validation', 'Starting all systems', systems])
+    parallelTasks.push(...callSystems(context, instanceId, systems, user, token))
     // start validated systems first
-    successValidated.forEach(validation => {
-      parallelTasks.push(context.df.callActivity('DUSTActivity', {
-        instanceId,
-        system: validation.system,
-        user,
-        token
-      }))
-    })
+    logger('info', ['orchestrator', 'Some systems failed validation', 'Starting validated systems first and then the failed validation systems afterwards'])
+    parallelTasks.push(...callSystems(context, instanceId, succeededValidation, user, token))
 
     // wait for validated system requests to finish
     yield context.df.Task.all(parallelTasks)
@@ -58,15 +60,8 @@ module.exports = df.orchestrator(function * (context) {
       }
     })
 
-    // start systems which fail-validated
-    failValidated.forEach(validation => {
-      parallelTasks.push(context.df.callActivity('DUSTActivity', {
-        instanceId,
-        system: validation.system,
-        user: updatedUser,
-        token
-      }))
-    })
+    // start systems which failed validation
+    parallelTasks.push(...callSystems(context, instanceId, failedValidation, user, token))
   }
 
   // wait for all system requests to finish
