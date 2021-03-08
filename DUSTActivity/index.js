@@ -12,9 +12,9 @@ module.exports = async function (context) {
   try {
     result.query = generate(system, user)
 
-    logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || `${user.givenName} ${user.surName}`, 'data', 'start'])
+    logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || '', 'data', 'start'])
     const { body } = await callHandler(caller, result.query, system)
-    logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || `${user.givenName} ${user.surName}`, 'data', 'finish'])
+    logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || '', 'data', 'finish'])
     result.data = body
   } catch (error) {
     result.status = error.statusCode || 400
@@ -24,11 +24,11 @@ module.exports = async function (context) {
   }
 
   try {
-    logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || `${user.givenName} ${user.surName}`, 'request-update', result.data ? 'data' : 'error', 'start'])
+    logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || '', 'request-update', result.data ? 'data' : 'error', 'start'])
     await updateRequest({ instanceId, ...result })
-    logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || `${user.givenName} ${user.surName}`, 'request-update', result.data ? 'data' : 'error', 'finish'])
+    logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || '', 'request-update', result.data ? 'data' : 'error', 'finish'])
   } catch (error) {
-    logger('error', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || `${user.givenName} ${user.surName}`, 'request-update', 'error', error.message])
+    logger('error', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || '', 'request-update', 'error', error.message])
     result.status = 500
     result.error = error.message
     result.innerError = error.stack
