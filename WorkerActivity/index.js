@@ -23,5 +23,23 @@ module.exports = async function (context) {
     return updateUser(query.results, query.user)
   } else if (type === 'logger') {
     logger(variant, query)
+  } else if (type === 'test') {
+    const { instanceId, results, user } = query
+
+    results.forEach(async result => {
+      const { validate } = require('../systems')[result.name]
+      if (typeof validate === 'function') {
+        const tests = validate(result.data, user, true)
+        if (Array.isArray(result.test)) {
+          tests.forEach(test => {
+            const testExists = result.test.filter(t => t.id === test.id)
+            if (testExists) result.test.push(test)
+          })
+        }
+        else result.test = tests
+
+        await updateRequest({ instanceId, ...result })
+      }
+    })
   }
 }
