@@ -24,10 +24,13 @@ module.exports = async function (context) {
   try {
     result.query = generate(system, user)
 
+    // set data
     logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || '', 'data', 'start'])
     const { body } = await callHandler(caller, result.query, system)
     logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || '', 'data', 'finish'])
     result.data = body
+
+    // set tests
     const tests = test(system, body, user)
     if (tests) result.test = tests.filter(t => t.result)
   } catch (error) {
@@ -38,6 +41,7 @@ module.exports = async function (context) {
   }
 
   try {
+    // update db with data and tests or error
     logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || '', 'request-update', result.data ? 'data' : 'error', 'start'])
     await updateRequest({ instanceId, ...result })
     logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || '', 'request-update', result.data ? 'data' : 'error', 'finish'])
