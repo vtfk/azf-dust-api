@@ -14,7 +14,7 @@ module.exports = (systemData, metadata, allData = false) => ([
   }),
   test('ad-03', 'UPN er lik e-postadressen', 'Sjekker at UPN-et er lik e-postadressen i AD', () => {
     if (!systemData.userPrincipalName) return error('No UPN', systemData)
-    return systemData.userPrincipalName.toLowerCase() === systemData.email.toLowerCase()
+    return systemData.userPrincipalName.toLowerCase() === systemData.mail.toLowerCase()
   }),
   test('ad-04', 'UPN er korrekt', 'Sjekker at UPN er @vtfk.no for ansatte, og @skole.vtfk.no for elever', () => {
     if (!systemData.userPrincipalName) return error('No UPN', systemData)
