@@ -103,7 +103,7 @@ module.exports = df.orchestrator(function * (context) {
     data: parallelTasks.map(task => {
       return {
         name: task.result.name,
-        data: task.result.data,
+        data: task.result.data || undefined,
         statusCode: task.result.status || 200,
         error: task.result.error || undefined,
         innerError: task.result.innerError || undefined,
