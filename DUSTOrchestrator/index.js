@@ -62,7 +62,7 @@ module.exports = df.orchestrator(function * (context) {
     yield context.df.callActivity('WorkerActivity', {
       type: 'logger',
       variant: 'info',
-      query: ['orchestrator', 'Some systems failed validation', 'Starting validated systems first and then the failed validation systems afterwards', succeededValidation, failedValidation]
+      query: ['orchestrator', 'Some systems failed validation', 'Starting validated systems first and then the failed systems afterwards', succeededValidation, failedValidation]
     })
     parallelTasks.push(...callSystems(context, instanceId, succeededValidation, user, token))
 
