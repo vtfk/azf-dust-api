@@ -6,7 +6,7 @@ const { updateRequest } = require('../lib/mongo/handle-mongo')
 
 const test = (system, data, user) => {
   const { validate } = require('../systems')[system]
-  return validate(data, user)
+  if (typeof validate === 'function') return validate(data, user)
 }
 
 module.exports = async function (context) {
