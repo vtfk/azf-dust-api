@@ -35,8 +35,7 @@ module.exports = async function (context) {
             const testExists = result.test.filter(t => t.id === test.id)
             if (testExists) result.test.push(test)
           })
-        }
-        else result.test = tests
+        } else result.test = tests
 
         await updateRequest({ instanceId, ...result })
       }
