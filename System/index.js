@@ -1,7 +1,7 @@
 const { DEFAULT_CALLER } = require('../config')
 const { logger } = require('@vtfk/logger')
 const withTokenAuth = require('../lib/auth/with-token-auth')
-const callHandler = require('../handlers/call-handlers')
+const callHandler = require('../lib/call-handlers')
 
 const handleSystem = async (context, req) => {
   const { system } = req.params

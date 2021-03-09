@@ -1,7 +1,7 @@
 const { logger, logConfig } = require('@vtfk/logger')
 const { DEFAULT_CALLER } = require('../config')
 const { generate } = require('../lib/user-query')
-const callHandler = require('../handlers/call-handlers')
+const callHandler = require('../lib/call-handlers')
 const { updateRequest } = require('../lib/mongo/handle-mongo')
 
 module.exports = async function (context) {
