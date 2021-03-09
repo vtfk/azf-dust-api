@@ -19,15 +19,6 @@ module.exports = (systemData, metadata, allData = false) => ([
   test('ad-04', 'UPN er korrekt', 'Sjekker at UPN er @vtfk.no for ansatte, og @skole.vtfk.no for elever', () => {
     if (!systemData.userPrincipalName) return error('No UPN', systemData)
 
-    if (metadata.expectedType === 'employee') {
-      return systemData.userPrincipalName.includes('@vtfk.no')
-    } else {
-      return systemData.userPrincipalName.includes('@skole.vtfk.no')
-    }
-  }),
-  test('ad-05', 'UPN er korrekt', 'Sjekker at UPN er @vtfk.no for ansatte, og @skole.vtfk.no for elever', () => {
-    if (!systemData.userPrincipalName) return error('No UPN', systemData)
-
     if (!allData) return noData('Venter på data...')
     if (metadata.expectedType === 'employee') {
       return systemData.userPrincipalName.includes('@vtfk.no')
