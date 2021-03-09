@@ -1,7 +1,7 @@
 {
   "bindings": [
     {
-      "authLevel": "function",
+      "authLevel": "anonymous",
       "type": "httpTrigger",
       "direction": "in",
       "name": "req",
@@ -13,7 +13,7 @@
     {
       "type": "http",
       "direction": "out",
-      "name": "res"
+      "name": "$return"
     },
     {
       "name": "starter",

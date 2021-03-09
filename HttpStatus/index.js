@@ -1,7 +1,9 @@
 const df = require('durable-functions')
+const withTokenAuth = require('../lib/auth/with-token-auth')
 const getStatusResponse = require('../lib/get-status-response')
+const { RETRY_WAIT } = require('../config')
 
-module.exports = async function (context, req) {
+const status = async function (context, req) {
   const client = df.getClient(context)
   const { instanceId } = req.params
   const status = await client.getStatus(instanceId, true)
@@ -11,7 +13,7 @@ module.exports = async function (context, req) {
     delete status.input
   }
 
-  context.res = status
+  let res = status
     ? ({
         body: status,
         headers: {}
@@ -27,11 +29,15 @@ module.exports = async function (context, req) {
 
   // orchestrator is pending or running - return 202
   if (status && ['Running', 'Pending'].includes(status.runtimeStatus)) {
-    context.res = {
-      ...getStatusResponse(req, client, instanceId),
+    res = {
+      ...getStatusResponse(client, instanceId, RETRY_WAIT),
       body: status
     }
   }
 
-  context.res.headers['Content-Type'] = 'application/json; charset=utf-8'
+  res.headers['Content-Type'] = 'application/json; charset=utf-8'
+
+  return res
 }
+
+module.exports = (context, req) => withTokenAuth(context, req, status)

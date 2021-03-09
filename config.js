@@ -1,11 +1,9 @@
 const TENANT_ID = process.env.TENANT_ID || '08f3813c-9f29-482f-9aec-16ef7cbf477a'
-const CLIENT_ID = process.env.CLIENT_ID
 
 module.exports = {
   TOKEN_AUTH: {
     jwksUri: process.env.TOKEN_AUTH_JWK_URI || `https://login.microsoftonline.com/${TENANT_ID}/discovery/v2.0/keys`,
-    issuer: process.env.TOKEN_AUTH_ISS || undefined,
-    audience: process.env.TOKEN_AUTH_AUD || CLIENT_ID || undefined // Application Client ID
+    issuer: process.env.TOKEN_AUTH_ISS || `https://login.microsoftonline.com/${TENANT_ID}/v2.0`
   },
   GRAPH: {
     AUTH: {
@@ -29,6 +27,7 @@ module.exports = {
     COLLECTION: process.env.MONGODB_COLLECTION,
     NAME: process.env.MONGODB_NAME
   },
+  SOURCE_DATA_SYSTEMS: (process.env.SOURCE_DATA_SYSTEMS && process.env.SOURCE_DATA_SYSTEMS.split(',')) || [],
   SCRIPT_SERVICE_URL: process.env.SCRIPT_SERVICE_URL || 'http://localhost:3000',
   DUST_JWT_SECRET: process.env.DUST_JWT_SECRET || false,
   DEFAULT_CALLER: 'NoenAndré',
