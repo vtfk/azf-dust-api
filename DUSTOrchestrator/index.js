@@ -74,7 +74,7 @@ module.exports = df.orchestrator(function * (context) {
       type: 'user',
       variant: 'update',
       query: {
-        results: parallelTasks.map(task => task.result),
+        results: parallelTasks.filter(task => task.result.data).map(task => task.result),
         user
       }
     })
