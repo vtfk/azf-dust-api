@@ -4,6 +4,11 @@ const { generate } = require('../lib/user-query')
 const callHandler = require('../lib/call-handlers')
 const { updateRequest } = require('../lib/mongo/handle-mongo')
 
+const test = (system, data, user) => {
+  const { validate } = require('../systems')[system]
+  return validate(data, user)
+}
+
 module.exports = async function (context) {
   const { instanceId, system, user, token } = context.bindings.request
   const caller = (token && token.upn) || DEFAULT_CALLER
@@ -23,6 +28,7 @@ module.exports = async function (context) {
     const { body } = await callHandler(caller, result.query, system)
     logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || '', 'data', 'finish'])
     result.data = body
+    result.test = test(system, body, user)
   } catch (error) {
     result.status = error.statusCode || 400
     result.error = error.message
