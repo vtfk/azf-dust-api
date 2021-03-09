@@ -104,6 +104,7 @@ module.exports = df.orchestrator(function * (context) {
       return {
         name: task.result.name,
         data: task.result.data || undefined,
+        test: task.result.test || undefined,
         statusCode: task.result.status || 200,
         error: task.result.error || undefined,
         innerError: task.result.innerError || undefined,
