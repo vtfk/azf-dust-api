@@ -1,7 +1,4 @@
-const test = require('../../lib/test')
-const success = (message, raw) => ({ status: 'ok', message, raw })
-const error = (message, raw) => ({ status: 'error', message, raw })
-const noData = message => ({ status: 'no-data', message })
+const { test, success, error, noData } = require('../../lib/test')
 
 module.exports = (systemData, metadata, allData = false) => ([
   test('ad-01', 'Kontoen er aktivert', 'Sjekker at kontoen er aktivert i AD', () => {
