@@ -1,25 +1,25 @@
 module.exports = {
-  AD: {
+  ad: {
     handle: require('./ad/handler'),
     validate: require('./ad/validator')
   },
-  Feide: {
+  feide: {
     handle: require('./feide/handler'),
     validate: require('./feide/validator')
   },
-  PIFU: {
+  pifu: {
     handle: require('./pifu/handler'),
     validate: require('./pifu/validator')
   },
-  SDS: {
+  sds: {
     handle: require('./sds/handler'),
     validate: require('./sds/validator')
   },
-  Visma: {
+  visma: {
     handle: require('./visma/handler'),
     validate: require('./visma/validator')
   },
-  AAD: {
+  aad: {
     handle: require('./aad/handler'),
     validate: require('./aad/validator')
   }
