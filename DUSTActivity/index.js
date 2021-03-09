@@ -28,7 +28,8 @@ module.exports = async function (context) {
     const { body } = await callHandler(caller, result.query, system)
     logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || '', 'data', 'finish'])
     result.data = body
-    result.test = test(system, body, user)
+    const tests = test(system, body, user)
+    if (tests) result.test = tests.filter(t => t.result)
   } catch (error) {
     result.status = error.statusCode || 400
     result.error = error.message
