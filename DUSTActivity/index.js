@@ -27,7 +27,7 @@ module.exports = async function (context) {
     result.status = error.statusCode || 400
     result.error = error.message
     result.innerError = error.innerError || error.stack
-    logger('error', ['dust-activity', system, 'error', error.statusCode, error.message])
+    logger('error', ['dust-activity', system, 'error', result.status, error.message])
   }
 
   try {
