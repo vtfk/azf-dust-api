@@ -14,9 +14,9 @@ const callSystems = (context, instanceId, systems, user, token) => {
 
 module.exports = df.orchestrator(function * (context) {
   const { token } = context.df.getInput()
-  let { body: { systems, user } } = context.df.getInput()
   const instanceId = context.df.instanceId
   const parallelTasks = []
+  let { body: { systems, user } } = context.df.getInput()
 
   // lowercase all system names
   systems = systems.map(system => system.toLowerCase())
@@ -85,6 +85,17 @@ module.exports = df.orchestrator(function * (context) {
 
   // wait for all system requests to finish
   yield context.df.Task.all(parallelTasks)
+
+  // run all tests on all systems
+  yield context.df.callActivity('WorkerActivity', {
+    type: 'test',
+    variant: 'all',
+    query: {
+      instanceId,
+      results: parallelTasks.filter(task => task.result.data).map(task => task.result),
+      user
+    }
+  })
 
   // update request with a finish timestamp and user object
   const timestamp = new Date().toISOString()
