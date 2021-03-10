@@ -35,6 +35,7 @@ const status = async function (context, req) {
     }
   }
 
+  if (status && status.output && status.output.statusCode) res.status = status.output.statusCode
   res.headers['Content-Type'] = 'application/json; charset=utf-8'
 
   return res
