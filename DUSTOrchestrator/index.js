@@ -13,10 +13,11 @@ const callSystems = (context, instanceId, systems, user, token) => {
 }
 
 module.exports = df.orchestrator(function * (context) {
-  const { token } = context.df.getInput()
+  const input = context.df.getInput()
+  const { token } = input
   const instanceId = context.df.instanceId
   const parallelTasks = []
-  let { body: { systems, user } } = context.df.getInput()
+  let { body: { systems, user } } = input
 
   // lowercase all system names
   systems = systems.map(system => system.toLowerCase())
