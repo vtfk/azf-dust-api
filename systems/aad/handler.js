@@ -1,8 +1,8 @@
 const { logger } = require('@vtfk/logger')
-const getGraphToken = require('../lib/graph/get-graph-token')
-const getGraphOptions = require('../lib/graph/get-graph-options')
-const getGraphData = require('../lib/graph/get-graph-data')
-const getResponse = require('../lib/get-response-object')
+const getGraphToken = require('../../lib/graph/get-graph-token')
+const getGraphOptions = require('../../lib/graph/get-graph-options')
+const getGraphData = require('../../lib/graph/get-graph-data')
+const getResponse = require('../../lib/get-response-object')
 
 module.exports = async (params) => {
   logger('info', ['aad', 'get graph token'])

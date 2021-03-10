@@ -14,9 +14,9 @@ const callSystems = (context, instanceId, systems, user, token) => {
 
 module.exports = df.orchestrator(function * (context) {
   const { token } = context.df.getInput()
-  let { body: { systems, user } } = context.df.getInput()
   const instanceId = context.df.instanceId
   const parallelTasks = []
+  let { body: { systems, user } } = context.df.getInput()
 
   // lowercase all system names
   systems = systems.map(system => system.toLowerCase())
@@ -62,7 +62,7 @@ module.exports = df.orchestrator(function * (context) {
     yield context.df.callActivity('WorkerActivity', {
       type: 'logger',
       variant: 'info',
-      query: ['orchestrator', 'Some systems failed validation', 'Starting validated systems first and then the failed validation systems afterwards', succeededValidation, failedValidation]
+      query: ['orchestrator', 'Some systems failed validation', 'Starting validated systems first and then the failed systems afterwards', succeededValidation, failedValidation]
     })
     parallelTasks.push(...callSystems(context, instanceId, succeededValidation, user, token))
 
@@ -74,7 +74,7 @@ module.exports = df.orchestrator(function * (context) {
       type: 'user',
       variant: 'update',
       query: {
-        results: parallelTasks.map(task => task.result),
+        results: parallelTasks.filter(task => task.result.data).map(task => task.result),
         user
       }
     })
@@ -85,6 +85,17 @@ module.exports = df.orchestrator(function * (context) {
 
   // wait for all system requests to finish
   yield context.df.Task.all(parallelTasks)
+
+  // run all tests on all systems
+  yield context.df.callActivity('WorkerActivity', {
+    type: 'test',
+    variant: 'all',
+    query: {
+      instanceId,
+      results: parallelTasks.filter(task => task.result.data).map(task => task.result),
+      user
+    }
+  })
 
   // update request with a finish timestamp and user object
   const timestamp = new Date().toISOString()
@@ -103,7 +114,8 @@ module.exports = df.orchestrator(function * (context) {
     data: parallelTasks.map(task => {
       return {
         name: task.result.name,
-        data: task.result.data,
+        data: task.result.data || undefined,
+        test: task.result.test || undefined,
         statusCode: task.result.status || 200,
         error: task.result.error || undefined,
         innerError: task.result.innerError || undefined,

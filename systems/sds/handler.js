@@ -1,7 +1,7 @@
 const { logger } = require('@vtfk/logger')
-const handleData = require('../lib/handle-data')
-const getResponse = require('../lib/get-response-object')
-const HTTPError = require('../lib/http-error')
+const handleData = require('../../lib/handle-data')
+const getResponse = require('../../lib/get-response-object')
+const HTTPError = require('../../lib/http-error')
 
 const getData = async (caller, data) => {
   const method = 'get'
