@@ -81,6 +81,16 @@ module.exports = df.orchestrator(function * (context) {
 
     // start systems which failed validation
     parallelTasks.push(...callSystems(context, instanceId, failedValidation, user, token))
+  } else {
+    // all systems failed validation
+    return {
+      statusCode: 400,
+      user,
+      data: {
+        systems,
+        error: 'All systems failed validation'
+      }
+    }
   }
 
   // wait for all system requests to finish
