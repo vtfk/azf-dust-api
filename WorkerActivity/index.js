@@ -3,6 +3,12 @@ const { newRequest, updateRequest } = require('../lib/mongo/handle-mongo')
 const { validate } = require('../lib/user-query')
 const updateUser = require('../lib/update-user')
 
+const getSystems = results => {
+  const data = {}
+  results.forEach(result => { data[result.name] = result.data })
+  return data
+}
+
 module.exports = async function (context) {
   const { type, variant, query } = context.bindings.request
 
@@ -25,11 +31,12 @@ module.exports = async function (context) {
     logger(variant, query)
   } else if (type === 'test') {
     const { instanceId, results, user } = query
+    const systems = getSystems(results)
 
     results.forEach(async result => {
       const { validate } = require('../systems')[result.name]
       if (typeof validate === 'function') {
-        const tests = validate(result.data, user, true)
+        const tests = validate(result.data, user, systems)
         if (Array.isArray(result.test)) {
           tests.forEach(test => {
             const testExists = result.test.filter(t => t.id === test.id)
