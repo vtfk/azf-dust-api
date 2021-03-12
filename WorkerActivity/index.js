@@ -32,6 +32,7 @@ module.exports = async function (context) {
   } else if (type === 'test') {
     const { instanceId, results, user } = query
     const systems = getSystems(results)
+    logger('info', ['worker-activity', 'Starting final tests', 'Systems', Object.getOwnPropertyNames(systems).length])
 
     results.forEach(async result => {
       const { validate } = require('../systems')[result.name]
