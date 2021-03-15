@@ -48,7 +48,7 @@ module.exports = (systemData, user, allData = false) => ([
       return error('Ingen stillinger ble funnet i HRM', { employment, positions: (positions || null) })
     }
 
-    const primaryPositions = positions.map(position => position['@isPrimaryPosition'] === 'true')
+    const primaryPositions = positions.filter(position => position['@isPrimaryPosition'] === 'true')
     const activePrimaryPositions = primaryPositions.map(position => position.active)
     const activePrimaryPosition = activePrimaryPositions.includes(true)
 
