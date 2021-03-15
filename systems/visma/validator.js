@@ -34,7 +34,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (user.expectedType === 'student') return warn('Personen ble funnet i HRM', { personIdHRM })
     return success('Personen ble funnet i HRM', { personIdHRM })
   }),
-  test('visma-03', 'Aktiv stilling', 'Kontrollerer at personen har en aktiv stilling', () => {
+  test('visma-02', 'Aktiv stilling', 'Kontrollerer at personen har en aktiv stilling', () => {
     const hrm = getSystemData(systemData)
     const employment = getEmployment(hrm)
     if (!employment) {
