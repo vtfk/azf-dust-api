@@ -37,24 +37,34 @@ module.exports = (systemData, user, allData = false) => ([
       return error('Ingen stillinger ble funnet i HRM', { employment, positions: (positions || null) })
     }
 
+    const primaryPositions = positions.map(position => position['@isPrimaryPosition'] === 'true')
+    const activePrimaryPositions = primaryPositions.map(position => position.active)
+    const activePrimaryPosition = activePrimaryPositions.includes(true)
+
     const activePositions = positions.map(position => position.active)
     const activePosition = activePositions.includes(true)
 
     // Sjekk at det finnes et aktivt ansettelsesforhold og minst én aktiv stilling
-    if (employment.active && activePosition) {
+    if (employment.active && activePrimaryPosition) {
       if (user.expectedType === 'student') return warn('Fant aktivt ansettelsesforhold og stilling i HRM', { employment, positions })
       return success('Fant aktivt ansettelsesforhold og stilling i HRM', { employment, positions })
     }
 
     // Fant kun et ansettelsesforhold
     if (employment.active) {
-      if (user.expectedType === 'student') return warn('Fant et aktivt ansettelsesforhold i HRM, men ingen aktiv stilling', { employment, positions })
-      return error('Fant et aktivt ansettelsesforhold i HRM, men ingen aktiv stilling', { employment, positions })
+      // Krøss i taket om dette noen gang skjer, men..
+      if (!activePrimaryPosition && activePosition) {
+        if (user.expectedType === 'student') return warn('Fant et aktivt ansettelsesforhold i HRM, men ingen av de aktive stillingene er en hovedstilling', { employment, positions })
+        return error('Fant et aktivt ansettelsesforhold i HRM, men ingen av de aktive stillingene er en hovedstilling', { employment, positions })
+      }
+
+      if (user.expectedType === 'student') return warn('Fant et aktivt ansettelsesforhold i HRM, men ingen aktiv hovedstilling', { employment, positions })
+      return error('Fant et aktivt ansettelsesforhold i HRM, men ingen aktiv hovedstilling', { employment, positions })
     }
 
     // Fant kun aktiv(e) stilling(er)
-    if (activePosition) {
-      const message = `Fant ${activePositions.length > 1 ? 'flere aktive stillinger' : 'en aktiv stilling'}, men ikke noe ansettelsesforhold`
+    if (activePrimaryPosition) {
+      const message = `Fant ${activePrimaryPosition.length > 1 ? 'flere aktive hovedstillinger' : 'én aktiv hovedstilling'}, men ikke noe ansettelsesforhold`
       if (user.expectedType === 'student') return warn(message, { employment, positions })
       return error(message, { employment, positions })
     }
