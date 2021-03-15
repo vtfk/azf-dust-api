@@ -6,7 +6,16 @@ const { updateRequest } = require('../lib/mongo/handle-mongo')
 
 const test = (system, data, user) => {
   const { validate } = require('../systems')[system]
-  if (typeof validate === 'function') return validate(data, user)
+  if (typeof validate === 'function') {
+    if (data) return validate(data, user)
+    else {
+      logger('warn', ['dust-activity', system, 'test', 'no data to test'])
+      return []
+    }
+  } else {
+    logger('warn', ['dust-activity', system, 'test', 'no tests found'])
+    return []
+  }
 }
 
 module.exports = async function (context) {

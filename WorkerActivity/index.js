@@ -37,9 +37,16 @@ module.exports = async function (context) {
     results.forEach(async result => {
       const { validate } = require('../systems')[result.name]
       if (typeof validate === 'function') {
-        result.test = validate(result.data, user, systems)
-        await updateRequest({ instanceId, ...result })
+        if (result.data) result.test = validate(result.data, user, systems)
+        else {
+          logger('warn', ['worker-activity', 'final tests', result.name, 'no data to test'])
+          result.test = []
+        }
+      } else {
+        logger('warn', ['worker-activity', 'final tests', result.name, 'no tests found'])
+        result.test = []
       }
+      await updateRequest({ instanceId, ...result })
     })
   }
 }
