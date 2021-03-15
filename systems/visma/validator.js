@@ -2,7 +2,7 @@ const { SYSTEMS } = require('../../config')
 const isWithinDaterange = require('../../lib/is-within-daterange')
 const { test, success, warn, error, noData } = require('../../lib/test')
 
-const hasData = obj => Array.isArray(obj) ? obj.length >= 1 : obj
+const hasData = obj => Array.isArray(obj) ? obj.length >= 1 : !!obj
 const getArray = obj => (Array.isArray(obj) ? obj : [obj]).filter(obj => !!obj)
 const getSystemData = systemData => getArray(systemData)[0]
 
