@@ -31,6 +31,10 @@ module.exports = {
     VISMA: {
       COMPANY_ID: process.env.VISMA_COMPANY_ID || '1',
       CATEGORIES: process.env.VISMA_CATEGORIES || 'O,SE,TK,X,XA,XB,FW'
+    },
+    FEIDE: {
+      PRINCIPAL_NAME: process.env.FEIDE_PRINCIPAL_NAME,
+      ORGANIZATION_DN: process.env.FEIDE_ORGANIZATION_DN
     }
   },
   SOURCE_DATA_SYSTEMS: (process.env.SOURCE_DATA_SYSTEMS && process.env.SOURCE_DATA_SYSTEMS.split(',')) || [],
