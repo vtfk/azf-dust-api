@@ -107,7 +107,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (user.expectedType === 'student') return warn(message, { category, description })
     return success(message, { category, description })
   }),
-  test('visma-03', 'E-postadressen er riktig', 'Sjekker at registrert e-post er lik som i AD', () => {
+  test('visma-04', 'E-postadressen er riktig', 'Sjekker at registrert e-post er lik som i AD', () => {
     if (!allData || !allData.ad) return noData('Venter på data...')
     if (!allData.ad.mail) return warn('Mail mangler i dataene fra AD', { ad: allData.ad ? { mail: allData.ad.mail || null } : null })
 
