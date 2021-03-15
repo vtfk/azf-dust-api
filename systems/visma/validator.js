@@ -75,7 +75,7 @@ module.exports = (systemData, user, allData = false) => ([
 
     // Fant kun aktiv(e) stilling(er)
     if (activePrimaryPosition) {
-      const message = `Fant ${activePrimaryPosition.length > 1 ? 'flere aktive hovedstillinger' : 'én aktiv hovedstilling'}, men ikke noe ansettelsesforhold`
+      const message = `Fant ${activePrimaryPositions.length > 1 ? 'flere aktive hovedstillinger' : 'én aktiv hovedstilling'}, men ikke noe ansettelsesforhold`
       if (user.expectedType === 'student') return warn(message, { employment, positions })
       return error(message, { employment, positions })
     }
