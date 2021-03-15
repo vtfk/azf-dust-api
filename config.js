@@ -27,6 +27,12 @@ module.exports = {
     COLLECTION: process.env.MONGODB_COLLECTION,
     NAME: process.env.MONGODB_NAME
   },
+  SYSTEMS: {
+    VISMA: {
+      COMPANY_ID: process.env.VISMA_COMPANY_ID || '1',
+      CATEGORIES: process.env.VISMA_CATEGORIES || 'O,SE,TK,X,XA,XB,FW'
+    }
+  },
   SOURCE_DATA_SYSTEMS: (process.env.SOURCE_DATA_SYSTEMS && process.env.SOURCE_DATA_SYSTEMS.split(',')) || [],
   SCRIPT_SERVICE_URL: process.env.SCRIPT_SERVICE_URL || 'http://localhost:3000',
   DUST_JWT_SECRET: process.env.DUST_JWT_SECRET || false,
