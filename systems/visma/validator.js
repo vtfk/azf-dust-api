@@ -2,36 +2,44 @@ const { SYSTEMS } = require('../../config')
 const isWithinDaterange = require('../../lib/is-within-daterange')
 const { test, success, warn, error, noData } = require('../../lib/test')
 
+const hasData = obj => Array.isArray(obj) ? obj.length >= 1 : obj
 const getArray = obj => (Array.isArray(obj) ? obj : [obj]).filter(obj => !!obj)
+
+const getEmployment = systemData => {
+  if (!(hasData(systemData) && systemData.employments && systemData.employments.employment)) return null
+  const employment = getArray(systemData.employments.employment).find(employment => employment.company && employment.company.companyId === SYSTEMS.VISMA.COMPANY_ID)
+  employment.active = isWithinDaterange(employment.startDate, employment.endDate)
+
+  return employment
+}
+
+const getPositions = employment => {
+  if (!(hasData(employment) && employment.positions && employment.positions.position)) return null
+  return getArray(employment.positions.position).map(position => ({
+    ...position,
+    active: isWithinDaterange(position.positionStartDate, position.positionEndDate)
+  }))
+}
 
 module.exports = (systemData, user, allData = false) => ([
   test('visma-01', 'Personen finnes', 'Sjekker at det ble funnet en person i HRM', () => {
-    if (systemData && systemData['@personIdHRM']) {
-      if (user.expectedType === 'student') return warn('Personen ble funnet i HRM', { personIdHRM: systemData['@personIdHRM'] })
-      return success('Personen ble funnet i HRM', { personIdHRM: systemData['@personIdHRM'] })
+    const personIdHRM = hasData(systemData) && systemData['@personIdHRM']
+    if (!personIdHRM) {
+      if (user.expectedType === 'student') return success('Personen ble ikke funnet i HRM, men siden dette er en elev er det helt normalt')
+      return error('Personen ble ikke funnet i HRM')
     }
-    if (user.expectedType === 'student') return success('Personen ble ikke funnet i HRM, men siden dette er en elev er det helt normalt')
-    return error('Personen ble ikke funnet i HRM')
+
+    if (user.expectedType === 'student') return warn('Personen ble funnet i HRM', { personIdHRM })
+    return success('Personen ble funnet i HRM', { personIdHRM })
   }),
   test('visma-03', 'Aktiv stilling', 'Kontrollerer at personen har en aktiv stilling', () => {
-    // Hent ut ansettelsesforholdet i fylkeskommunen
-    const employment = getArray(systemData.employments.employment).find(employment => employment.company.companyId === SYSTEMS.VISMA.COMPANY_ID)
+    const employment = getEmployment(systemData)
     if (!employment) {
       if (user.expectedType === 'student') return warn('Ingen ansettelsesforhold ble funnet i HRM', { employments: (systemData.employments || null) })
       return error('Ingen ansettelsesforhold ble funnet i HRM', { employments: (systemData.employments || null) })
     }
 
-    employment.active = isWithinDaterange(employment.startDate, employment.endDate)
-
-    // Hent stillinger og sjekk om de er aktive
-    const positions = getArray(employment.positions && employment.positions.position).map(position => {
-      console.log('position', position)
-      return {
-        ...position,
-        active: isWithinDaterange(position.positionStartDate, position.positionEndDate)
-      }
-    })
-
+    const positions = getPositions(employment)
     if (!positions) {
       if (user.expectedType === 'student') return warn('Ingen stillinger ble funnet i HRM', { employment, positions: (positions || null) })
       return error('Ingen stillinger ble funnet i HRM', { employment, positions: (positions || null) })
@@ -74,7 +82,7 @@ module.exports = (systemData, user, allData = false) => ([
     return error('Det ble ikke funnet noe aktivt ansettelsesforhold eller stillinger i HRM', { employment, positions })
   }),
   test('visma-03', 'Hovedstilling har korrekt kategori', 'Kontrollerer at hovedstillingen ikke har en kategori som er unntatt fra å få brukerkonto', () => {
-    const employment = getArray(systemData.employments.employment).find(employment => employment.company.companyId === SYSTEMS.VISMA.COMPANY_ID)
+    const employment = getEmployment(systemData)
     if (!employment) {
       if (user.expectedType === 'student') return warn('Ingen ansettelsesforhold ble funnet i HRM', { employments: (systemData.employments || null) })
       return error('Ingen ansettelsesforhold ble funnet i HRM', { employments: (systemData.employments || null) })
@@ -98,7 +106,7 @@ module.exports = (systemData, user, allData = false) => ([
   test('ad-03', 'E-postadressen er riktig', 'Sjekker at registrert e-post er lik som i AD', () => {
     if (!allData || !allData.ad) return noData('Venter på data...')
     if (!allData.ad.mail) return warn('Mail mangler i dataene fra AD', { ad: allData.ad ? { mail: allData.ad.mail || null } : null })
-    if (!systemData || !systemData.contactInfo || !systemData.contactInfo.email) {
+    if (!hasData(systemData) || !systemData.contactInfo || !systemData.contactInfo.email) {
       if (user.expectedType === 'student' && !systemData) return success('Ingen profil eller e-postadresse funnet i HRM', { systemData })
       return warn('Ingen e-postadresse registrert i HRM', systemData)
     }
@@ -112,7 +120,7 @@ module.exports = (systemData, user, allData = false) => ([
   test('ad-04', 'Brukernavn er likt brukernavnet i AD', 'Sjekker at brukernavnet i HRM er likt samAccountName i lokalt AD', () => {
     if (!allData || !allData.ad) return noData('Venter på data...')
     if (!allData.ad.samAccountName) return warn('samAccountName mangler i dataene fra AD', { ad: allData.ad ? { samAccountName: allData.ad.samAccountName || null } : null })
-    if (!systemData || !systemData.authentication || !systemData.authentication.alias) {
+    if (!hasData(systemData) || !systemData.authentication || !systemData.authentication.alias) {
       if (user.expectedType === 'student' && !systemData) return success('Ingen profil ble funnet i HRM', { systemData })
       return warn('Brukernavnet er ikke registrert i HRM slik det skal', { systemData })
     }
