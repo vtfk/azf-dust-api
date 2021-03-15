@@ -38,7 +38,7 @@ module.exports = (systemData, user, allData = false) => ([
     const hrm = getSystemData(systemData)
     const employment = getEmployment(hrm)
     if (!employment) {
-      if (user.expectedType === 'student') return warn('Ingen ansettelsesforhold ble funnet i HRM', { employments: (hrm.employments || null) })
+      if (user.expectedType === 'student') return success('Ingen ansettelsesforhold ble funnet i HRM', { employments: (hrm.employments || null) })
       return error('Ingen ansettelsesforhold ble funnet i HRM', { employments: (hrm.employments || null) })
     }
 
