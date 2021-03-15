@@ -44,7 +44,7 @@ module.exports = (systemData, user, allData = false) => ([
 
     const positions = getPositions(employment)
     if (!positions) {
-      if (user.expectedType === 'student') return warn('Ingen stillinger ble funnet i HRM', { employment, positions: (positions || null) })
+      if (user.expectedType === 'student') return success('Ingen stillinger ble funnet i HRM', { employment, positions: (positions || null) })
       return error('Ingen stillinger ble funnet i HRM', { employment, positions: (positions || null) })
     }
 
