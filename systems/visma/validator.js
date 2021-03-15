@@ -84,7 +84,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (user.expectedType === 'student') return success('Det ble ikke funnet noe aktivt ansettelsesforhold i HRM', { employment, positions })
     return error('Det ble ikke funnet noe aktivt ansettelsesforhold eller stillinger i HRM', { employment, positions })
   }),
-  test('visma-03', 'Hovedstilling har korrekt kategori', 'Kontrollerer at hovedstillingen ikke har en kategori som er unntatt fra å få brukerkonto', () => {
+  test('visma-03', 'Ansettelsesforholdet har korrekt kategori', 'Kontrollerer at ansettelsesforholdet ikke har en kategori som er unntatt fra å få brukerkonto', () => {
     const hrm = getSystemData(systemData)
     const employment = getEmployment(hrm)
     if (!employment) {
