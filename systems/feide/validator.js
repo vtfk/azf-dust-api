@@ -151,8 +151,9 @@ module.exports = (systemData, user, allData = false) => ([
       norEduPersonAuthnMethod: systemData.norEduPersonAuthnMethod.map(auth => auth.split(' ')[0])
     }
     if (systemData.norEduPersonAuthnMethod.length > 0) {
-      const smsAuth = systemData.norEduPersonAuthnMethod.map(auth => auth.includes('urn:mace:feide.no:auth:method:sms'))
-      const gaAuth = systemData.norEduPersonAuthnMethod.map(auth => auth.includes('urn:mace:feide.no:auth:method:ga'))
+      const smsAuth = systemData.norEduPersonAuthnMethod.filter(auth => auth.includes('urn:mace:feide.no:auth:method:sms'))
+      const gaAuth = systemData.norEduPersonAuthnMethod.filter(auth => auth.includes('urn:mace:feide.no:auth:method:ga'))
+
       if (smsAuth.length > 0 && gaAuth.length > 0) return success('MFA for SMS og Godkjenner/Authenticator app er satt opp', data)
       else if (smsAuth.length > 0 && gaAuth.length === 0) return success('MFA for SMS er satt opp', data)
       else if (smsAuth.length === 0 && gaAuth.length > 0) return success('MFA for Godkjenner/Authenticator app er satt opp', data)
