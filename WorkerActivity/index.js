@@ -5,7 +5,9 @@ const updateUser = require('../lib/update-user')
 
 const getSystems = results => {
   const data = {}
-  results.forEach(result => { data[result.name] = result.data })
+  results.forEach(result => {
+    if (result.data) data[result.name] = result.data
+  })
   return data
 }
 
