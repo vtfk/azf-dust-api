@@ -183,6 +183,14 @@ module.exports = (systemData, user, allData = false) => ([
       else if (systemData.eduPersonAffiliation.includes('member') && systemData.eduPersonAffiliation.includes('employee')) return warn('Tilhørighet er satt som en ansatt til tross for at dette er en elev', data)
       else return error('Tilhørighet er feil', data)
     }
+  }),
+  test('feide-18', 'Har grupperettigheter', 'Sjekker at det er satt grupperettigheter', () => {
+    // TODO: Bør kanskje sjekke at grupperettighetene stemmer overens med data fra PIFU
+    if (!systemData.eduPersonEntitlement) return error('Grupperettigheter mangler 🤭', systemData)
+    const data = {
+      eduPersonEntitlement: systemData.eduPersonEntitlement
+    }
+    if (systemData.eduPersonEntitlement.length > 0) return success('Grupperettigheter er riktig', data)
+    else return error('Grupperettigheter er feil', data)
   })
 ])
-
