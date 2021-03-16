@@ -24,16 +24,18 @@ module.exports = async function (context) {
     logger('info', ['dust-activity', system, 'data', 'start'])
     const { body } = await callHandler(caller, result.query, system)
     logger('info', ['dust-activity', system, 'data', 'finish'])
+    if (body && body.statusCode && (body.statusCode / 100 | 0) > 2) {
+      result.status = body.statusCode
+      result.error = body.message
+      logger('error', ['dust-activity', system, 'error', result.status, result.error])
+    } else {
+      result.data = body
+      result.test = test(system, body, user)
     }
-    result.data = body
-
-    // set tests
-    result.test = test(system, body, user)
   } catch (error) {
     result.status = error.statusCode || 400
     result.error = error.message
-    result.innerError = error.innerError || error.stack || undefined
-    logger('error', ['dust-activity', system, 'error', result.status, error.message])
+    logger('error', ['dust-activity', system, 'error', result.status, result.error])
   }
 
   try {
@@ -45,7 +47,6 @@ module.exports = async function (context) {
     logger('error', ['dust-activity', system, 'request-update', 'error', error.message])
     result.status = 500
     result.error = error.message
-    result.innerError = error.stack
   }
 
   return result
