@@ -24,6 +24,10 @@ module.exports = async function (context) {
     logger('info', ['dust-activity', system, 'data', 'start'])
     const { body } = await callHandler(caller, result.query, system)
     logger('info', ['dust-activity', system, logDesc, 'data', 'finish'])
+    if (body && body.statusCode && (body.statusCode / 100 | 0) > 2) throw {
+      statusCode: body.statusCode,
+      message: body.message
+    }
     result.data = body
 
     // set tests
@@ -31,7 +35,7 @@ module.exports = async function (context) {
   } catch (error) {
     result.status = error.statusCode || 400
     result.error = error.message
-    result.innerError = error.innerError || error.stack
+    result.innerError = error.innerError || error.stack || undefined
     logger('error', ['dust-activity', system, 'error', result.status, error.message])
   }
 
