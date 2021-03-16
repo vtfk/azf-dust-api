@@ -132,12 +132,12 @@ module.exports = df.orchestrator(function * (context) {
     data: parallelTasks.map(task => {
       return {
         name: task.result.name,
+        timestamp: task.timestamp,
         data: task.result.data || undefined,
-        test: task.result.test || undefined,
-        statusCode: task.result.status || 200,
         error: task.result.error || undefined,
+        statusCode: task.result.status || 200,
         innerError: task.result.innerError || undefined,
-        timestamp: task.timestamp
+        test: task.result.test || undefined,
       }
     })
   }
