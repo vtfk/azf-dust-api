@@ -1,14 +1,4 @@
-const { test, success, error, noData } = require('../../lib/test')
-
-const isPwdLastSet = (pwdOne, pwdTwo) => {
-  // should be last set between 0 and 15 seconds
-  const diff = 15
-  const pwdLastDiff = (pwdTwo - pwdOne) / 1000
-  return {
-    result: (pwdLastDiff > 0 && pwdLastDiff <= diff),
-    seconds: pwdLastDiff
-  }
-}
+const { test, success, error } = require('../../lib/test')
 
 module.exports = (systemData, user, allData = false) => ([
   test('ad-01', 'Kontoen er aktivert', 'Sjekker at kontoen er aktivert i AD', () => {
@@ -81,24 +71,5 @@ module.exports = (systemData, user, allData = false) => ([
       else if (data.primary.length === 1) return success('Har 1 primær e-postadresse, dette er også korrekt for en elev', data)
       else return error(`Har ${data.primary.length} primær e-postadresser`, data)
     }
-  }),
-  test('ad-08', 'Passord synkronisert til FEIDE', 'Sjekker at passordet er synkronisert til FEIDE innenfor 5 minutter', () => {
-    if (!allData) return noData('Venter på data...')
-    if (!allData.feide) return error('Mangler feide-data', allData)
-
-    const pwdAd = new Date(systemData.pwdLastSet)
-    const pwdFeide = new Date(allData.feide.passwordLastSet)
-    const isPwdOk = isPwdLastSet(pwdAd, pwdFeide)
-    const data = {
-      ad: {
-        pwdLastSet: systemData.pwdLastSet
-      },
-      feide: {
-        passwordLastSet: allData.feide.passwordLastSet
-      },
-      seconds: isPwdOk.seconds
-    }
-    if (isPwdOk.result) return success('Passord synkronisert til FEIDE', data)
-    else return error('Passord ikke synkronisert til FEIDE', data)
   })
 ])
