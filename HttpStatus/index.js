@@ -31,7 +31,12 @@ const status = async function (context, req) {
   if (status && ['Running', 'Pending'].includes(status.runtimeStatus)) {
     res = {
       ...getStatusResponse(client, instanceId, RETRY_WAIT),
-      body: status
+      body: {
+        user: status.customStatus,
+        started: status.createdTime,
+        lastUpdated: status.lastUpdatedTime,
+        data: status.historyEvents.filter(event => event.Result && event.Result.name).map(event => event.Result)
+      }
     }
   }
 
