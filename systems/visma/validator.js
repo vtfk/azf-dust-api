@@ -107,7 +107,20 @@ module.exports = (systemData, user, allData = false) => ([
     if (user.expectedType === 'student') return warn(message, { category, description })
     return success(message, { category, description })
   }),
-  test('visma-04', 'E-postadressen er riktig', 'Sjekker at registrert e-post er lik som i AD', () => {
+  test('visma-04', 'Fødselsnummeret er gyldig', 'Sjekker at fødselsnummeret som er registrert er gyldig', () => {
+    const hrm = getSystemData(systemData)
+    if (!hasData(hrm) || !hrm.ssn) {
+      if (user.expectedType === 'student') return success('Ingen person ble funnet i HRM', { hrm })
+      return warn('Ingen person ble funnet i HRM', { hrm })
+    }
+
+    const validationResult = isValidFnr(hrm.ssn)
+    if (!validationResult.valid) return error(validationResult.error, { hrm: { ssn: hrm.ssn }, validationResult })
+
+    if (validationResult.type !== 'Fødselsnummer') return warn(`Fødselsnummeret som er registrert er et ${validationResult.type}. Dette kan skape problemer i enkelte systemer`, { hrm: { ssn: hrm.ssn }, validationResult })
+    return success('Fødselsnummeret registrert i HRM er gyldig', { hrm: { ssn: hrm.ssn }, validationResult })
+  }),
+  test('visma-05', 'E-postadressen er riktig', 'Sjekker at registrert e-post er lik som i AD', () => {
     if (!allData || !allData.ad) return noData('Venter på data...')
     if (!allData.ad.mail) return warn('Mail mangler i dataene fra AD', { ad: allData.ad ? { mail: allData.ad.mail || null } : null })
 
@@ -123,7 +136,7 @@ module.exports = (systemData, user, allData = false) => ([
       return error('E-postadressen i AD og HRM er ulike', { ad: allData.ad.mail, hrm: hrm.contactInfo.email })
     }
   }),
-  test('visma-05', 'Brukernavn er likt brukernavnet i AD', 'Sjekker at brukernavnet i HRM er likt samAccountName i lokalt AD', () => {
+  test('visma-06', 'Brukernavn er likt brukernavnet i AD', 'Sjekker at brukernavnet i HRM er likt samAccountName i lokalt AD', () => {
     if (!allData || !allData.ad) return noData('Venter på data...')
     if (!allData.ad.samAccountName) return warn('samAccountName mangler i dataene fra AD', { ad: allData.ad ? { samAccountName: allData.ad.samAccountName || null } : null })
 
