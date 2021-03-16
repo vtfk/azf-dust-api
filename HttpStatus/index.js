@@ -1,6 +1,7 @@
 const df = require('durable-functions')
 const withTokenAuth = require('../lib/auth/with-token-auth')
 const getStatusResponse = require('../lib/get-status-response')
+const { getRequest } = require('../lib/mongo/handle-mongo')
 const { RETRY_WAIT } = require('../config')
 
 const status = async function (context, req) {
@@ -13,19 +14,44 @@ const status = async function (context, req) {
     delete status.input
   }
 
-  let res = status
-    ? ({
-        body: status,
+  let res
+  if (status) {
+    res = {
+      body: status.output,
+      headers: {}
+    }
+  } else if (instanceId) {
+    const entry = await getRequest(instanceId)
+    if (entry) {
+      res = {
+        body: {
+          user: entry.user,
+          started: entry.started,
+          finished: entry.finished,
+          data: entry.systems
+        },
         headers: {}
-      })
-    : ({
+      }
+    } else {
+      res = {
         status: 404,
         body: {
-          error: 'InstanceId not found',
+          error: 'Database entry not found',
           instanceId
         },
         headers: {}
-      })
+      }
+    }
+  } else {
+    res = {
+      status: 404,
+      body: {
+        error: 'InstanceId not found',
+        instanceId
+      },
+      headers: {}
+    }
+  }
 
   // orchestrator is pending or running - return 202
   if (status && ['Running', 'Pending'].includes(status.runtimeStatus)) {
