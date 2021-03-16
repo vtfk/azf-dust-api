@@ -157,7 +157,8 @@ module.exports = (systemData, user, allData = false) => ([
       else if (smsAuth.length > 0 && gaAuth.length === 0) return success('MFA for SMS er satt opp', data)
       else if (smsAuth.length === 0 && gaAuth.length > 0) return success('MFA for Godkjenner/Authenticator app er satt opp', data)
       else return error('MFA for noe annet enn SMS og Godkjenner/Authenticator app er satt opp', data)
-    } else return error('MFA er ikke satt opp', data)
+    } else if (user.expectedType === 'employee') return error('MFA er ikke satt opp', data)
+    else return success('MFA er ikke satt opp. Dette er korrekt for en elev', data)
   }),
   test('feide-16', 'Organisasjon er riktig', 'Sjekker at organisasjon er riktig', () => {
     if (!systemData.eduPersonOrgDN) return error('Organisasjon mangler 🤭', systemData)
