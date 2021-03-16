@@ -31,7 +31,7 @@ module.exports = df.orchestrator(function * (context) {
   context.df.setCustomStatus(user)
 
   // create a new request in the db
-  yield context.df.callActivity('WorkerActivity', {
+  const newEntry = yield context.df.callActivity('WorkerActivity', {
     type: 'db',
     variant: 'new',
     query: {
@@ -115,19 +115,20 @@ module.exports = df.orchestrator(function * (context) {
   })
 
   // update request with a finish timestamp and user object
-  const timestamp = new Date().toISOString()
-  yield context.df.callActivity('WorkerActivity', {
+  const updatedEntry = yield context.df.callActivity('WorkerActivity', {
     type: 'db',
     variant: 'update',
     query: {
       instanceId,
-      timestamp,
+      timestamp: new Date().toISOString(),
       user
     }
   })
 
   return {
     user,
+    started: newEntry.started,
+    finished: updatedEntry.$set.finished,
     data: parallelTasks.map(task => {
       return {
         name: task.result.name,
