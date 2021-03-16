@@ -16,7 +16,7 @@ module.exports = df.orchestrator(function * (context) {
   const input = context.df.getInput()
   const { token } = input
   const instanceId = context.df.instanceId
-  const parallelTasks = []
+  let parallelTasks = []
   let { body: { systems, user } } = input
 
   // lowercase all system names
@@ -27,8 +27,11 @@ module.exports = df.orchestrator(function * (context) {
     if (!systems.includes(system.toLowerCase())) systems.push(system.toLowerCase())
   })
 
+  // set current user object to customStatus
+  context.df.setCustomStatus(user)
+
   // create a new request in the db
-  yield context.df.callActivity('WorkerActivity', {
+  const newEntry = yield context.df.callActivity('WorkerActivity', {
     type: 'db',
     variant: 'new',
     query: {
@@ -80,6 +83,9 @@ module.exports = df.orchestrator(function * (context) {
       }
     })
 
+    // set current user object to customStatus
+    context.df.setCustomStatus(user)
+
     // start systems which failed validation
     parallelTasks.push(...callSystems(context, instanceId, failedValidation, user, token))
   } else {
@@ -98,39 +104,40 @@ module.exports = df.orchestrator(function * (context) {
   yield context.df.Task.all(parallelTasks)
 
   // run all tests on all systems
-  yield context.df.callActivity('WorkerActivity', {
+  parallelTasks = yield context.df.callActivity('WorkerActivity', {
     type: 'test',
     variant: 'all',
     query: {
       instanceId,
-      results: parallelTasks.filter(task => task.result.data).map(task => task.result),
+      tasks: parallelTasks,
       user
     }
   })
 
   // update request with a finish timestamp and user object
-  const timestamp = new Date().toISOString()
-  yield context.df.callActivity('WorkerActivity', {
+  const updatedEntry = yield context.df.callActivity('WorkerActivity', {
     type: 'db',
     variant: 'update',
     query: {
       instanceId,
-      timestamp,
+      timestamp: new Date().toISOString(),
       user
     }
   })
 
   return {
     user,
+    started: newEntry.started,
+    finished: updatedEntry.$set.finished,
     data: parallelTasks.map(task => {
       return {
         name: task.result.name,
+        timestamp: task.timestamp,
         data: task.result.data || undefined,
-        test: task.result.test || undefined,
-        statusCode: task.result.status || 200,
         error: task.result.error || undefined,
+        statusCode: task.result.status || 200,
         innerError: task.result.innerError || undefined,
-        timestamp: task.timestamp
+        test: task.result.test || undefined
       }
     })
   }

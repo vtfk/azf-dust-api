@@ -32,23 +32,28 @@ module.exports = async function (context) {
   } else if (type === 'logger') {
     logger(variant, query)
   } else if (type === 'test') {
-    const { instanceId, results, user } = query
-    const systems = getSystems(results)
+    const { instanceId, tasks, user } = query
+    const systems = getSystems(tasks.map(task => task.result))
     logger('info', ['worker-activity', 'final tests', 'systems', Object.getOwnPropertyNames(systems).length])
 
-    results.forEach(async result => {
-      const { validate } = require('../systems')[result.name]
+    return await Promise.all(tasks.map(async task => {
+      const { validate } = require('../systems')[task.result.name]
       if (typeof validate === 'function') {
-        if (result.data) result.test = validate(result.data, user, systems)
-        else {
-          logger('warn', ['worker-activity', 'final tests', result.name, 'no data to test'])
-          result.test = []
+        if (task.result.data) {
+          logger('warn', ['worker-activity', 'final tests', task.result.name, 'running tests'])
+          task.result.test = validate(task.result.data, user, systems)
+        } else {
+          logger('warn', ['worker-activity', 'final tests', task.result.name, 'no data to test'])
+          task.result.test = []
         }
       } else {
-        logger('warn', ['worker-activity', 'final tests', result.name, 'no tests found'])
-        result.test = []
+        logger('warn', ['worker-activity', 'final tests', task.result.name, 'no tests found'])
+        task.result.test = []
       }
-      await updateRequest({ instanceId, ...result })
-    })
+      logger('warn', ['worker-activity', 'final tests', task.result.name, 'updating db'])
+      await updateRequest({ instanceId, ...task.result })
+
+      return task
+    }))
   }
 }

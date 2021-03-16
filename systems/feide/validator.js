@@ -56,10 +56,10 @@ module.exports = (systemData, user, allData = false) => ([
     const isPwdOk = isPwdLastSet(pwdAd, pwdFeide)
     const data = {
       feide: {
-        passwordLastSet: allData.feide.passwordLastSet
+        passwordLastSet: systemData.passwordLastSet
       },
       ad: {
-        pwdLastSet: systemData.pwdLastSet
+        pwdLastSet: allData.ad.pwdLastSet
       },
       seconds: isPwdOk.seconds
     }
@@ -115,7 +115,7 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return success('PrincipalName er satt', data)
   }),
-  test('feide-12', `PrincipalName er lik "uid${SYSTEMS.FEIDE.PRINCIPAL_NAME}"`, `Sjekker at PrincipalName er lik "uid${SYSTEMS.FEIDE.PRINCIPAL_NAME}"`, () => {
+  test('feide-12', `PrincipalName er lik 'uid${SYSTEMS.FEIDE.PRINCIPAL_NAME}'`, `Sjekker at PrincipalName er lik 'uid${SYSTEMS.FEIDE.PRINCIPAL_NAME}'`, () => {
     if (!systemData.eduPersonPrincipalName === `${systemData.name}${SYSTEMS.FEIDE.PRINCIPAL_NAME}`) return error('PrincipalName er feil 🤭', systemData)
     const data = {
       eduPersonPrincipalName: systemData.eduPersonPrincipalName
@@ -148,11 +148,12 @@ module.exports = (systemData, user, allData = false) => ([
   test('feide-15', 'Har satt opp MFA', 'Sjekker at MFA er satt opp', () => {
     if (!systemData.norEduPersonAuthnMethod) return error('MFA mangler 🤭', systemData)
     const data = {
-      norEduPersonAuthnMethod: systemData.norEduPersonAuthnMethod
+      norEduPersonAuthnMethod: systemData.norEduPersonAuthnMethod.map(auth => auth.split(' ')[0])
     }
     if (systemData.norEduPersonAuthnMethod.length > 0) {
-      const smsAuth = systemData.norEduPersonAuthnMethod.map(auth => auth.includes('urn:mace:feide.no:auth:method:sms'))
-      const gaAuth = systemData.norEduPersonAuthnMethod.map(auth => auth.includes('urn:mace:feide.no:auth:method:ga'))
+      const smsAuth = systemData.norEduPersonAuthnMethod.filter(auth => auth.includes('urn:mace:feide.no:auth:method:sms'))
+      const gaAuth = systemData.norEduPersonAuthnMethod.filter(auth => auth.includes('urn:mace:feide.no:auth:method:ga'))
+
       if (smsAuth.length > 0 && gaAuth.length > 0) return success('MFA for SMS og Godkjenner/Authenticator app er satt opp', data)
       else if (smsAuth.length > 0 && gaAuth.length === 0) return success('MFA for SMS er satt opp', data)
       else if (smsAuth.length === 0 && gaAuth.length > 0) return success('MFA for Godkjenner/Authenticator app er satt opp', data)
