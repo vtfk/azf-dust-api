@@ -6,7 +6,7 @@ const { RETRY_WAIT } = require('../config')
 const status = async function (context, req) {
   const client = df.getClient(context)
   const { instanceId } = req.params
-  const status = await client.getStatus(instanceId, true)
+  const status = await client.getStatus(instanceId, true, true)
 
   // remove input from status object if everything is fine
   if (status.input && !([status.runtimeStatus, status.customStatus].includes('Failed'))) {
