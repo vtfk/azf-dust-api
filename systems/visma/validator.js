@@ -133,9 +133,8 @@ module.exports = (systemData, user, allData = false) => ([
 
     if (allData.ad.mail.toLowerCase() === hrm.contactInfo.email.toLowerCase()) {
       return success('E-postadressen i AD og HRM er like', { ad: allData.ad.mail, hrm: hrm.contactInfo.email })
-    } else {
-      return error('E-postadressen i AD og HRM er ulike', { ad: allData.ad.mail, hrm: hrm.contactInfo.email })
     }
+    return error('E-postadressen i AD og HRM er ulike', { ad: allData.ad.mail, hrm: hrm.contactInfo.email })
   }),
   test('visma-06', 'Brukernavn er likt brukernavnet i AD', 'Sjekker at brukernavnet i HRM er likt samAccountName i lokalt AD', () => {
     if (!allData || !allData.ad) return noData('Venter på data...')
@@ -149,8 +148,7 @@ module.exports = (systemData, user, allData = false) => ([
 
     if (allData.ad.samAccountName.toLowerCase() === hrm.authentication.alias.toLowerCase()) {
       return success('Brukernavnene i AD og HRM er like', { ad: allData.ad.samAccountName, hrm: hrm.authentication.alias })
-    } else {
-      return error('Brukernavnene i AD og HRM er ulike', { ad: allData.ad.samAccountName, hrm: hrm.authentication.alias })
     }
+    return error('Brukernavnene i AD og HRM er ulike', { ad: allData.ad.samAccountName, hrm: hrm.authentication.alias })
   })
 ])
