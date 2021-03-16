@@ -137,7 +137,7 @@ module.exports = df.orchestrator(function * (context) {
         error: task.result.error || undefined,
         statusCode: task.result.status || 200,
         innerError: task.result.innerError || undefined,
-        test: task.result.test || undefined,
+        test: task.result.test || undefined
       }
     })
   }
