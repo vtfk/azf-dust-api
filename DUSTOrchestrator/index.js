@@ -27,6 +27,9 @@ module.exports = df.orchestrator(function * (context) {
     if (!systems.includes(system.toLowerCase())) systems.push(system.toLowerCase())
   })
 
+  // set current user object to customStatus
+  context.df.setCustomStatus(user)
+
   // create a new request in the db
   yield context.df.callActivity('WorkerActivity', {
     type: 'db',
@@ -79,6 +82,9 @@ module.exports = df.orchestrator(function * (context) {
         user
       }
     })
+
+    // set current user object to customStatus
+    context.df.setCustomStatus(user)
 
     // start systems which failed validation
     parallelTasks.push(...callSystems(context, instanceId, failedValidation, user, token))
