@@ -23,10 +23,7 @@ module.exports = async function (context) {
     // set data
     logger('info', ['dust-activity', system, 'data', 'start'])
     const { body } = await callHandler(caller, result.query, system)
-    logger('info', ['dust-activity', system, logDesc, 'data', 'finish'])
-    if (body && body.statusCode && (body.statusCode / 100 | 0) > 2) throw {
-      statusCode: body.statusCode,
-      message: body.message
+    logger('info', ['dust-activity', system, 'data', 'finish'])
     }
     result.data = body
 
