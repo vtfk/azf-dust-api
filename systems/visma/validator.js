@@ -1,5 +1,5 @@
 const { SYSTEMS } = require('../../config')
-const isWithinDaterange = require('../../lib/is-within-daterange')
+const isWithinDaterange = require('../../lib/helpers/is-within-daterange')
 const { test, success, warn, error, noData } = require('../../lib/test')
 
 const hasData = obj => Array.isArray(obj) ? obj.length >= 1 : !!obj
