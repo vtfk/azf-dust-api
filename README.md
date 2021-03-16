@@ -15,6 +15,7 @@ When all calls are finished, tests across all retrieved data will be executed.
   ],
   "user": {
     "userPrincipalName": "bjarne.betjent@vtfk.no",
+    "expectedType": "employee|student",
     ...userProps
   }
 }
