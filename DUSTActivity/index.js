@@ -2,21 +2,8 @@ const { logger, logConfig } = require('@vtfk/logger')
 const { DEFAULT_CALLER } = require('../config')
 const { generate } = require('../lib/user-query')
 const callHandler = require('../lib/call-handlers')
+const test = require('../lib/call-test')
 const { updateRequest } = require('../lib/mongo/handle-mongo')
-
-const test = (system, data, user) => {
-  const { validate } = require('../systems')[system]
-  if (typeof validate === 'function') {
-    if (data) return validate(data, user)
-    else {
-      logger('warn', ['dust-activity', system, 'test', 'no data to test'])
-      return []
-    }
-  } else {
-    logger('warn', ['dust-activity', system, 'test', 'no tests found'])
-    return []
-  }
-}
 
 module.exports = async function (context) {
   const { instanceId, system, user, token } = context.bindings.request
@@ -40,8 +27,7 @@ module.exports = async function (context) {
     result.data = body
 
     // set tests
-    const tests = test(system, body, user)
-    if (tests) result.test = tests.filter(t => t.result)
+    result.test = test(system, body, user)
   } catch (error) {
     result.status = error.statusCode || 400
     result.error = error.message
