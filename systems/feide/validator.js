@@ -144,7 +144,7 @@ module.exports = (systemData, user, allData = false) => ([
       eduPersonOrgUnitDN: systemData.eduPersonOrgUnitDN
     }
     if (systemData.eduPersonOrgUnitDN.length > 0) return success('Knyttning til skole funnet', data)
-    else return error('Ingen knyttning funnet', data)
+    else return warn('Ingen knyttning til skole funnet. Dersom dette er en manuelt opprettet FEIDE-bruker eller en administrativ ansatt, er dette korrekt', data)
   }),
   test('feide-15', 'Har satt opp MFA', 'Sjekker at MFA er satt opp', () => {
     if (!systemData.norEduPersonAuthnMethod) return error('MFA mangler 🤭', systemData)
