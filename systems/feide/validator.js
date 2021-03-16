@@ -47,7 +47,6 @@ module.exports = (systemData, user, allData = false) => ([
     if (systemData.norEduPersonNIN === allData.ad.employeeNumber) return success('Fødselsnummer er likt i AD og FEIDE', data)
     else return error('Fødselsnummer er forskjellig i AD og FEIDE', data)
   }),
-  ,
   test('feide-06', 'Passord synkronisert til FEIDE', 'Sjekker at passordet er synkronisert til FEIDE innenfor 5 minutter', () => {
     if (!allData) return noData('Venter på data...')
     if (!allData.ad) return error('Mangler AD-data', allData)
