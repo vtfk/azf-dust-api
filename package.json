@@ -37,9 +37,14 @@
     "standard": "16.0.3"
   },
   "standard": {
-    "env": [ "jest" ]
+    "env": [
+      "jest"
+    ]
   },
   "jest": {
-    "testMatch": [ "**/tests/**/*.[jt]s?(x)", "**/?(*.)+.(spec|test).[jt]s?(x)" ]
+    "testMatch": [
+      "**/tests/**/*.[jt]s?(x)",
+      "**/?(*.)+.(spec|test).[jt]s?(x)"
+    ]
   }
 }
