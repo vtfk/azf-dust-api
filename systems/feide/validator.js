@@ -56,10 +56,10 @@ module.exports = (systemData, user, allData = false) => ([
     const isPwdOk = isPwdLastSet(pwdAd, pwdFeide)
     const data = {
       feide: {
-        passwordLastSet: allData.feide.passwordLastSet
+        passwordLastSet: systemData.passwordLastSet
       },
       ad: {
-        pwdLastSet: systemData.pwdLastSet
+        pwdLastSet: allData.ad.pwdLastSet
       },
       seconds: isPwdOk.seconds
     }
