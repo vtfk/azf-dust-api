@@ -1,4 +1,4 @@
-const { test, success, error, noData } = require('../../lib/test')
+const { test, success, error } = require('../../lib/test')
 
 module.exports = (systemData, user, allData = false) => ([
   test('ad-01', 'Kontoen er aktivert', 'Sjekker at kontoen er aktivert i AD', () => {
