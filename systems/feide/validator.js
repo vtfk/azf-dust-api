@@ -148,7 +148,7 @@ module.exports = (systemData, user, allData = false) => ([
   test('feide-15', 'Har satt opp MFA', 'Sjekker at MFA er satt opp', () => {
     if (!systemData.norEduPersonAuthnMethod) return error('MFA mangler 🤭', systemData)
     const data = {
-      norEduPersonAuthnMethod: systemData.norEduPersonAuthnMethod
+      norEduPersonAuthnMethod: systemData.norEduPersonAuthnMethod.map(auth => auth.split(' ')[0])
     }
     if (systemData.norEduPersonAuthnMethod.length > 0) {
       const smsAuth = systemData.norEduPersonAuthnMethod.map(auth => auth.includes('urn:mace:feide.no:auth:method:sms'))
