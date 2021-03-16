@@ -16,7 +16,7 @@ module.exports = df.orchestrator(function * (context) {
   const input = context.df.getInput()
   const { token } = input
   const instanceId = context.df.instanceId
-  const parallelTasks = []
+  let parallelTasks = []
   let { body: { systems, user } } = input
 
   // lowercase all system names
@@ -98,12 +98,12 @@ module.exports = df.orchestrator(function * (context) {
   yield context.df.Task.all(parallelTasks)
 
   // run all tests on all systems
-  yield context.df.callActivity('WorkerActivity', {
+  parallelTasks = yield context.df.callActivity('WorkerActivity', {
     type: 'test',
     variant: 'all',
     query: {
       instanceId,
-      results: parallelTasks.filter(task => task.result.data).map(task => task.result),
+      tasks: parallelTasks,
       user
     }
   })
