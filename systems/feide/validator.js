@@ -115,7 +115,7 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return success('PrincipalName er satt', data)
   }),
-  test('feide-12', `PrincipalName er lik "uid${SYSTEMS.FEIDE.PRINCIPAL_NAME}"`, `Sjekker at PrincipalName er lik "uid${SYSTEMS.FEIDE.PRINCIPAL_NAME}"`, () => {
+  test('feide-12', `PrincipalName er lik 'uid${SYSTEMS.FEIDE.PRINCIPAL_NAME}'`, `Sjekker at PrincipalName er lik 'uid${SYSTEMS.FEIDE.PRINCIPAL_NAME}'`, () => {
     if (!systemData.eduPersonPrincipalName === `${systemData.name}${SYSTEMS.FEIDE.PRINCIPAL_NAME}`) return error('PrincipalName er feil 🤭', systemData)
     const data = {
       eduPersonPrincipalName: systemData.eduPersonPrincipalName
