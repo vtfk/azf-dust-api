@@ -4,7 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "standard",
+    "test": "jest && standard",
+    "test:lint": "standard",
+    "test:jest": "jest",
+    "test:watch": "jest --watch",
     "standard-fix": "standard --fix",
     "refresh": "rm -rf node_modules && rm package-lock.json && npm install"
   },
@@ -30,6 +33,13 @@
     "qs": "6.9.6"
   },
   "devDependencies": {
+    "jest": "26.6.3",
     "standard": "16.0.3"
+  },
+  "standard": {
+    "env": [ "jest" ]
+  },
+  "jest": {
+    "testMatch": [ "**/tests/**/*.[jt]s?(x)", "**/?(*.)+.(spec|test).[jt]s?(x)" ]
   }
 }
