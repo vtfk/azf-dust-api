@@ -1,4 +1,4 @@
-const { test, success, warn, error } = require('../../lib/test')
+const { test, success, warn, error, noData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const isWithinDaterange = require('../../lib/helpers/is-within-daterange')
