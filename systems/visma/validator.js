@@ -2,10 +2,7 @@ const { SYSTEMS } = require('../../config')
 const { test, success, warn, error, noData } = require('../../lib/test')
 const isWithinDaterange = require('../../lib/helpers/is-within-daterange')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
-
-const hasData = obj => Array.isArray(obj) ? obj.length >= 1 : !!obj
-const getArray = obj => (Array.isArray(obj) ? obj : [obj]).filter(obj => !!obj)
-const getSystemData = systemData => getArray(systemData)[0]
+const { hasData, getArray, getSystemData } = require('../../lib/helpers/system-data')
 
 const getEmployment = hrm => {
   if (!hasData(hrm) || !hrm.employments || !hrm.employments.employment) return null
