@@ -30,7 +30,7 @@ module.exports = async function (context) {
       logger('error', ['dust-activity', system, 'error', result.status, result.error])
     } else {
       result.data = body
-      result.test = test(system, body, user)
+      result.tests = test(system, body, user)
     }
   } catch (error) {
     result.status = error.statusCode || 400
