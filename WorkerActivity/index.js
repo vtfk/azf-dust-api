@@ -2,6 +2,7 @@ const { logger, logConfig } = require('@vtfk/logger')
 const { newRequest, updateRequest } = require('../lib/mongo/handle-mongo')
 const { validate } = require('../lib/user-query')
 const updateUser = require('../lib/update-user')
+const test = require('../lib/call-test')
 
 const getSystems = results => {
   const data = {}
@@ -37,19 +38,7 @@ module.exports = async function (context) {
     logger('info', ['worker-activity', 'final tests', 'systems', Object.getOwnPropertyNames(systems).length])
 
     return await Promise.all(tasks.map(async task => {
-      const { validate } = require('../systems')[task.result.name]
-      if (typeof validate === 'function') {
-        if (task.result.data) {
-          logger('warn', ['worker-activity', 'final tests', task.result.name, 'running tests'])
-          task.result.test = validate(task.result.data, user, systems)
-        } else {
-          logger('warn', ['worker-activity', 'final tests', task.result.name, 'no data to test'])
-          task.result.test = []
-        }
-      } else {
-        logger('warn', ['worker-activity', 'final tests', task.result.name, 'no tests found'])
-        task.result.test = []
-      }
+      task.result.test = test(task.result.name, task.result.data, user, systems)
       logger('warn', ['worker-activity', 'final tests', task.result.name, 'updating db'])
       await updateRequest({ instanceId, ...task.result })
 

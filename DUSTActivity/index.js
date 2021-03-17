@@ -2,21 +2,8 @@ const { logger, logConfig } = require('@vtfk/logger')
 const { DEFAULT_CALLER } = require('../config')
 const { generate } = require('../lib/user-query')
 const callHandler = require('../lib/call-handlers')
+const test = require('../lib/call-test')
 const { updateRequest } = require('../lib/mongo/handle-mongo')
-
-const test = (system, data, user) => {
-  const { validate } = require('../systems')[system]
-  if (typeof validate === 'function') {
-    if (data) return validate(data, user)
-    else {
-      logger('warn', ['dust-activity', system, 'test', 'no data to test'])
-      return []
-    }
-  } else {
-    logger('warn', ['dust-activity', system, 'test', 'no tests found'])
-    return []
-  }
-}
 
 module.exports = async function (context) {
   const { instanceId, system, user, token } = context.bindings.request
@@ -34,31 +21,32 @@ module.exports = async function (context) {
     result.query = generate(system, user)
 
     // set data
-    logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || '', 'data', 'start'])
+    logger('info', ['dust-activity', system, 'data', 'start'])
     const { body } = await callHandler(caller, result.query, system)
-    logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || '', 'data', 'finish'])
-    result.data = body
-
-    // set tests
-    const tests = test(system, body, user)
-    if (tests) result.test = tests.filter(t => t.result)
+    logger('info', ['dust-activity', system, 'data', 'finish'])
+    if (body && body.statusCode && (body.statusCode / 100 | 0) > 2) {
+      result.status = body.statusCode
+      result.error = body.message
+      logger('error', ['dust-activity', system, 'error', result.status, result.error])
+    } else {
+      result.data = body
+      result.test = test(system, body, user)
+    }
   } catch (error) {
     result.status = error.statusCode || 400
     result.error = error.message
-    result.innerError = error.innerError || error.stack
-    logger('error', ['dust-activity', system, 'error', result.status, error.message])
+    logger('error', ['dust-activity', system, 'error', result.status, result.error])
   }
 
   try {
     // update db with data and tests or error
-    logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || '', 'request-update', result.data ? 'data' : 'error', 'start'])
+    logger('info', ['dust-activity', system, 'request-update', result.data ? 'data' : 'error', 'start'])
     await updateRequest({ instanceId, ...result })
-    logger('info', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || '', 'request-update', result.data ? 'data' : 'error', 'finish'])
+    logger('info', ['dust-activity', system, 'request-update', result.data ? 'data' : 'error', 'finish'])
   } catch (error) {
-    logger('error', ['dust-activity', system, user.userPrincipalName || user.samAccountName || user.displayName || '', 'request-update', 'error', error.message])
+    logger('error', ['dust-activity', system, 'request-update', 'error', error.message])
     result.status = 500
     result.error = error.message
-    result.innerError = error.stack
   }
 
   return result
