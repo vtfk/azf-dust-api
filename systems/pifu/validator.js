@@ -41,7 +41,6 @@ module.exports = (systemData, user, allData = false) => ([
     if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)
     else if (!hasData(systemData.person.userid)) return error('Person-objekt mangler userid 🤭', systemData)
     const employee = getEmployeeNumber(systemData.person.userid)
-    console.log('Employee:', employee, 'Type:', typeof employee)
     const data = {
       id: employee,
       fnr: isValidFnr(employee)
