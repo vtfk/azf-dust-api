@@ -4,6 +4,13 @@ const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const isWithinDaterange = require('../../lib/helpers/is-within-daterange')
 const { SYSTEMS } = require('../../config')
 
+const getEmployeeNumber = data => {
+  if (hasData(data)) {
+    const user = data.filter(user => user.useridtype === 'personNIN')
+    if (hasData(user)) return user[0].text
+    else return false
+  } else return false
+}
 const getMemberships = data => hasData(data) ? data.filter(item => !!item.member.role.timeframe) : false
 
 module.exports = (systemData, user, allData = false) => ([
@@ -18,8 +25,8 @@ module.exports = (systemData, user, allData = false) => ([
     if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)
     else if (!hasData(systemData.person.userid)) return error('Person-objekt mangler userid oppføringer', systemData)
 
-    const employeeType = systemData.person.userid.filter(item => item['@_useridtype'] === SYSTEMS.PIFU.PERSON_EMPLOYEE_TYPE)
-    const studentType = systemData.person.userid.filter(item => item['@_useridtype'] === SYSTEMS.PIFU.PERSON_STUDENT_TYPE)
+    const employeeType = systemData.person.userid.filter(item => item['useridtype'] === SYSTEMS.PIFU.PERSON_EMPLOYEE_TYPE)
+    const studentType = systemData.person.userid.filter(item => item['useridtype'] === SYSTEMS.PIFU.PERSON_STUDENT_TYPE)
     if (user.expectedType === 'employee') {
       if (hasData(employeeType)) return success('Person-objekt har riktig person-type', employeeType)
       else if (hasData(studentType)) return error('Person-objekt har feil person-type', studentType)
@@ -32,22 +39,25 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('pifu-03', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
     if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)
-    else if (!hasData(systemData.person.sourcedid)) return error('Person-objekt mangler source 🤭', systemData)
+    else if (!hasData(systemData.person.userid)) return error('Person-objekt mangler userid 🤭', systemData)
+    const employee = getEmployeeNumber(systemData.person.userid)
+    console.log('Employee:', employee, 'Type:', typeof employee)
     const data = {
-      id: Number.isInteger(systemData.person.sourcedid.id) ? systemData.person.sourcedid.id.toString() : systemData.person.sourcedid.id,
-      fnr: isValidFnr(systemData.person.sourcedid.id)
+      id: employee,
+      fnr: isValidFnr(employee)
     }
     return data.fnr.valid ? success(`Har gyldig ${data.fnr.type}`, data) : error(data.fnr.error, data)
   }),
   test('pifu-04', 'Fødselsnummer er likt i AD', 'Sjekker at fødselsnummeret er likt i AD og Extens', () => {
     if (!allData) return noData('Venter på data...')
-    if (!allData.ad) return error('Mangler AD-data', allData)
+    if (!hasData(allData.ad)) return error('Mangler AD-data', allData)
 
     if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)
-    else if (!hasData(systemData.person.sourcedid)) return error('Person-objekt mangler source 🤭', systemData)
+    else if (!hasData(systemData.person.userid)) return error('Person-objekt mangler userid 🤭', systemData)
+    const employee = getEmployeeNumber(systemData.person.userid)
     const data = {
       pifu: {
-        id: Number.isInteger(systemData.person.sourcedid.id) ? systemData.person.sourcedid.id.toString() : systemData.person.sourcedid.id
+        id: employee
       },
       ad: {
         employeeNumber: allData.ad.employeeNumber
@@ -59,13 +69,13 @@ module.exports = (systemData, user, allData = false) => ([
   test('pifu-05', 'Har gruppemedlemskap', 'Sjekker at det finnes gruppemedlemskap', () => {
     // TODO: Bør det sjekkes noe mere here? Er det noen ganger det er riktig at det ikke er noen gruppemedlemskap?
     const memberships = getMemberships(systemData.memberships)
-    if (!memberships) return error('Har ingen gruppemedlemskap 🤭', systemData)
+    if (!hasData(memberships)) return error('Har ingen gruppemedlemskap 🤭', systemData)
     else return success(`Har ${memberships.length} gruppemedlemskap`, memberships)
   }),
   test('pifu-06', 'Har riktig rolletype', 'Sjekker at det er riktig rolletype i gruppemedlemskapene', () => {
     const memberships = getMemberships(systemData.memberships)
-    if (!memberships) return error('Har ingen gruppemedlemskap 🤭', systemData)
-    const data = memberships.map(membership => ({ id: membership.sourcedid.id, type: membership.member.role['@_roletype'] }))
+    if (!hasData(memberships)) return error('Har ingen gruppemedlemskap 🤭', systemData)
+    const data = memberships.map(membership => ({ id: membership.sourcedid.id, type: membership.member.role['roletype'] }))
     if (user.expectedType === 'employee') {
       const wrongMemberships = data.filter(item => item.type !== SYSTEMS.PIFU.MEMBERSHIP_EMPLOYEE_ROLETYPE)
       return hasData(wrongMemberships) ? warn(`Har ${wrongMemberships.length} gruppemedlemskap med feil rolletype. Dersom vedkommende er elev i disse gruppene er dette allikevel riktig`, data) : success('Har riktig rolletype i alle gruppemedlemskapene', data)
@@ -76,8 +86,8 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('pifu-07', 'Gruppemedlemskapet er gyldig', 'Sjekker at gruppemedlemskapene ikke er avlsuttet', () => {
     const memberships = getMemberships(systemData.memberships)
-    if (!memberships) return error('Har ingen gruppemedlemskap 🤭', systemData)
-    const invalidMemberships = memberships.filter(item => !isWithinDaterange(item.member.role.timeframe.begin['#text'], item.member.role.timeframe.end['#text']))
+    if (!hasData(memberships)) return error('Har ingen gruppemedlemskap 🤭', systemData)
+    const invalidMemberships = memberships.filter(item => !isWithinDaterange(item.member.role.timeframe.begin['text'], item.member.role.timeframe.end['text']))
     return hasData(invalidMemberships) ? error(`Har ${invalidMemberships.length} ugyldige gruppemedlemskap av totalt ${memberships.length} gruppemedlemskap`, memberships) : success('Alle gruppemedlemskap er gyldige', memberships)
   })
 ])
