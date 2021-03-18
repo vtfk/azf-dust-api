@@ -49,7 +49,7 @@ module.exports = {
   DEFAULT_CALLER: 'NoenAndré',
   DEMO: (process.env.DEMO === 'true') || false,
   DEMO_USER: process.env.DEMO_USER || undefined,
-  DEMO_SKIP_DB: process.env.DEMO_SKIP_DB || false,
+  DEMO_SKIP_DB: (process.env.DEMO_SKIP_DB === 'true') || false,
   PAPERTRAIL_HOST: process.env.PAPERTRAIL_HOST || undefined,
   PAPERTRAIL_PORT: process.env.PAPERTRAIL_PORT || undefined,
   PAPERTRAIL_HOSTNAME: process.env.PAPERTRAIL_HOSTNAME || undefined,
