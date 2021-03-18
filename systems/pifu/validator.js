@@ -39,7 +39,7 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('pifu-03', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
     if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)
-    else if (!hasData(systemData.person.userid)) return error('Person-objekt mangler userid 🤭', systemData)
+    else if (!hasData(systemData.person.userid)) return error('Person-objekt mangler userid oppføringer 🤭', systemData)
     const employee = getEmployeeNumber(systemData.person.userid)
     const data = {
       id: employee,
@@ -52,7 +52,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (!hasData(allData.ad)) return error('Mangler AD-data', allData)
 
     if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)
-    else if (!hasData(systemData.person.userid)) return error('Person-objekt mangler userid 🤭', systemData)
+    else if (!hasData(systemData.person.userid)) return error('Person-objekt mangler userid oppføringer 🤭', systemData)
     const employee = getEmployeeNumber(systemData.person.userid)
     const data = {
       pifu: {
