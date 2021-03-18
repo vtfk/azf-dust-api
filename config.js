@@ -35,6 +35,12 @@ module.exports = {
     FEIDE: {
       PRINCIPAL_NAME: process.env.FEIDE_PRINCIPAL_NAME,
       ORGANIZATION_DN: process.env.FEIDE_ORGANIZATION_DN
+    },
+    PIFU: {
+      PERSON_EMPLOYEE_TYPE: process.env.PIFU_PERSON_EMPLOYEE_TYPE,
+      PERSON_STUDENT_TYPE: process.env.PIFU_PERSON_STUDENT_TYPE,
+      MEMBERSHIP_EMPLOYEE_ROLETYPE: process.env.PIFU_MEMBERSHIP_EMPLOYEE_ROLETYPE,
+      MEMBERSHIP_STUDENT_ROLETYPE: process.env.PIFU_MEMBERSHIP_STUDENT_ROLETYPE
     }
   },
   SOURCE_DATA_SYSTEMS: (process.env.SOURCE_DATA_SYSTEMS && process.env.SOURCE_DATA_SYSTEMS.split(',')) || [],
@@ -43,7 +49,7 @@ module.exports = {
   DEFAULT_CALLER: 'NoenAndré',
   DEMO: (process.env.DEMO === 'true') || false,
   DEMO_USER: process.env.DEMO_USER || undefined,
-  DEMO_SKIP_DB: process.env.DEMO_SKIP_DB || false,
+  DEMO_SKIP_DB: (process.env.DEMO_SKIP_DB === 'true') || false,
   PAPERTRAIL_HOST: process.env.PAPERTRAIL_HOST || undefined,
   PAPERTRAIL_PORT: process.env.PAPERTRAIL_PORT || undefined,
   PAPERTRAIL_HOSTNAME: process.env.PAPERTRAIL_HOSTNAME || undefined,

@@ -38,7 +38,7 @@ module.exports = async function (context) {
     logger('info', ['worker-activity', 'final tests', 'systems', Object.getOwnPropertyNames(systems).length])
 
     return await Promise.all(tasks.map(async task => {
-      task.result.test = test(task.result.name, task.result.data, user, systems)
+      task.result.tests = test(task.result.name, task.result.data, user, systems)
       logger('warn', ['worker-activity', 'final tests', task.result.name, 'updating db'])
       await updateRequest({ instanceId, ...task.result })
 
