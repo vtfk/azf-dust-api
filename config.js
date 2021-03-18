@@ -34,7 +34,9 @@ module.exports = {
     },
     FEIDE: {
       PRINCIPAL_NAME: process.env.FEIDE_PRINCIPAL_NAME,
-      ORGANIZATION_DN: process.env.FEIDE_ORGANIZATION_DN
+      ORGANIZATION_DN: process.env.FEIDE_ORGANIZATION_DN,
+      MFA_SMS: process.env.FEIDE_MFA_SMS,
+      MFA_GA: process.env.FEIDE_MFA_GA
     },
     PIFU: {
       PERSON_EMPLOYEE_TYPE: process.env.PIFU_PERSON_EMPLOYEE_TYPE,
