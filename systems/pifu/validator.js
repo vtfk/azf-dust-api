@@ -25,8 +25,8 @@ module.exports = (systemData, user, allData = false) => ([
     if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)
     else if (!hasData(systemData.person.userid)) return error('Person-objekt mangler userid oppføringer', systemData)
 
-    const employeeType = systemData.person.userid.filter(item => item['useridtype'] === SYSTEMS.PIFU.PERSON_EMPLOYEE_TYPE)
-    const studentType = systemData.person.userid.filter(item => item['useridtype'] === SYSTEMS.PIFU.PERSON_STUDENT_TYPE)
+    const employeeType = systemData.person.userid.filter(item => item.useridtype === SYSTEMS.PIFU.PERSON_EMPLOYEE_TYPE)
+    const studentType = systemData.person.userid.filter(item => item.useridtype === SYSTEMS.PIFU.PERSON_STUDENT_TYPE)
     if (user.expectedType === 'employee') {
       if (hasData(employeeType)) return success('Person-objekt har riktig person-type', employeeType)
       else if (hasData(studentType)) return error('Person-objekt har feil person-type', studentType)
@@ -75,7 +75,7 @@ module.exports = (systemData, user, allData = false) => ([
   test('pifu-06', 'Har riktig rolletype', 'Sjekker at det er riktig rolletype i gruppemedlemskapene', () => {
     const memberships = getMemberships(systemData.memberships)
     if (!hasData(memberships)) return error('Har ingen gruppemedlemskap 🤭', systemData)
-    const data = memberships.map(membership => ({ id: membership.sourcedid.id, type: membership.member.role['roletype'] }))
+    const data = memberships.map(membership => ({ id: membership.sourcedid.id, type: membership.member.role.roletype }))
     if (user.expectedType === 'employee') {
       const wrongMemberships = data.filter(item => item.type !== SYSTEMS.PIFU.MEMBERSHIP_EMPLOYEE_ROLETYPE)
       return hasData(wrongMemberships) ? warn(`Har ${wrongMemberships.length} gruppemedlemskap med feil rolletype. Dersom vedkommende er elev i disse gruppene er dette allikevel riktig`, data) : success('Har riktig rolletype i alle gruppemedlemskapene', data)
@@ -87,7 +87,7 @@ module.exports = (systemData, user, allData = false) => ([
   test('pifu-07', 'Gruppemedlemskapet er gyldig', 'Sjekker at gruppemedlemskapene ikke er avlsuttet', () => {
     const memberships = getMemberships(systemData.memberships)
     if (!hasData(memberships)) return error('Har ingen gruppemedlemskap 🤭', systemData)
-    const invalidMemberships = memberships.filter(item => !isWithinDaterange(item.member.role.timeframe.begin['text'], item.member.role.timeframe.end['text']))
+    const invalidMemberships = memberships.filter(item => !isWithinDaterange(item.member.role.timeframe.begin.text, item.member.role.timeframe.end.text))
     return hasData(invalidMemberships) ? error(`Har ${invalidMemberships.length} ugyldige gruppemedlemskap av totalt ${memberships.length} gruppemedlemskap`, memberships) : success('Alle gruppemedlemskap er gyldige', memberships)
   })
 ])
