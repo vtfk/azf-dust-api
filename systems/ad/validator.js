@@ -1,4 +1,5 @@
 const { test, success, error } = require('../../lib/test')
+const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 
 module.exports = (systemData, user, allData = false) => ([
   test('ad-01', 'Kontoen er aktivert', 'Sjekker at kontoen er aktivert i AD', () => {
@@ -43,13 +44,13 @@ module.exports = (systemData, user, allData = false) => ([
       else return systemData.distinguishedName.includes('OU=AUTO DISABLED USER,OU=USERS,OU=VTFK,DC=skole,DC=top,DC=no') ? success('OU er korrekt', data) : error('OU er ikke korrekt', data)
     }
   }),
-  test('ad-05', 'Fødselsnummer er korrekt lengde', 'Sjekker at fødselsnummeret er 11 tegn', () => {
+  test('ad-05', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
     if (!systemData.employeeNumber) return error('Fødselsnummer mangler 🤭', systemData)
     const data = {
-      employeeNumber: systemData.employeeNumber
+      employeeNumber: systemData.employeeNumber,
+      fnr: isValidFnr(systemData.employeeNumber)
     }
-    if (systemData.employeeNumber.length === 11) return success('Fødselsnummer er korrekt lengde', data)
-    else return error('Fødselsnummer er ikke korrekt lengde', data)
+    return data.fnr.valid ? success(`Har gyldig ${data.fnr.type}`, data) : error(data.fnr.error, data)
   }),
   test('ad-06', 'extensionAttribute6 er satt', 'Sjekker at extensionAttribute6 er satt', () => {
     const data = {
