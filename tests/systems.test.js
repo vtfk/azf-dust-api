@@ -102,7 +102,7 @@ const mockData = {
             type: 'personEmailAtOrg'
           },
           {
-            text: 'anne.Tusenfryd@vtfk.no',
+            text: 'dyktig.Tusenfryd@vtfk.no',
             type: 'personEmailPrivate'
           }
         ],
