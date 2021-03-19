@@ -13,9 +13,19 @@ module.exports = (systemData, user, allData = false) => ([
     if (!allData) return noData('Venter på data...')
     if (!hasData(allData.aad)) return error('Mangler AAD-data', allData)
 
-    //const aadMemberGroups = allData.aad.memberOf.filter(member => hasData(member.displayName)).map(member => member.displayName)
-    const wrongEnrollments = systemData.filter(obj => !!obj) // implement check for each group in enrollments for existens in aad data
-    if (hasData(wrongEnrollments)) return error(`${wrongEnrollments.length} gruppe(r) mangler i Azure AD 🤭`, wrongEnrollments)
+    const aadMemberGroups = allData.aad.memberOf.filter(member => member && hasData(member.displayName)).map(member => member.displayName)
+    const wrongEnrollments = []
+    systemData.forEach(obj => {
+      // implement check for each group in enrollments for existens in aad data
+      if (!hasData(obj.enrollments)) return
+
+      const wrongInnerEnrollments = obj.enrollments.filter(innerObj => !aadMemberGroups.includes(innerObj.sectionName) && !aadMemberGroups.includes(innerObj.sectionId))
+      if (hasData(wrongInnerEnrollments)) wrongEnrollments.push({
+        person: obj.person,
+        enrollments: wrongInnerEnrollments
+      })
+    })
+    if (hasData(wrongEnrollments)) return error('En eller flere grupper mangler i Azure AD 🤭', wrongEnrollments)
     else return success('Alle SDS-gruppene er synkronisert ut til Azure AD', systemData)
   })
 ])
