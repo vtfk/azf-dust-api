@@ -44,7 +44,7 @@ module.exports = (systemData, user, allData = false) => ([
       else return systemData.distinguishedName.includes('OU=AUTO DISABLED USER,OU=USERS,OU=VTFK,DC=skole,DC=top,DC=no') ? success('OU er korrekt', data) : error('OU er ikke korrekt', data)
     }
   }),
-  test('ad-05', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
+  test('ad-06', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
     if (!systemData.employeeNumber) return error('Fødselsnummer mangler 🤭', systemData)
     const data = {
       employeeNumber: systemData.employeeNumber,
@@ -52,14 +52,14 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return data.fnr.valid ? success(`Har gyldig ${data.fnr.type}`, data) : error(data.fnr.error, data)
   }),
-  test('ad-06', 'extensionAttribute6 er satt', 'Sjekker at extensionAttribute6 er satt', () => {
+  test('ad-07', 'extensionAttribute6 er satt', 'Sjekker at extensionAttribute6 er satt', () => {
     const data = {
       extensionAttribute6: systemData.extensionAttribute6
     }
     if (systemData.extensionAttribute6) return success('extensionAttribute6 er satt', data)
     else return error('extensionAttribute6 mangler 🤭', data)
   }),
-  test('ad-07', 'Har kun èn primær e-postadresse', 'Sjekker at brukeren har kun èn primær e-postadresse', () => {
+  test('ad-08', 'Har kun èn primær e-postadresse', 'Sjekker at brukeren har kun èn primær e-postadresse', () => {
     const data = {
       proxyAddresses: systemData.proxyAddresses,
       primary: systemData.proxyAddresses.filter(address => address.startsWith('SMTP:'))
