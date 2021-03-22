@@ -27,9 +27,11 @@ module.exports = {
     NAME: process.env.MONGODB_NAME
   },
   SYSTEMS: {
-    VISMA: {
-      COMPANY_ID: process.env.VISMA_COMPANY_ID || '1',
-      CATEGORIES: process.env.VISMA_CATEGORIES || 'O,SE,TK,X,XA,XB,FW'
+    AD: {
+      EMPLOYEE_DISABLED_OU: 'OU=AUTO DISABLED USER,OU=USERS,OU=VTFK,DC=login,DC=top,DC=no',
+      EMPLOYEE_ENABLED_OU: 'OU=AUTO USERS,OU=USERS,OU=VTFK,DC=login,DC=top,DC=no',
+      STUDENT_DISABLED_OU: 'OU=AUTO DISABLED USER,OU=USERS,OU=VTFK,DC=skole,DC=top,DC=no',
+      STUDENT_ENABLED_OU: 'OU=AUTO USERS,OU=USERS,OU=VTFK,DC=skole,DC=top,DC=no'
     },
     FEIDE: {
       PRINCIPAL_NAME: process.env.FEIDE_PRINCIPAL_NAME,
@@ -42,6 +44,10 @@ module.exports = {
       PERSON_STUDENT_TYPE: process.env.PIFU_PERSON_STUDENT_TYPE,
       MEMBERSHIP_EMPLOYEE_ROLETYPE: process.env.PIFU_MEMBERSHIP_EMPLOYEE_ROLETYPE,
       MEMBERSHIP_STUDENT_ROLETYPE: process.env.PIFU_MEMBERSHIP_STUDENT_ROLETYPE
+    },
+    VISMA: {
+      COMPANY_ID: process.env.VISMA_COMPANY_ID || '1',
+      CATEGORIES: process.env.VISMA_CATEGORIES || 'O,SE,TK,X,XA,XB,FW'
     }
   },
   SOURCE_DATA_SYSTEMS: (process.env.SOURCE_DATA_SYSTEMS && process.env.SOURCE_DATA_SYSTEMS.split(',')) || [],

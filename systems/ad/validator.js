@@ -1,4 +1,6 @@
-const { test, success, error } = require('../../lib/test')
+const { test, success, error, warn } = require('../../lib/test')
+const { SYSTEMS } = require('../../config')
+const { hasData } = require('../../lib/helpers/system-data')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 
 module.exports = (systemData, user, allData = false) => ([
@@ -37,11 +39,11 @@ module.exports = (systemData, user, allData = false) => ([
       distinguishedName: systemData.distinguishedName
     }
     if (user.expectedType === 'employee') {
-      if (systemData.enabled) return systemData.distinguishedName.includes('OU=AUTO USERS,OU=USERS,OU=VTFK,DC=login,DC=top,DC=no') ? success('OU er korrekt', data) : error('OU er ikke korrekt', data)
-      else return systemData.distinguishedName.includes('OU=AUTO DISABLED USER,OU=USERS,OU=VTFK,DC=login,DC=top,DC=no') ? success('OU er korrekt', data) : error('OU er ikke korrekt', data)
+      if (systemData.enabled) return systemData.distinguishedName.includes(SYSTEMS.AD.EMPLOYEE_ENABLED_OU) ? success('OU er korrekt', data) : error('OU er ikke korrekt', { ...data, expectedOU: SYSTEMS.AD.EMPLOYEE_ENABLED_OU })
+      else return systemData.distinguishedName.includes(SYSTEMS.AD.EMPLOYEE_DISABLED_OU) ? success('OU er korrekt', data) : error('OU er ikke korrekt', { ...data, expectedOU: SYSTEMS.AD.EMPLOYEE_DISABLED_OU })
     } else {
-      if (systemData.enabled) return systemData.distinguishedName.includes('OU=AUTO USERS,OU=USERS,OU=VTFK,DC=skole,DC=top,DC=no') ? success('OU er korrekt', data) : error('OU er ikke korrekt', data)
-      else return systemData.distinguishedName.includes('OU=AUTO DISABLED USER,OU=USERS,OU=VTFK,DC=skole,DC=top,DC=no') ? success('OU er korrekt', data) : error('OU er ikke korrekt', data)
+      if (systemData.enabled) return systemData.distinguishedName.includes(SYSTEMS.AD.STUDENT_ENABLED_OU) ? success('OU er korrekt', data) : error('OU er ikke korrekt', { ...data, expectedOU: SYSTEMS.AD.STUDENT_ENABLED_OU })
+      else return systemData.distinguishedName.includes(SYSTEMS.AD.STUDENT_DISABLED_OU) ? success('OU er korrekt', data) : error('OU er ikke korrekt', { ...data, expectedOU: SYSTEMS.AD.STUDENT_DISABLED_OU })
     }
   }),
   test('ad-06', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
@@ -56,8 +58,8 @@ module.exports = (systemData, user, allData = false) => ([
     const data = {
       extensionAttribute6: systemData.extensionAttribute6
     }
-    if (systemData.extensionAttribute6) return success('extensionAttribute6 er satt', data)
-    else return error('extensionAttribute6 mangler 🤭', data)
+    if (user.expectedType === 'employee') return hasData(systemData.extensionAttribute6) ? success('extensionAttribute6 er satt', data) : error('extensionAttribute6 mangler 🤭', data)
+    else return hasData(systemData.extensionAttribute6) ? warn('extensionAttribute6 er satt på en elev. Elever trenger ikke denne', data) : success('extensionAttribute6 er ikke satt, men siden dette er en elev er det helt normalt', systemData)
   }),
   test('ad-08', 'Har kun èn primær e-postadresse', 'Sjekker at brukeren har kun èn primær e-postadresse', () => {
     const data = {
