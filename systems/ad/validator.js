@@ -68,7 +68,7 @@ module.exports = (systemData, user, allData = false) => ([
       if (data.primary.length === 1) return success('Har kun 1 primær e-postadresse', data)
       else return error(`Har ${data.primary.length} primær e-postadresser`, data)
     } else {
-      if (data.primary.length === 0) return success('Har ingen primær e-postadresse, men siden dette er en elev er dette korrekt', data)
+      if (data.primary.length === 0) return success('Har ingen primær e-postadresse, men siden dette er en elev er dette korrekt. Mail-attributtet vil være gjeldende', { ...data, mail: systemData.mail })
       else if (data.primary.length === 1) return success('Har 1 primær e-postadresse, dette er også korrekt for en elev', data)
       else return error(`Har ${data.primary.length} primær e-postadresser`, data)
     }

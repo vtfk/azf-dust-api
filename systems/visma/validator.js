@@ -36,13 +36,13 @@ module.exports = (systemData, user, allData = false) => ([
     const hrm = getArrayData(systemData)
     const employment = hasData(hrm) && getEmployment(hrm)
     if (!employment) {
-      if (user.expectedType === 'student') return success('Ingen ansettelsesforhold ble funnet i HRM', { hrm })
+      if (user.expectedType === 'student') return success('Ingen ansettelsesforhold ble funnet i HRM, og siden dette er en elev er det helt normalt', { hrm })
       return error('Ingen ansettelsesforhold ble funnet i HRM', { hrm })
     }
 
     const positions = getPositions(employment)
     if (!positions) {
-      if (user.expectedType === 'student') return success('Ingen stillinger ble funnet i HRM', { employment, positions: (positions || null) })
+      if (user.expectedType === 'student') return warn('Ansettelsesforhold ble funnet i HRM, men ingen aktive stillinger ble funnet', { employment, positions: (positions || null) })
       return error('Ingen stillinger ble funnet i HRM', { employment, positions: (positions || null) })
     }
 
@@ -86,7 +86,7 @@ module.exports = (systemData, user, allData = false) => ([
     const hrm = getArrayData(systemData)
     const employment = hasData(hrm) && getEmployment(hrm)
     if (!employment) {
-      if (user.expectedType === 'student') return success('Ingen ansettelsesforhold ble funnet i HRM', { hrm })
+      if (user.expectedType === 'student') return success('Ingen ansettelsesforhold ble funnet i HRM, men siden dette er en elev er det helt normalt', { hrm })
       return error('Ingen ansettelsesforhold ble funnet i HRM', { hrm })
     }
 
@@ -124,7 +124,7 @@ module.exports = (systemData, user, allData = false) => ([
 
     const hrm = getArrayData(systemData)
     if (!hasData(hrm) || !hrm.contactInfo || !hrm.contactInfo.email) {
-      if (user.expectedType === 'student' && !hrm) return success('Ingen profil eller e-postadresse funnet i HRM', { hrm })
+      if (user.expectedType === 'student' && !hrm) return success('Ingen profil eller e-postadresse funnet i HRM, men siden dette er en elev er det helt normalt', { hrm })
       return warn('Ingen e-postadresse registrert i HRM', { hrm })
     }
 
