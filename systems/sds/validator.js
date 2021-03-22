@@ -1,4 +1,4 @@
-const { test, success, warn, error, noData } = require('../../lib/test')
+const { test, success, error, noData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
 
 module.exports = (systemData, user, allData = false) => ([
@@ -20,10 +20,12 @@ module.exports = (systemData, user, allData = false) => ([
       if (!hasData(obj.enrollments)) return
 
       const wrongInnerEnrollments = obj.enrollments.filter(innerObj => !aadMemberGroups.includes(innerObj.sectionName) && !aadMemberGroups.includes(innerObj.sectionId))
-      if (hasData(wrongInnerEnrollments)) wrongEnrollments.push({
-        person: obj.person,
-        enrollments: wrongInnerEnrollments
-      })
+      if (hasData(wrongInnerEnrollments)) {
+        wrongEnrollments.push({
+          person: obj.person,
+          enrollments: wrongInnerEnrollments
+        })
+      }
     })
     if (hasData(wrongEnrollments)) return error('Mangler medlemskap i en eller flere SDS-grupper i Azure AD 🤭', wrongEnrollments)
     else return success('Har medlemskap i alle sine SDS-grupper i Azure AD', systemData)
