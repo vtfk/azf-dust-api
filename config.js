@@ -14,8 +14,7 @@ module.exports = {
       SCOPE: process.env.GRAPH_SCOPE || 'https://graph.microsoft.com/.default'
     },
     URL: process.env.GRAPH_API || 'https://graph.microsoft.com/v1.0/users',
-    DEFAULT_USER_PROPERTIES: (process.env.GRAPH_USER_PROPERTIES && process.env.GRAPH_USER_PROPERTIES.split(',')) || '*',
-    DEFAULT_USER_EXPANDS: (process.env.GRAPH_USER_EXPANDS && process.env.GRAPH_USER_EXPANDS.split(',')) || null
+    DEFAULT_USER_PROPERTIES: (process.env.GRAPH_USER_PROPERTIES && process.env.GRAPH_USER_PROPERTIES.split(',')) || '*'
   },
   RETRY_WAIT: (process.env.RETRY_WAIT && Number.parseInt(process.env.RETRY_WAIT)) || 10000,
   STATUS_PAGE: {

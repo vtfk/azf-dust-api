@@ -5,25 +5,39 @@ const getGraphData = require('../../lib/graph/get-graph-data')
 const getResponse = require('../../lib/get-response-object')
 
 module.exports = async (params) => {
+  // get token
   logger('info', ['aad', 'get graph token'])
   const token = await getGraphToken()
   logger('info', ['aad', 'get graph token', 'length', token.length])
 
-  const graphOptions = getGraphOptions(params)
-  logger('info', ['aad', 'graph-user', graphOptions.url])
-  const graphUser = await getGraphData(graphOptions, token)
-
-  const graphOptionsMFA = getGraphOptions({
+  // build queries
+  const graphUserOptions = getGraphOptions(params)
+  const graphUserGroupsOptions = getGraphOptions({
+    ...params,
+    subQuery: 'transitiveMemberOf',
+    properties: undefined
+  })
+  const graphUserAuthOptions = getGraphOptions({
     ...params,
     subQuery: 'authentication/methods',
-    properties: undefined,
-    expand: undefined
+    properties: undefined
   })
-  logger('info', ['aad', 'graph-user-mfa', graphOptionsMFA.url])
-  const graphAuth = await getGraphData(graphOptionsMFA, token)
+
+  logger('info', ['aad', 'graph-user', params.userPrincipalName, 'start'])
+  const graphUser = await getGraphData(graphUserOptions, token)
+  logger('info', ['aad', 'graph-user', params.userPrincipalName, 'finish'])
+
+  logger('info', ['aad', 'graph-user-groups', params.userPrincipalName, 'start'])
+  const graphUserGroups = await getGraphData(graphUserGroupsOptions, token)
+  logger('info', ['aad', 'graph-user-groups', params.userPrincipalName, 'finish', 'received', (graphUserGroups && graphUserGroups.value && graphUserGroups.value.length) || 0])
+
+  logger('info', ['aad', 'graph-user-mfa', params.userPrincipalName, 'start'])
+  const graphUserAuth = await getGraphData(graphUserAuthOptions, token)
+  logger('info', ['aad', 'graph-user-mfa', params.userPrincipalName, 'finish', 'received', (graphUserAuth && graphUserAuth.value && graphUserAuth.value.length) || 0])
 
   return getResponse({
     ...graphUser,
-    authenticationMethods: graphAuth.value
+    transitiveMemberOf: graphUserGroups.value,
+    authenticationMethods: graphUserAuth.value
   })
 }

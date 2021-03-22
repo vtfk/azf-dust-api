@@ -13,7 +13,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (!allData) return noData('Venter på data...')
     if (!hasData(allData.aad)) return error('Mangler AAD-data', allData)
 
-    const aadMemberGroups = allData.aad.memberOf.filter(member => member && hasData(member.displayName)).map(member => member.displayName)
+    const aadMemberGroups = allData.aad.transitiveMemberOf.filter(member => member && hasData(member.displayName)).map(member => member.displayName)
     const wrongEnrollments = []
     systemData.forEach(obj => {
       // implement check for each group in enrollments for existens in aad data
