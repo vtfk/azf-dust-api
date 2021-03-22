@@ -9,9 +9,9 @@ module.exports = (systemData, user, allData = false) => ([
     else if (hasData(missingEnrollments)) return error('Gruppemedlemskap mangler 🤭', systemData)
     return success('Har person og gruppemedlemskap', systemData)
   }),
-  test('sds-02', 'SDS-gruppene er opprettet i Azure AD', 'Sjekker at SDS-gruppene er synkronisert ut til Azure AD', () => {
+  test('sds-02', 'Er medlem av SDS-gruppen(e) i Azure AD', 'Sjekker at bruker er medlem av SDS-gruppen(e) i Azure AD', () => {
     if (!allData) return noData('Venter på data...')
-    if (!hasData(allData.aad)) return error('Mangler AAD-data', allData)
+    if (!hasData(allData.aad)) return error('Mangler Azure AD data', allData)
 
     const aadMemberGroups = allData.aad.transitiveMemberOf.filter(member => member && hasData(member.displayName)).map(member => member.displayName)
     const wrongEnrollments = []
@@ -25,7 +25,7 @@ module.exports = (systemData, user, allData = false) => ([
         enrollments: wrongInnerEnrollments
       })
     })
-    if (hasData(wrongEnrollments)) return error('En eller flere grupper mangler i Azure AD 🤭', wrongEnrollments)
-    else return success('Alle SDS-gruppene er synkronisert ut til Azure AD', systemData)
+    if (hasData(wrongEnrollments)) return error('Mangler medlemskap i en eller flere SDS-grupper i Azure AD 🤭', wrongEnrollments)
+    else return success('Har medlemskap i alle sine SDS-grupper i Azure AD', systemData)
   })
 ])

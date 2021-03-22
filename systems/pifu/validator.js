@@ -12,6 +12,7 @@ const getEmployeeNumber = data => {
   } else return false
 }
 const getMemberships = data => hasData(data) ? data.filter(item => !!item.member.role.timeframe) : false
+const getUserIdType = (data, userType) => hasData(data) ? data.filter(item => item.useridtype === userType).map(item => item.useridtype) : false
 
 module.exports = (systemData, user, allData = false) => ([
   test('pifu-01', 'Har et person-objekt', 'Sjekker at det finnes et person-objekt', () => {
@@ -25,8 +26,8 @@ module.exports = (systemData, user, allData = false) => ([
     if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)
     else if (!hasData(systemData.person.userid)) return error('Person-objekt mangler userid oppføringer', systemData)
 
-    const employeeType = systemData.person.userid.filter(item => item.useridtype === SYSTEMS.PIFU.PERSON_EMPLOYEE_TYPE)
-    const studentType = systemData.person.userid.filter(item => item.useridtype === SYSTEMS.PIFU.PERSON_STUDENT_TYPE)
+    const employeeType = getUserIdType(systemData.person.userid, SYSTEMS.PIFU.PERSON_EMPLOYEE_TYPE)
+    const studentType = getUserIdType(systemData.person.userid, SYSTEMS.PIFU.PERSON_STUDENT_TYPE)
     if (user.expectedType === 'employee') {
       if (hasData(employeeType)) return success('Person-objekt har riktig person-type', employeeType)
       else if (hasData(studentType)) return error('Person-objekt har feil person-type', studentType)
@@ -87,6 +88,6 @@ module.exports = (systemData, user, allData = false) => ([
     const memberships = getMemberships(systemData.memberships)
     if (!hasData(memberships)) return error('Har ingen gruppemedlemskap 🤭', systemData)
     const invalidMemberships = memberships.filter(item => !isWithinDaterange(item.member.role.timeframe.begin.text, item.member.role.timeframe.end.text))
-    return hasData(invalidMemberships) ? error(`Har ${invalidMemberships.length} ugyldige gruppemedlemskap av totalt ${memberships.length} gruppemedlemskap`, memberships) : success('Alle gruppemedlemskap er gyldige', memberships)
+    return hasData(invalidMemberships) ? error(`Har ${invalidMemberships.length} ugyldige gruppemedlemskap av totalt ${memberships.length} gruppemedlemskap`, invalidMemberships) : success('Alle gruppemedlemskap er gyldige', memberships)
   })
 ])
