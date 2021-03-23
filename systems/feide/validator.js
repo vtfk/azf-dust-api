@@ -139,7 +139,7 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('feide-14', 'Har satt opp MFA', 'Sjekker at MFA er satt opp', () => {
     if (!hasData(systemData.norEduPersonAuthnMethod) && user.expectedType === 'employee') return error('MFA er ikke satt opp 🤭', systemData)
-    else if (!hasData(systemData.norEduPersonAuthnMethod) && user.expectedType === 'student') return success('MFA er ikke satt opp, ei heller påkrevd for elever', systemData)
+    else if (!hasData(systemData.norEduPersonAuthnMethod) && user.expectedType === 'student') return success('MFA er ikke satt opp, ei heller påkrevd for elever')
     const data = {
       norEduPersonAuthnMethod: systemData.norEduPersonAuthnMethod.map(auth => auth.split(' ')[0])
     }
