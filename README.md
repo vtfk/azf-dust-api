@@ -203,6 +203,7 @@ Get Azure Active Directory user account + authentication methods
         "STATUS_ENDPOINT": "status",
         "MONGODB_CONNECTION": "mongodb+srv://<user>:<password>@cluster0.jlu5j.azure.mongodb.net?retryWrites=true&w=majority",
         "MONGODB_COLLECTION": "collection",
+        "MONGODB_COLLECTION_USERS": "user-collection",
         "MONGODB_NAME": "db",
         "PAPERTRAIL_HOST": "papertrail-log-url",
         "PAPERTRAIL_PORT": 100,
