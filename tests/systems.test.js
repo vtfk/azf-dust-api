@@ -1244,4 +1244,15 @@ systems.forEach(system => {
       expect(ids.filter(id => id === item.id).length).toBe(1)
     })
   })
+
+  test(`Sjekker at ${system}-testene har korrekte løpenummer`, () => {
+    const tests = validator(data, mockUser)
+    expect(Array.isArray(tests)).toBe(true)
+    let index = 1
+    tests.forEach(item => {
+      const id = Number.parseInt(item.id.split('-')[1])
+      expect(id).toBe(index)
+      index++
+    })
+  })
 })
