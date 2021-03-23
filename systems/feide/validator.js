@@ -42,7 +42,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (systemData.norEduPersonNIN === allData.ad.employeeNumber) return success('Fødselsnummer er likt i AD og FEIDE', data)
     else return error('Fødselsnummer er forskjellig i AD og FEIDE', data)
   }),
-  test('feide-05', 'Passord synkronisert til FEIDE', 'Sjekker at passordet er synkronisert til FEIDE innenfor 5 minutter', () => {
+  test('feide-05', 'Passord synkronisert til FEIDE', 'Sjekker at passordet er synkronisert til FEIDE innenfor 15 sekunder', () => {
     if (!allData) return noData('Venter på data...')
     if (!hasData(allData.ad)) return error('Mangler AD-data', allData)
     const pwdCheck = isPwdLastSet(new Date(allData.ad.pwdLastSet), new Date(systemData.passwordLastSet))
