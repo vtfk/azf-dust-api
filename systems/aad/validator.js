@@ -11,18 +11,18 @@ module.exports = (systemData, user, allData = false) => ([
     return error('Kontoen er deaktivert', data)
   }),
   test('aad-02', 'UPN er lik e-postadressen', 'Sjekker at UPN-et er lik e-postadressen i AD', () => {
-    if (!systemData.userPrincipalName) return error('UPN mangler 🤭', systemData)
     const data = {
-      mail: systemData.mail,
-      userPrincipalName: systemData.userPrincipalName
+      mail: systemData.mail || null,
+      userPrincipalName: systemData.userPrincipalName || null
     }
+    if (!systemData.userPrincipalName) return error('UPN mangler 🤭', data)
     return systemData.userPrincipalName.toLowerCase() === systemData.mail.toLowerCase() ? success('UPN er lik e-postadressen', data) : error('UPN er ikke lik e-postadressen', data)
   }),
   test('aad-03', 'UPN er korrekt', 'Sjekker at UPN er @vtfk.no for ansatte, og @skole.vtfk.no for elever', () => {
-    if (!systemData.userPrincipalName) return error('UPN mangler 🤭', systemData)
     const data = {
-      userPrincipalName: systemData.userPrincipalName
+      userPrincipalName: systemData.userPrincipalName || null
     }
+    if (!systemData.userPrincipalName) return error('UPN mangler 🤭', data)
     if (user.expectedType === 'employee') return systemData.userPrincipalName.includes('@vtfk.no') ? success('UPN er korrekt', data) : error('UPN er ikke korrekt', data)
     else return systemData.userPrincipalName.includes('@skole.vtfk.no') ? success('UPN er korrekt', data) : error('UPN er ikke korrekt', data)
   }),

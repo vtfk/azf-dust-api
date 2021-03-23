@@ -20,11 +20,11 @@ module.exports = (systemData, user, allData = false) => ([
     return error('Kontoen er sperret for pålogging', data)
   }),
   test('feide-03', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
-    if (!systemData.norEduPersonNIN) return error('Fødselsnummer mangler 🤭', systemData)
     const data = {
-      norEduPersonNIN: systemData.norEduPersonNIN,
+      norEduPersonNIN: systemData.norEduPersonNIN || null,
       fnr: isValidFnr(systemData.norEduPersonNIN)
     }
+    if (!systemData.norEduPersonNIN) return error('Fødselsnummer mangler 🤭', data)
     return data.fnr.valid ? success(`Har gyldig ${data.fnr.type}`, data) : error(data.fnr.error, data)
   }),
   test('feide-04', 'Fødselsnummer er likt i AD', 'Sjekker at fødselsnummeret er likt i AD og FEIDE', () => {
@@ -59,10 +59,10 @@ module.exports = (systemData, user, allData = false) => ([
     else return error('Passord ikke synkronisert', data)
   }),
   test('feide-06', 'Brukernavn er angitt', 'Sjekker at brukernavnet er angitt', () => {
-    if (!systemData.name) return error('Brukernavn mangler 🤭', systemData)
     const data = {
-      name: systemData.name
+      name: systemData.name || null
     }
+    if (!systemData.name) return error('Brukernavn mangler 🤭', data)
     return success('Brukernavn er angitt', data)
   }),
   test('feide-07', 'Brukernavn er likt i AD', 'Sjekker at brukernavnet er likt i AD og FEIDE', () => {
@@ -82,37 +82,37 @@ module.exports = (systemData, user, allData = false) => ([
     else return error('Brukernavn er forskjellig i AD og FEIDE', data)
   }),
   test('feide-08', 'UID er angitt', 'Sjekker at UID er angitt', () => {
-    if (!hasData(systemData.uid)) return error('UID mangler 🤭', systemData)
     const data = {
-      uid: systemData.uid
+      uid: systemData.uid || null
     }
+    if (!hasData(systemData.uid)) return error('UID mangler 🤭', data)
     if (systemData.uid.length === 1) return success('UID er angitt', data)
     else if (systemData.uid.length > 1) return error('UID skal bare inneholde ett brukernavn', data)
     else return error('UID er ikke angitt', data)
   }),
   test('feide-09', 'UID er likt brukernavn', 'Sjekker at UID er likt brukernavn', () => {
-    if (!hasData(systemData.uid)) return error('UID mangler 🤭', systemData)
     const data = {
-      uid: systemData.uid,
-      name: systemData.name
+      uid: systemData.uid || null,
+      name: systemData.name || null
     }
+    if (!hasData(systemData.uid)) return error('UID mangler 🤭', data)
     if (systemData.uid.length === 1 && systemData.uid[0] === systemData.name) return success('UID er likt brukernavn', data)
     else if (systemData.uid.length > 1) return error('UID skal bare inneholde ett brukernavn', data)
     else return error('UID er ikke angitt', data)
   }),
   test('feide-10', 'PrincipalName er satt', 'Sjekker at PrincipalName er satt', () => {
-    if (!systemData.eduPersonPrincipalName) return error('PrincipalName mangler 🤭', systemData)
     const data = {
-      eduPersonPrincipalName: systemData.eduPersonPrincipalName
+      eduPersonPrincipalName: systemData.eduPersonPrincipalName || null
     }
+    if (!systemData.eduPersonPrincipalName) return error('PrincipalName mangler 🤭', data)
     return success('PrincipalName er satt', data)
   }),
   test('feide-11', `PrincipalName er lik 'uid${SYSTEMS.FEIDE.PRINCIPAL_NAME}'`, `Sjekker at PrincipalName er lik 'uid${SYSTEMS.FEIDE.PRINCIPAL_NAME}'`, () => {
-    if (!systemData.eduPersonPrincipalName === `${systemData.name}${SYSTEMS.FEIDE.PRINCIPAL_NAME}`) return error('PrincipalName er feil 🤭', systemData)
     const data = {
-      eduPersonPrincipalName: systemData.eduPersonPrincipalName
+      eduPersonPrincipalName: systemData.eduPersonPrincipalName,
+      expectedPersonPrincipalName: `${systemData.name}${SYSTEMS.FEIDE.PRINCIPAL_NAME}`
     }
-    return success('PrincipalName er riktig', data)
+    return systemData.eduPersonPrincipalName !== `${systemData.name}${SYSTEMS.FEIDE.PRINCIPAL_NAME}` ? error('PrincipalName er feil 🤭', data) : success('PrincipalName er riktig', data)
   }),
   test('feide-12', 'E-postadresse er lik UPN', 'Sjekker at e-postadresse er lik UPN', () => {
     if (!allData) return noData('Venter på data...')
@@ -130,16 +130,18 @@ module.exports = (systemData, user, allData = false) => ([
     else return error('E-postadresse er ikke lik UPN', data)
   }),
   test('feide-13', 'Har knyttning til en skole', 'Sjekker at det finnes knyttning til minst èn skole', () => {
-    if (!hasData(systemData.eduPersonOrgUnitDN)) return error('Knyttning til skole mangler 🤭', systemData)
+    // TODO: Her bør det sjekkes om bruker skal ha tilknyttning til en skole eller ei
     const data = {
-      eduPersonOrgUnitDN: systemData.eduPersonOrgUnitDN
+      eduPersonOrgUnitDN: systemData.eduPersonOrgUnitDN || null
     }
+    if (!hasData(systemData.eduPersonOrgUnitDN)) return error('Knyttning til skole mangler 🤭', data)
     if (systemData.eduPersonOrgUnitDN.length > 0) return success('Knyttning til skole funnet', data)
     else return warn('Ingen knyttning til skole funnet. Dersom dette er en manuelt opprettet FEIDE-bruker eller en administrativ ansatt, er dette korrekt', data)
   }),
   test('feide-14', 'Har satt opp MFA', 'Sjekker at MFA er satt opp', () => {
-    if (!hasData(systemData.norEduPersonAuthnMethod) && user.expectedType === 'employee') return error('MFA er ikke satt opp 🤭', systemData)
-    else if (!hasData(systemData.norEduPersonAuthnMethod) && user.expectedType === 'student') return success('MFA er ikke satt opp, ei heller påkrevd for elever')
+    if (!hasData(systemData.norEduPersonAuthnMethod)) {
+      return user.expectedType === 'employee' ? error('MFA er ikke satt opp 🤭', systemData) : success('MFA er ikke satt opp, og heller ikke påkrevd for elever')
+    }
     const data = {
       norEduPersonAuthnMethod: systemData.norEduPersonAuthnMethod.map(auth => auth.split(' ')[0])
     }
@@ -148,38 +150,33 @@ module.exports = (systemData, user, allData = false) => ([
     if (hasData(smsAuth) && hasData(gaAuth)) return success('MFA for SMS og Godkjenner/Authenticator app er satt opp', data)
     else if (hasData(smsAuth) && !hasData(gaAuth)) return success('MFA for SMS er satt opp', data)
     else if (!hasData(smsAuth) && hasData(gaAuth)) return success('MFA for Godkjenner/Authenticator app er satt opp', data)
-    else return error('MFA for noe annet enn SMS og Godkjenner/Authenticator app er satt opp', data)
+    else return warn('MFA for noe annet enn SMS og Godkjenner/Authenticator app er satt opp', data)
   }),
   test('feide-15', 'Organisasjon er riktig', 'Sjekker at organisasjon er riktig', () => {
-    if (!systemData.eduPersonOrgDN) return error('Organisasjon mangler 🤭', systemData)
     const data = {
-      eduPersonOrgDN: systemData.eduPersonOrgDN,
+      eduPersonOrgDN: systemData.eduPersonOrgDN || null,
       expectedOrgDN: SYSTEMS.FEIDE.ORGANIZATION_DN
     }
-    if (systemData.eduPersonOrgDN === SYSTEMS.FEIDE.ORGANIZATION_DN) return success('Organisasjon er riktig', data)
-    else return error('Organisasjon er ikke riktig', data)
+    if (!hasData(systemData.eduPersonOrgDN)) return error('Organisasjon mangler 🤭', data)
+    return systemData.eduPersonOrgDN === SYSTEMS.FEIDE.ORGANIZATION_DN ? success('Organisasjon er riktig', data) : error('Organisasjon er ikke riktig', data)
   }),
   test('feide-16', 'Har riktig tilhørighet', 'Sjekker at det er satt riktig tilhørighet', () => {
-    if (!hasData(systemData.eduPersonAffiliation)) return error('Tilhørighet mangler 🤭', systemData)
     const data = {
-      eduPersonAffiliation: systemData.eduPersonAffiliation
+      eduPersonAffiliation: systemData.eduPersonAffiliation || null
     }
+    if (!hasData(systemData.eduPersonAffiliation)) return error('Tilhørighet mangler 🤭', data)
+    if (systemData.eduPersonAffiliation.includes('member') && systemData.eduPersonAffiliation.includes(user.expectedType)) return success('Tilhørighet er riktig', data)
     if (user.expectedType === 'employee') {
-      if (systemData.eduPersonAffiliation.includes('member') && systemData.eduPersonAffiliation.includes(user.expectedType)) return success('Tilhørighet er riktig', data)
-      else if (systemData.eduPersonAffiliation.includes('member') && systemData.eduPersonAffiliation.includes('student')) return warn('Tilhørighet er satt som en elev til tross for at dette er en ansatt', data)
-      else return error('Tilhørighet er feil', data)
+      return systemData.eduPersonAffiliation.includes('member') && systemData.eduPersonAffiliation.includes('student') ? warn('Tilhørighet er satt som en elev til tross for at dette er en ansatt', data) : error('Tilhørighet er feil', data)
     } else {
-      if (systemData.eduPersonAffiliation.includes('member') && systemData.eduPersonAffiliation.includes(user.expectedType)) return success('Tilhørighet er riktig', data)
-      else if (systemData.eduPersonAffiliation.includes('member') && systemData.eduPersonAffiliation.includes('employee')) return warn('Tilhørighet er satt som en ansatt til tross for at dette er en elev', data)
-      else return error('Tilhørighet er feil', data)
+      return systemData.eduPersonAffiliation.includes('member') && systemData.eduPersonAffiliation.includes('employee') ? warn('Tilhørighet er satt som en ansatt til tross for at dette er en elev', data) : error('Tilhørighet er feil', data)
     }
   }),
   test('feide-17', 'Har grupperettigheter', 'Sjekker at det er satt grupperettigheter', () => {
     // TODO: Bør kanskje sjekke at grupperettighetene stemmer overens med data fra PIFU
-    if (!hasData(systemData.eduPersonEntitlement)) return error('Grupperettigheter mangler 🤭', systemData)
     const data = {
-      eduPersonEntitlement: systemData.eduPersonEntitlement
+      eduPersonEntitlement: systemData.eduPersonEntitlement || null
     }
-    return success('Grupperettigheter er riktig', data)
+    return !hasData(systemData.eduPersonEntitlement) ? error('Grupperettigheter mangler 🤭', data) : success('Grupperettigheter er riktig', data)
   })
 ])
