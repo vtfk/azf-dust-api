@@ -1,4 +1,4 @@
-const { test, success, error } = require('../../lib/test')
+const { test, success, error, noData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
 const isPwdLastSet = require('../../lib/helpers/is-pwd-within-timerange')
 
