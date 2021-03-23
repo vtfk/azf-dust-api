@@ -11,7 +11,8 @@ const getEmployeeNumber = data => {
     else return false
   } else return false
 }
-const getMemberships = data => hasData(data) ? data.filter(item => !!item.member.role.timeframe) : false
+const getActiveMemberships = data => hasData(data) ? data.filter(item => !!item.member.role.timeframe) : false
+const getAllMemberships = data => hasData(data) ? data : false
 const getUserIdType = (data, userType) => hasData(data) ? data.filter(item => item.useridtype === userType).map(item => item.useridtype) : false
 
 module.exports = (systemData, user, allData = false) => ([
@@ -66,28 +67,31 @@ module.exports = (systemData, user, allData = false) => ([
     if (data.pifu.id === data.ad.employeeNumber) return success('Fødselsnummer er likt i AD og Extens', data)
     else return error('Fødselsnummer er forskjellig i AD og Extens', data)
   }),
-  test('pifu-05', 'Har gruppemedlemskap', 'Sjekker at det finnes gruppemedlemskap', () => {
+  test('pifu-05', 'Har aktive gruppemedlemskap', 'Sjekker at det finnes aktive gruppemedlemskap', () => {
     // TODO: Bør det sjekkes noe mere here? Er det noen ganger det er riktig at det ikke er noen gruppemedlemskap?
-    const memberships = getMemberships(systemData.memberships)
-    if (!hasData(memberships)) return error('Har ingen gruppemedlemskap 🤭', systemData)
-    else return success(`Har ${memberships.length} gruppemedlemskap`, memberships)
+    const activeMemberships = getActiveMemberships(systemData.memberships)
+    const allMemberships = getAllMemberships(systemData.memberships)
+    if (!hasData(activeMemberships)) return hasData(allMemberships) ? error('Har ingen aktive gruppemedlemskap', systemData) : error('Har ingen gruppemedlemskap 🤭', systemData)
+    else return success(`Har ${activeMemberships.length} aktive gruppemedlemskap`, activeMemberships)
   }),
   test('pifu-06', 'Har riktig rolletype', 'Sjekker at det er riktig rolletype i gruppemedlemskapene', () => {
-    const memberships = getMemberships(systemData.memberships)
-    if (!hasData(memberships)) return error('Har ingen gruppemedlemskap 🤭', systemData)
-    const data = memberships.map(membership => ({ id: membership.sourcedid.id, type: membership.member.role.roletype }))
+    const activeMemberships = getActiveMemberships(systemData.memberships)
+    const allMemberships = getAllMemberships(systemData.memberships)
+    if (!hasData(activeMemberships)) return hasData(allMemberships) ? error('Har ingen aktive gruppemedlemskap', systemData) : error('Har ingen gruppemedlemskap 🤭', systemData)
+    const data = activeMemberships.map(membership => ({ id: membership.sourcedid.id, type: membership.member.role.roletype }))
     if (user.expectedType === 'employee') {
       const wrongMemberships = data.filter(item => item.type !== SYSTEMS.PIFU.MEMBERSHIP_EMPLOYEE_ROLETYPE)
-      return hasData(wrongMemberships) ? warn(`Har ${wrongMemberships.length} gruppemedlemskap med feil rolletype. Dersom vedkommende er elev i disse gruppene er dette allikevel riktig`, data) : success('Har riktig rolletype i alle gruppemedlemskapene', data)
+      return hasData(wrongMemberships) ? warn(`Har ${wrongMemberships.length} aktive gruppemedlemskap med feil rolletype. Dersom vedkommende faktisk er elev i disse gruppene er dette allikevel riktig`, data) : success('Har riktig rolletype i alle aktive gruppemedlemskap', data)
     } else {
       const wrongMemberships = data.filter(item => item.type !== SYSTEMS.PIFU.MEMBERSHIP_STUDENT_ROLETYPE)
-      return hasData(wrongMemberships) ? error(`Har ${wrongMemberships.length} gruppemedlemskap med feil rolletype`, data) : success('Har riktig rolletype i alle gruppemedlemskapene', data)
+      return hasData(wrongMemberships) ? error(`Har ${wrongMemberships.length} aktive gruppemedlemskap med feil rolletype`, data) : success('Har riktig rolletype i alle aktive gruppemedlemskap', data)
     }
   }),
-  test('pifu-07', 'Gruppemedlemskapet er gyldig', 'Sjekker at gruppemedlemskapene ikke er avlsuttet', () => {
-    const memberships = getMemberships(systemData.memberships)
-    if (!hasData(memberships)) return error('Har ingen gruppemedlemskap 🤭', systemData)
-    const invalidMemberships = memberships.filter(item => !isWithinDaterange(item.member.role.timeframe.begin.text, item.member.role.timeframe.end.text))
-    return hasData(invalidMemberships) ? error(`Har ${invalidMemberships.length} ugyldige gruppemedlemskap av totalt ${memberships.length} gruppemedlemskap`, invalidMemberships) : success('Alle gruppemedlemskap er gyldige', memberships)
+  test('pifu-07', 'Gruppemedlemskapet er gyldig', 'Sjekker at gruppemedlemskapene ikke er avsluttet', () => {
+    const activeMemberships = getActiveMemberships(systemData.memberships)
+    const allMemberships = getAllMemberships(systemData.memberships)
+    if (!hasData(activeMemberships)) return hasData(allMemberships) ? error('Har ingen aktive gruppemedlemskap', systemData) : error('Har ingen gruppemedlemskap 🤭', systemData)
+    const invalidMemberships = activeMemberships.filter(item => !isWithinDaterange(item.member.role.timeframe.begin.text, item.member.role.timeframe.end.text))
+    return hasData(invalidMemberships) ? error(`Har ${invalidMemberships.length} avsluttede gruppemedlemskap av totalt ${activeMemberships.length} aktive gruppemedlemskap`, invalidMemberships) : success('Alle gruppemedlemskap er gyldige', activeMemberships)
   })
 ])
