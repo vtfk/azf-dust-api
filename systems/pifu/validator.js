@@ -92,6 +92,6 @@ module.exports = (systemData, user, allData = false) => ([
     const allMemberships = getAllMemberships(systemData.memberships)
     if (!hasData(activeMemberships)) return hasData(allMemberships) ? error('Har ingen aktive gruppemedlemskap', systemData) : error('Har ingen gruppemedlemskap 🤭', systemData)
     const invalidMemberships = activeMemberships.filter(item => !isWithinDaterange(item.member.role.timeframe.begin.text, item.member.role.timeframe.end.text))
-    return hasData(invalidMemberships) ? error(`Har ${invalidMemberships.length} avsluttede gruppemedlemskap av totalt ${activeMemberships.length} aktive gruppemedlemskap`, invalidMemberships) : success('Alle gruppemedlemskap er gyldige', activeMemberships)
+    return hasData(invalidMemberships) ? error(`Har ${invalidMemberships.length} avsluttede gruppemedlemskap av totalt ${activeMemberships.length} gruppemedlemskap`, invalidMemberships) : success('Alle gruppemedlemskap er gyldige', activeMemberships)
   })
 ])
