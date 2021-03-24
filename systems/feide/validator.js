@@ -129,14 +129,16 @@ module.exports = (systemData, user, allData = false) => ([
     if (systemData.mail === allData.ad.userPrincipalName) return success('E-postadresse er lik UPN', data)
     else return error('E-postadresse er ikke lik UPN', data)
   }),
-  test('feide-13', 'Har knyttning til en skole', 'Sjekker at det finnes knyttning til minst èn skole', () => {
-    // TODO: Her bør det sjekkes om bruker skal ha tilknyttning til en skole eller ei
+  test('feide-13', 'Har knytning til en skole', 'Sjekker at det finnes knytning til minst èn skole', () => {
+    if (!allData) return noData('Venter på data...')
+
     const data = {
       eduPersonOrgUnitDN: systemData.eduPersonOrgUnitDN || null
     }
-    if (!hasData(systemData.eduPersonOrgUnitDN)) return error('Knyttning til skole mangler 🤭', data)
-    if (systemData.eduPersonOrgUnitDN.length > 0) return success('Knyttning til skole funnet', data)
-    else return warn('Ingen knyttning til skole funnet. Dersom dette er en manuelt opprettet FEIDE-bruker eller en administrativ ansatt, er dette korrekt', data)
+    if (!hasData(systemData.eduPersonOrgUnitDN)) {
+      return hasData(allData.pifu) ? error('Knytning til skole mangler 🤭', data) : success('Ingen knytning til skole funnet. Dette er riktig da bruker ikke finnes i Extens')
+    }
+    return success('Knytning til skole funnet', data)
   }),
   test('feide-14', 'Har satt opp MFA', 'Sjekker at MFA er satt opp', () => {
     const data = {
@@ -161,10 +163,14 @@ module.exports = (systemData, user, allData = false) => ([
     return systemData.eduPersonOrgDN === SYSTEMS.FEIDE.ORGANIZATION_DN ? success('Organisasjon er riktig', data) : error('Organisasjon er ikke riktig', data)
   }),
   test('feide-16', 'Har riktig tilhørighet', 'Sjekker at det er satt riktig tilhørighet', () => {
+    if (!allData) return noData('Venter på data...')
+
     const data = {
       eduPersonAffiliation: systemData.eduPersonAffiliation || null
     }
-    if (!hasData(systemData.eduPersonAffiliation)) return error('Tilhørighet mangler 🤭', data)
+    if (!hasData(systemData.eduPersonAffiliation)) {
+      return hasData(allData.pifu) ? error('Tilhørighet mangler 🤭', data) : success('Ingen tilhørighet funnet. Dette er riktig da bruker ikke finnes i Extens')
+    }
     if (systemData.eduPersonAffiliation.includes('member') && systemData.eduPersonAffiliation.includes(user.expectedType)) return success('Tilhørighet er riktig', data)
     if (user.expectedType === 'employee') {
       return systemData.eduPersonAffiliation.includes('member') && systemData.eduPersonAffiliation.includes('student') ? warn('Tilhørighet er satt som en elev til tross for at dette er en ansatt', data) : error('Tilhørighet er feil', data)
@@ -174,9 +180,13 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('feide-17', 'Har grupperettigheter', 'Sjekker at det er satt grupperettigheter', () => {
     // TODO: Bør kanskje sjekke at grupperettighetene stemmer overens med data fra PIFU
+    if (!allData) return noData('Venter på data...')
+
     const data = {
       eduPersonEntitlement: systemData.eduPersonEntitlement || null
     }
-    return !hasData(systemData.eduPersonEntitlement) ? error('Grupperettigheter mangler 🤭', data) : success('Grupperettigheter er riktig', data)
+    if (!hasData(systemData.eduPersonEntitlement)) {
+      return hasData(allData.pifu) ? error('Grupperettigheter mangler 🤭', data) : success('Ingen grupperettigheter funnet. Dette er riktig da bruker ikke finnes i Extens', data)
+    } else return success('Grupperettigheter er riktig', data)
   })
 ])
