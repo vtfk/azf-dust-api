@@ -41,5 +41,13 @@ module.exports = (systemData, user, allData = false) => ([
     }
     if (pwdCheck.result) return success('Passord synkronisert til Azure AD', data)
     else return error('Passord ikke synkronisert', data)
+  }),
+  test('aad-05', 'Synkroniseres fra lokalt AD', 'Sjekker at synkronisering fra lokalt AD er aktivert', () => {
+    const data = {
+      onPremisesSyncEnabled: systemData.onPremisesSyncEnabled || null
+    }
+    if (!hasData(systemData.onPremisesSyncEnabled)) return error('onPremisesSyncEnabled mangler 🤭', data)
+    return systemData.onPremisesSyncEnabled ? success('Synkronisering fra lokalt AD er aktivert', data) : warn('Synkronisering fra lokalt AD er ikke aktivert. Dersom brukeren kun eksisterer i Azure AD er dette allikevel riktig', data)
+  }),
   })
 ])
