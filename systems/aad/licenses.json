@@ -1,0 +1,55 @@
+[
+  {
+    "personType": "student",
+    "departments": [
+      {
+        "department": ["OF"],
+        "licenses": [
+          {
+            "name": "MICROSOFT FLOW FREE",
+            "sku": "f30db892-07e9-47e9-837c-80727f46fd3d"
+          },
+          {
+            "name": "ENTERPRISE MOBILITY + SECURITY E3",
+            "sku": "efccb6f7-5641-4e0e-bd10-b4976e1bf68e"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "personType": "employee",
+    "departments": [
+      {
+        "department": ["OF", "BDK-TEK", "BDK-IT"],
+        "licenses": [
+          {
+            "name": "MICROSOFT 365 A3 FOR FACULTY",
+            "sku": "4b590615-0888-425a-a965-b3bf7789848d"
+          },
+          {
+            "name": "ENTERPRISE MOBILITY + SECURITY E3",
+            "sku": "efccb6f7-5641-4e0e-bd10-b4976e1bf68e"
+          },
+          {
+            "name": "MICROSOFT FLOW FREE",
+            "sku": "f30db892-07e9-47e9-837c-80727f46fd3d"
+          }
+        ]
+      },
+      {
+        "department": ["FOLKEVALGTE"],
+        "licenses": [
+          {
+            "name": "MICROSOFT 365 E3",
+            "sku": "05e9a617-0261-4cee-bb44-138d3ef5d965"
+          },
+          {
+            "name": "ENTERPRISE MOBILITY + SECURITY E3",
+            "sku": "efccb6f7-5641-4e0e-bd10-b4976e1bf68e"
+          }
+        ]
+      }
+    ]
+  }
+]
