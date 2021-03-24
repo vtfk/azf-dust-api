@@ -1,6 +1,7 @@
-const { test, success, error, noData } = require('../../lib/test')
+const { test, success, error, warn, noData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
 const isPwdLastSet = require('../../lib/helpers/is-pwd-within-timerange')
+const licenses = require('./licenses.json')
 
 module.exports = (systemData, user, allData = false) => ([
   test('aad-01', 'Kontoen er aktivert', 'Sjekker at kontoen er aktivert i Azure AD', () => {
@@ -55,5 +56,31 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return hasData(systemData.onPremisesProvisioningErrors) ? error('Synkroniseringsproblemer funnet 🤭', data) : success('Ingen synkroniseringsproblemer funnet', data)
   }),
+  test('aad-07', 'Har riktig lisens(er)', 'Sjekker at riktig lisens(er) er aktivert', () => {
+    const data = {
+      assignedLicenses: systemData.assignedLicenses
+    }
+    if (!hasData(systemData.assignedLicenses)) return error('Har ingen Azure AD lisenser 🤭', data)
+    if (!hasData(user.departmentShort)) return warn('Ikke nok informasjon tilstede for å utføre testen', user)
+
+    const expectedLicenses = licenses.filter(item => item.personType === user.expectedType)[0]
+    if (!hasData(expectedLicenses)) return error(`Feilet ved innhenting av lisenstabell for ${user.expectedType} 🤭`, licenses)
+
+    let departmentLicenses
+    if (user.expectedType === 'employee') {
+      departmentLicenses = expectedLicenses.departments.filter(item => item.department.filter(dep => user.departmentShort.includes(dep)).length > 0)
+      if (!hasData(departmentLicenses)) return error(`Feilet ved innhenting av lisenstabell for ${user.expectedType} 🤭`, licenses)
+      departmentLicenses = departmentLicenses[0].licenses
+    } else {
+      departmentLicenses = expectedLicenses.departments[0].licenses
+    }
+
+    data.missingLicenses = []
+    departmentLicenses.forEach(license => {
+      const assigned = systemData.assignedLicenses.filter(assignedLicense => assignedLicense.skuId === license.sku)
+      if (!hasData(assigned)) data.missingLicenses.push(license)
+    })
+
+    return hasData(data.missingLicenses) ? error(`Mangler ${data.missingLicenses.length} lisens(er)`, data) : success('Lisenser er riktig', data)
   })
 ])
