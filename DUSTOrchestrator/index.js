@@ -1,5 +1,6 @@
 const df = require('durable-functions')
 const { SOURCE_DATA_SYSTEMS } = require('../config')
+const { hasData } = require('../lib/helpers/system-data')
 
 const callSystems = (context, instanceId, systems, user, token) => {
   return systems.map(system => {
@@ -102,6 +103,31 @@ module.exports = df.orchestrator(function * (context) {
 
   // wait for all system requests to finish
   yield context.df.Task.all(parallelTasks)
+
+  // if user not found in ad but is found in visma and/or pifu, switch users expectedType and do new searches for systems missing data
+  const adData = parallelTasks.filter(task => task.result.name === 'ad' && hasData(task.result.data))
+  const sourceData = parallelTasks.filter(task => (task.result.name === 'visma' || task.result.name === 'pifu') && hasData(task.result.data))
+  if (!hasData(adData) && hasData(sourceData)) {
+    // switch users expectedType
+    user.initialExpectedType = user.expectedType
+    user.expectedType = user.initialExpectedType === 'employee' ? 'student' : 'employee'
+
+    // set current user object to customStatus
+    context.df.setCustomStatus(user)
+
+    const retrySystems = parallelTasks.filter(task => !hasData(task.result.data) && !task.result.error).map(task => task.result.name)
+    parallelTasks = parallelTasks.filter(task => !retrySystems.includes(task.result.name))
+
+    yield context.df.callActivity('WorkerActivity', {
+      type: 'logger',
+      variant: 'info',
+      query: ['orchestrator', 'Systems missing data', 'Retrying with flipped user.expectedType', user.expectedType, retrySystems]
+    })
+    parallelTasks.push(...callSystems(context, instanceId, retrySystems, user, token))
+
+    // wait for all retry system requests to finish
+    yield context.df.Task.all(parallelTasks)
+  }
 
   // run all tests on all systems
   parallelTasks = yield context.df.callActivity('WorkerActivity', {
