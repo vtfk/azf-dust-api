@@ -49,5 +49,11 @@ module.exports = (systemData, user, allData = false) => ([
     if (!hasData(systemData.onPremisesSyncEnabled)) return error('onPremisesSyncEnabled mangler 🤭', data)
     return systemData.onPremisesSyncEnabled ? success('Synkronisering fra lokalt AD er aktivert', data) : warn('Synkronisering fra lokalt AD er ikke aktivert. Dersom brukeren kun eksisterer i Azure AD er dette allikevel riktig', data)
   }),
+  test('aad-06', 'Ingen feil i synkroniseringen', 'Sjekker at det ikke er noen feil i synkroniseringen fra lokalt AD', () => {
+    const data = {
+      onPremisesProvisioningErrors: systemData.onPremisesProvisioningErrors || null
+    }
+    return hasData(systemData.onPremisesProvisioningErrors) ? error('Synkroniseringsproblemer funnet 🤭', data) : success('Ingen synkroniseringsproblemer funnet', data)
+  }),
   })
 ])
