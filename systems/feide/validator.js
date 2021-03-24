@@ -139,11 +139,11 @@ module.exports = (systemData, user, allData = false) => ([
     else return warn('Ingen knyttning til skole funnet. Dersom dette er en manuelt opprettet FEIDE-bruker eller en administrativ ansatt, er dette korrekt', data)
   }),
   test('feide-14', 'Har satt opp MFA', 'Sjekker at MFA er satt opp', () => {
-    if (!hasData(systemData.norEduPersonAuthnMethod)) {
-      return user.expectedType === 'employee' ? error('MFA er ikke satt opp 🤭', systemData) : success('MFA er ikke satt opp, og heller ikke påkrevd for elever')
-    }
     const data = {
       norEduPersonAuthnMethod: systemData.norEduPersonAuthnMethod.map(auth => auth.split(' ')[0])
+    }
+    if (!hasData(systemData.norEduPersonAuthnMethod)) {
+      return user.expectedType === 'employee' ? error('MFA er ikke satt opp 🤭', data) : success('MFA er ikke satt opp, og heller ikke påkrevd for elever')
     }
     const smsAuth = systemData.norEduPersonAuthnMethod.filter(auth => auth.includes(SYSTEMS.FEIDE.MFA_SMS))
     const gaAuth = systemData.norEduPersonAuthnMethod.filter(auth => auth.includes(SYSTEMS.FEIDE.MFA_GA))
