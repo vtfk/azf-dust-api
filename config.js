@@ -16,10 +16,10 @@ module.exports = {
     URL: process.env.GRAPH_API || 'https://graph.microsoft.com/v1.0/users',
     DEFAULT_USER_PROPERTIES: (process.env.GRAPH_USER_PROPERTIES && process.env.GRAPH_USER_PROPERTIES.split(',')) || '*'
   },
-  RETRY_WAIT: (process.env.RETRY_WAIT && Number.parseInt(process.env.RETRY_WAIT)) || 10000,
+  RETRY_WAIT: (process.env.RETRY_WAIT && Number.parseInt(process.env.RETRY_WAIT)) || 3000,
   STATUS_PAGE: {
-    URL: process.env.STATUS_URL,
-    ENDPOINT: process.env.STATUS_ENDPOINT || 'api/status'
+    URL: process.env.STATUS_URL || 'http://localhost:7071/api',
+    ENDPOINT: process.env.STATUS_ENDPOINT || 'status'
   },
   MONGO: {
     CONNECTION: process.env.MONGODB_CONNECTION,
@@ -35,16 +35,16 @@ module.exports = {
       STUDENT_ENABLED_OU: 'OU=AUTO USERS,OU=USERS,OU=VTFK,DC=skole,DC=top,DC=no'
     },
     FEIDE: {
-      PRINCIPAL_NAME: process.env.FEIDE_PRINCIPAL_NAME,
-      ORGANIZATION_DN: process.env.FEIDE_ORGANIZATION_DN,
-      MFA_SMS: process.env.FEIDE_MFA_SMS,
-      MFA_GA: process.env.FEIDE_MFA_GA
+      PRINCIPAL_NAME: process.env.FEIDE_PRINCIPAL_NAME || '@vtfk.no',
+      ORGANIZATION_DN: process.env.FEIDE_ORGANIZATION_DN || 'O=Vestfold og Telemark fylkeskommune,DC=vtfk,DC=no',
+      MFA_SMS: process.env.FEIDE_MFA_SMS || 'urn:mace:feide.no:auth:method:sms',
+      MFA_GA: process.env.FEIDE_MFA_GA || 'urn:mace:feide.no:auth:method:ga'
     },
     PIFU: {
-      PERSON_EMPLOYEE_TYPE: process.env.PIFU_PERSON_EMPLOYEE_TYPE,
-      PERSON_STUDENT_TYPE: process.env.PIFU_PERSON_STUDENT_TYPE,
-      MEMBERSHIP_EMPLOYEE_ROLETYPE: process.env.PIFU_MEMBERSHIP_EMPLOYEE_ROLETYPE,
-      MEMBERSHIP_STUDENT_ROLETYPE: process.env.PIFU_MEMBERSHIP_STUDENT_ROLETYPE
+      PERSON_EMPLOYEE_TYPE: process.env.PIFU_PERSON_EMPLOYEE_TYPE || 'workforceID',
+      PERSON_STUDENT_TYPE: process.env.PIFU_PERSON_STUDENT_TYPE || 'studentID',
+      MEMBERSHIP_EMPLOYEE_ROLETYPE: process.env.PIFU_MEMBERSHIP_EMPLOYEE_ROLETYPE || '02',
+      MEMBERSHIP_STUDENT_ROLETYPE: process.env.PIFU_MEMBERSHIP_STUDENT_ROLETYPE || '01'
     },
     VISMA: {
       COMPANY_ID: process.env.VISMA_COMPANY_ID || '1',
