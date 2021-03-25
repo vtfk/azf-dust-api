@@ -57,25 +57,29 @@ module.exports = (systemData, user, allData = false) => ([
     return hasData(systemData.onPremisesProvisioningErrors) ? error('Synkroniseringsproblemer funnet 🤭', data) : success('Ingen synkroniseringsproblemer funnet', data)
   }),
   test('aad-07', 'Har riktig lisens(er)', 'Sjekker at riktig lisens(er) er aktivert', () => {
-    const data = {
-      assignedLicenses: systemData.assignedLicenses
-    }
-    if (!hasData(systemData.assignedLicenses)) return error('Har ingen Azure AD lisenser 🤭', data)
+    if (!hasData(systemData.assignedLicenses)) return error('Har ingen Azure AD lisenser 🤭', systemData.assignedLicenses)
     if (!hasData(user.departmentShort)) return warn('Ikke nok informasjon tilstede for å utføre testen', user)
 
-    const expectedLicenses = licenses.filter(item => item.personType === user.expectedType)[0]
-    if (!hasData(expectedLicenses)) return error(`Feilet ved innhenting av lisenstabell for ${user.expectedType} 🤭`, licenses)
+    const expectedLicenseTable = licenses.filter(item => item.personType === user.expectedType)[0]
+    if (!hasData(expectedLicenseTable)) return error(`Feilet ved innhenting av lisenstabell for ${user.expectedType} 🤭`, licenses)
 
-    let departmentLicenses
+    let department
     if (user.expectedType === 'employee') {
-      departmentLicenses = expectedLicenses.departments.filter(item => item.department.filter(dep => user.departmentShort.includes(dep)).length > 0)
-      if (!hasData(departmentLicenses)) return error(`Feilet ved innhenting av lisenstabell for ${user.expectedType} 🤭`, licenses)
-      departmentLicenses = departmentLicenses[0].licenses
+      department = expectedLicenseTable.departments.filter(item => item.department.filter(dep => user.departmentShort.includes(dep)).length > 0)
+      if (!hasData(department)) return error(`Feilet ved innhenting av lisenstabell for ${user.expectedType} 🤭`, licenses)
+      department = department[0]
     } else {
-      departmentLicenses = expectedLicenses.departments[0].licenses
+      department = expectedLicenseTable.departments[0]
+    }
+    const departmentLicenses = department.licenses
+
+    const data = {
+      licenseDepartment: department.department,
+      assignedLicenses: systemData.assignedLicenses,
+      expectedLicenses: departmentLicenses,
+      missingLicenses: []
     }
 
-    data.missingLicenses = []
     departmentLicenses.forEach(license => {
       const assigned = systemData.assignedLicenses.filter(assignedLicense => assignedLicense.skuId === license.sku)
       if (!hasData(assigned)) data.missingLicenses.push(license)
