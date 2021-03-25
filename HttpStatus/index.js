@@ -10,17 +10,19 @@ const status = async function (context, req) {
   const status = await client.getStatus(instanceId, true, true)
 
   // remove input from status object if everything is fine
-  if (status.input && !([status.runtimeStatus, status.customStatus].includes('Failed'))) {
+  if (status && status.input && !([status.runtimeStatus, status.customStatus].includes('Failed'))) {
     delete status.input
   }
 
   let res
   if (status) {
+    // orchestrator could be finished. Set res.body to status.output. If it's not finished yet res.body will be replaced further down
     res = {
       body: status.output,
       headers: {}
     }
   } else if (instanceId) {
+    // instanceId is given but not found in StorageAccount. Try finding it in the DB
     const entry = await getRequest(instanceId)
     if (entry) {
       res = {
@@ -33,6 +35,7 @@ const status = async function (context, req) {
         headers: {}
       }
     } else {
+      // instanceId not found in the DB either
       res = {
         status: 404,
         body: {
@@ -43,10 +46,11 @@ const status = async function (context, req) {
       }
     }
   } else {
+    // instanceId not given
     res = {
       status: 404,
       body: {
-        error: 'InstanceId not found',
+        error: 'InstanceId not set',
         instanceId
       },
       headers: {}
@@ -65,7 +69,7 @@ const status = async function (context, req) {
     }
   }
 
-  if (status && status.output && status.output.statusCode) res.status = status.output.statusCode
+  // add shared header to all calls
   res.headers['Content-Type'] = 'application/json; charset=utf-8'
 
   return res

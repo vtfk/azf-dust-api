@@ -1,9 +1,9 @@
 const { logger, logConfig } = require('@vtfk/logger')
 const { DEFAULT_CALLER } = require('../config')
 const { generate } = require('../lib/user-query')
+const { updateRequest } = require('../lib/mongo/handle-mongo')
 const callHandler = require('../lib/call-handlers')
 const test = require('../lib/call-test')
-const { updateRequest } = require('../lib/mongo/handle-mongo')
 
 module.exports = async function (context) {
   const { instanceId, system, user, token } = context.bindings.request
@@ -20,7 +20,6 @@ module.exports = async function (context) {
   try {
     result.query = generate(system, user)
 
-    // set data
     logger('info', ['dust-activity', system, 'data', 'start'])
     const { body } = await callHandler(caller, result.query, system)
     logger('info', ['dust-activity', system, 'data', 'finish'])
@@ -39,7 +38,6 @@ module.exports = async function (context) {
   }
 
   try {
-    // update db with data and tests or error
     logger('info', ['dust-activity', system, 'request-update', result.data ? 'data' : 'error', 'start'])
     await updateRequest({ instanceId, ...result })
     logger('info', ['dust-activity', system, 'request-update', result.data ? 'data' : 'error', 'finish'])

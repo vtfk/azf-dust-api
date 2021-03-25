@@ -104,9 +104,9 @@ module.exports = df.orchestrator(function * (context) {
   // wait for all system requests to finish
   yield context.df.Task.all(parallelTasks)
 
-  // if user not found in ad but is found in visma and/or pifu, switch users expectedType and do new searches for systems missing data
+  // if user not found in ad but is found in one of the source systems, switch users expectedType and do new searches for systems missing data
   const adData = parallelTasks.filter(task => task.result.name === 'ad' && hasData(task.result.data))
-  const sourceData = parallelTasks.filter(task => (task.result.name === 'visma' || task.result.name === 'pifu') && hasData(task.result.data))
+  const sourceData = parallelTasks.filter(task => SOURCE_DATA_SYSTEMS.includes(task.result.name) && hasData(task.result.data))
   if (!hasData(adData) && hasData(sourceData)) {
     // switch users expectedType
     user.initialExpectedType = user.expectedType
