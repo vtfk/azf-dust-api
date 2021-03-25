@@ -50,7 +50,7 @@ module.exports = (systemData, user, allData = false) => ([
     return data.fnr.valid ? success(`Har gyldig ${data.fnr.type}`, data) : error(data.fnr.error, data)
   }),
   test('pifu-04', 'Fødselsnummer er likt i AD', 'Sjekker at fødselsnummeret er likt i AD og Extens', () => {
-    if (!allData) return noData('Venter på data...')
+    if (!allData) return noData()
     if (!hasData(allData.ad)) return error('Mangler AD-data', allData)
 
     if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)

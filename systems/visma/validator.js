@@ -119,7 +119,7 @@ module.exports = (systemData, user, allData = false) => ([
     return success('Fødselsnummeret registrert i HRM er gyldig', { hrm: { ssn: hrm.ssn }, validationResult })
   }),
   test('visma-05', 'E-postadressen er riktig', 'Sjekker at registrert e-post er lik som i AD', () => {
-    if (!allData || !allData.ad) return noData('Venter på data...')
+    if (!allData || !allData.ad) return noData()
     if (!allData.ad.mail) return warn('Mail mangler i dataene fra AD', { ad: allData.ad ? { mail: allData.ad.mail || null } : null })
 
     const hrm = getArrayData(systemData)
@@ -134,7 +134,7 @@ module.exports = (systemData, user, allData = false) => ([
     return error('E-postadressen i AD og HRM er ulike', { ad: allData.ad.mail, hrm: hrm.contactInfo.email })
   }),
   test('visma-06', 'Brukernavn er likt brukernavnet i AD', 'Sjekker at brukernavnet i HRM er likt samAccountName i lokalt AD', () => {
-    if (!allData || !allData.ad) return noData('Venter på data...')
+    if (!allData || !allData.ad) return noData()
     if (!allData.ad.samAccountName) return warn('samAccountName mangler i dataene fra AD', { ad: allData.ad ? { samAccountName: allData.ad.samAccountName || null } : null })
 
     const hrm = getArrayData(systemData)

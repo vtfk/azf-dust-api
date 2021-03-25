@@ -10,7 +10,7 @@ module.exports = (systemData, user, allData = false) => ([
     return success('Har person og gruppemedlemskap', systemData)
   }),
   test('sds-02', 'Er medlem av SDS-gruppen(e) i Azure AD', 'Sjekker at bruker er medlem av SDS-gruppen(e) i Azure AD', () => {
-    if (!allData) return noData('Venter på data...')
+    if (!allData) return noData()
     if (!hasData(allData.aad)) return error('Mangler Azure AD data', allData)
 
     const aadMemberGroups = allData.aad.transitiveMemberOf.filter(member => member && hasData(member.displayName)).map(member => member.displayName)
