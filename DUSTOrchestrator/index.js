@@ -92,7 +92,7 @@ module.exports = df.orchestrator(function * (context) {
   } else {
     // all systems failed validation
     return {
-      statusCode: 400,
+      status: 400,
       user,
       data: {
         systems,
