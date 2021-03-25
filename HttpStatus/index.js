@@ -55,14 +55,13 @@ const status = async function (context, req) {
 
   // orchestrator is pending or running - return 202
   if (status && ['Running', 'Pending'].includes(status.runtimeStatus)) {
+    const runtimeResponse = getStatusResponse(client, instanceId, RETRY_WAIT)
     res = {
-      ...getStatusResponse(client, instanceId, RETRY_WAIT),
       body: {
-        user: status.customStatus,
-        started: status.createdTime,
-        lastUpdated: status.lastUpdatedTime,
-        data: status.historyEvents.filter(event => event.Result && event.Result.name).map(event => event.Result)
-      }
+        status: runtimeResponse.status,
+        headers: runtimeResponse.headers
+      },
+      headers: {}
     }
   }
 
