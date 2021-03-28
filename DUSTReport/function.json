@@ -5,9 +5,9 @@
       "name": "req",
       "type": "httpTrigger",
       "direction": "in",
+      "route": "report",
       "methods": [
-        "post",
-        "get"
+        "post"
       ]
     },
     {
