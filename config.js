@@ -58,6 +58,7 @@ module.exports = {
   DEMO: (process.env.DEMO === 'true') || false,
   DEMO_USER: process.env.DEMO_USER || undefined,
   DEMO_SKIP_DB: (process.env.DEMO_SKIP_DB === 'true') || false,
+  USER_SEARCH_LIMIT: (process.env.USER_SEARCH_LIMIT && Number.parseInt(USER_SEARCH_LIMIT)) || 10,
   PAPERTRAIL_HOST: process.env.PAPERTRAIL_HOST || undefined,
   PAPERTRAIL_PORT: process.env.PAPERTRAIL_PORT || undefined,
   PAPERTRAIL_HOSTNAME: process.env.PAPERTRAIL_HOSTNAME || undefined,
