@@ -152,7 +152,6 @@ module.exports = df.orchestrator(function * (context) {
   })
 
   return {
-    status: 200,
     user,
     started: newEntry.started,
     finished: updatedEntry.$set.finished,
