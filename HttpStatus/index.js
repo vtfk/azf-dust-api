@@ -8,9 +8,10 @@ const status = async function (context, req) {
   const client = df.getClient(context)
   const { instanceId } = req.params
   const status = await client.getStatus(instanceId, true, true)
+  const customStatus = status.customStatus
 
   // remove input from status object if everything is fine
-  if (status && status.input && !([status.runtimeStatus, status.customStatus].includes('Failed'))) {
+  if (status && status.input && status.runtimeStatus !== 'Failed') {
     delete status.input
   }
 
@@ -59,13 +60,13 @@ const status = async function (context, req) {
 
   // orchestrator is pending or running - return 202
   if (status && ['Running', 'Pending'].includes(status.runtimeStatus)) {
-    const runtimeResponse = getStatusResponse(client, instanceId, RETRY_WAIT)
-    res = {
-      body: {
-        status: runtimeResponse.status,
-        headers: runtimeResponse.headers
-      },
-      headers: {}
+    res = getStatusResponse(client, instanceId, RETRY_WAIT)
+    if (customStatus && customStatus.user && customStatus.systems) {
+      res.body = {
+        ...res.body,
+        user: customStatus.user,
+        systems: customStatus.systems
+      }
     }
   }
 

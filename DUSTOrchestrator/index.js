@@ -29,7 +29,10 @@ module.exports = df.orchestrator(function * (context) {
   })
 
   // set current user object to customStatus
-  context.df.setCustomStatus(user)
+  context.df.setCustomStatus({
+    user,
+    systems
+  })
 
   // create a new request in the db
   const newEntry = yield context.df.callActivity('WorkerActivity', {
@@ -85,7 +88,10 @@ module.exports = df.orchestrator(function * (context) {
     })
 
     // set current user object to customStatus
-    context.df.setCustomStatus(user)
+    context.df.setCustomStatus({
+      user,
+      systems
+    })
 
     // start systems which failed validation
     parallelTasks.push(...callSystems(context, instanceId, failedValidation, user, token))
@@ -113,7 +119,10 @@ module.exports = df.orchestrator(function * (context) {
     user.expectedType = user.initialExpectedType === 'employee' ? 'student' : 'employee'
 
     // set current user object to customStatus
-    context.df.setCustomStatus(user)
+    context.df.setCustomStatus({
+      user,
+      systems
+    })
 
     const retrySystems = parallelTasks.filter(task => !hasData(task.result.data) && !task.result.error).map(task => task.result.name)
     parallelTasks = parallelTasks.filter(task => !retrySystems.includes(task.result.name))
