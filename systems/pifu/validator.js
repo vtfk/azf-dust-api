@@ -76,8 +76,7 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('pifu-06', 'Har riktig rolletype', 'Sjekker at det er riktig rolletype i gruppemedlemskapene', () => {
     const activeMemberships = getActiveMemberships(systemData.memberships)
-    const allMemberships = getAllMemberships(systemData.memberships)
-    if (!hasData(activeMemberships)) return hasData(allMemberships) ? error('Har ingen aktive gruppemedlemskap', systemData) : error('Har ingen gruppemedlemskap 🤭', systemData)
+    if (!hasData(activeMemberships)) return
     const data = activeMemberships.map(membership => ({ id: membership.sourcedid.id, type: membership.member.role.roletype }))
     if (user.expectedType === 'employee') {
       const wrongMemberships = data.filter(item => item.type !== SYSTEMS.PIFU.MEMBERSHIP_EMPLOYEE_ROLETYPE)
@@ -89,8 +88,7 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('pifu-07', 'Gruppemedlemskapet er gyldig', 'Sjekker at gruppemedlemskapene ikke er avsluttet', () => {
     const activeMemberships = getActiveMemberships(systemData.memberships)
-    const allMemberships = getAllMemberships(systemData.memberships)
-    if (!hasData(activeMemberships)) return hasData(allMemberships) ? error('Har ingen aktive gruppemedlemskap', systemData) : error('Har ingen gruppemedlemskap 🤭', systemData)
+    if (!hasData(activeMemberships)) return
     const invalidMemberships = activeMemberships.filter(item => !isWithinDaterange(item.member.role.timeframe.begin.text, item.member.role.timeframe.end.text))
     return hasData(invalidMemberships) ? error(`Har ${invalidMemberships.length} avsluttede gruppemedlemskap av totalt ${activeMemberships.length} gruppemedlemskap`, invalidMemberships) : success('Alle gruppemedlemskap er gyldige', activeMemberships)
   })
