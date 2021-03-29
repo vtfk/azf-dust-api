@@ -2,7 +2,7 @@
 
 All calls needs an active Azure AD Token
 
-## `/start`
+## `/report`
 
 Calls executes in parallel. When a call has retrieved it's data it will be saved to a MongoDB. Then there will be tests executed on the data retrieved.
 
@@ -11,7 +11,9 @@ When all calls are finished, tests across all retrieved data will be executed.
 ```json
 {
   "systems": [
-    "aad"
+    "aad",
+    "ad",
+    "feide"
   ],
   "user": {
     "userPrincipalName": "bjarne.betjent@vtfk.no",
@@ -21,11 +23,19 @@ When all calls are finished, tests across all retrieved data will be executed.
 }
 ```
 
+## `/search?q=searchString&top=5`
+
+Search for cached users in db
+
+**q** : What to search for
+
+**top** *(optional)* : Search limit
+
 ## `/system/{system}`
 
 Call individual systems without updating db
 
-### `/systems/ad`
+### `/system/ad`
 
 Get OnPremises Active Directory user account
 
@@ -81,7 +91,7 @@ Get OnPremises Active Directory user account
 }
 ```
 
-### `/systems/visma`
+### `/system/visma`
 
 Get Visma HRM user account
 
@@ -100,7 +110,7 @@ Get Visma HRM user account
 }
 ```
 
-### `/systems/feide`
+### `/system/feide`
 
 Get OnPremises FEIDE user account
 
@@ -132,7 +142,7 @@ Get OnPremises FEIDE user account
 }
 ```
 
-### `/systems/sds`
+### `/system/sds`
 
 Get person object(s) and membership(s) for user account
 
@@ -152,7 +162,7 @@ Get person object(s) and membership(s) for user account
 }
 ```
 
-### `/systems/pifu`
+### `/system/pifu`
 
 Get raw info for user
 
@@ -163,7 +173,7 @@ Get raw info for user
 }
 ```
 
-### `/systems/aad`
+### `/system/aad`
 
 Get Azure Active Directory user account + authentication methods
 
