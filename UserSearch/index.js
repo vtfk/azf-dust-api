@@ -2,11 +2,12 @@ const { logger } = require('@vtfk/logger')
 const withTokenAuth = require('../lib/auth/with-token-auth')
 const getResponseObject = require('../lib/get-response-object')
 const { search } = require('../lib/mongo/handle-mongo')
+const { USER_SEARCH_LIMIT } = require('../config')
 
 const handleSearch = async (context, req) => {
   const { q, top } = req.query
   const query = decodeURIComponent(q)
-  const searchLimit = parseInt(top)
+  const searchLimit = (top && Number.parseInt(top)) || USER_SEARCH_LIMIT
 
   logger('info', ['handle-search', 'limit', top, 'search term', query])
 
