@@ -9,7 +9,7 @@ const handleSearch = async (context, req) => {
   const query = decodeURIComponent(q)
   const searchLimit = (top && Number.parseInt(top)) || USER_SEARCH_LIMIT
 
-  logger('info', ['handle-search', 'limit', top, 'search term', query])
+  logger('info', ['handle-search', 'limit', searchLimit, 'search term', `'${query}'`])
 
   const searchRes = q ? await search(query, searchLimit) : []
   return getResponseObject({
