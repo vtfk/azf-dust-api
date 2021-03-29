@@ -12,7 +12,9 @@ const handleSearch = async (context, req) => {
   logger('info', ['handle-search', 'limit', top, 'search term', query])
 
   const searchRes = q ? await search(query, searchLimit) : []
-  return getResponseObject(searchRes)
+  return getResponseObject({
+    result: searchRes // Workaround for axios som ikke takler at body kun er et array
+  })
 }
 
 module.exports = (context, req) => withTokenAuth(context, req, handleSearch)
