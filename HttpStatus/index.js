@@ -17,10 +17,22 @@ const status = async function (context, req) {
 
   let res
   if (status) {
-    // orchestrator could be finished. Set res.body to status.output. If it's not finished yet res.body will be replaced further down
-    res = {
-      body: status.output,
-      headers: {}
+    // orchestrator is pending or running - return 202
+    if (['Running', 'Pending'].includes(status.runtimeStatus)) {
+      res = getStatusResponse(client, instanceId, RETRY_WAIT)
+      if (customStatus && customStatus.user && customStatus.systems) {
+        res.body = {
+          ...res.body,
+          user: customStatus.user,
+          systems: customStatus.systems
+        }
+      }
+    } else {
+      // orchestrator is either (Canceled, Completed, ContinuedAsNew, Failed, Terminated or Unknown) - return 200
+      res = {
+        body: status.output,
+        headers: {}
+      }
     }
   } else if (instanceId) {
     // instanceId is given but not found in StorageAccount. Try finding it in the DB
@@ -55,18 +67,6 @@ const status = async function (context, req) {
         instanceId
       },
       headers: {}
-    }
-  }
-
-  // orchestrator is pending or running - return 202
-  if (status && ['Running', 'Pending'].includes(status.runtimeStatus)) {
-    res = getStatusResponse(client, instanceId, RETRY_WAIT)
-    if (customStatus && customStatus.user && customStatus.systems) {
-      res.body = {
-        ...res.body,
-        user: customStatus.user,
-        systems: customStatus.systems
-      }
     }
   }
 
