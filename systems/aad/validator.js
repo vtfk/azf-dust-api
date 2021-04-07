@@ -1,7 +1,7 @@
 const { test, success, error, warn, noData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
 const isPwdLastSet = require('../../lib/helpers/is-pwd-within-timerange')
-const licenses = require('./licenses.json')
+const licenses = require('../data/licenses.json')
 
 module.exports = (systemData, user, allData = false) => ([
   test('aad-01', 'Kontoen er aktivert', 'Sjekker at kontoen er aktivert i Azure AD', () => {
