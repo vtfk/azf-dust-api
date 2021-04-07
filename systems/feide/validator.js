@@ -140,19 +140,19 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return success('Knytning til skole funnet', data)
   }),
-  test('feide-14', 'Har satt opp MFA', 'Sjekker at MFA er satt opp', () => {
+  test('feide-14', 'Har satt opp Feide2Faktor', 'Sjekker at Feide2Faktor er satt opp', () => {
     const data = {
       norEduPersonAuthnMethod: systemData.norEduPersonAuthnMethod.map(auth => auth.split(' ')[0])
     }
     if (!hasData(systemData.norEduPersonAuthnMethod)) {
-      return user.expectedType === 'employee' ? error('MFA er ikke satt opp 🤭', data) : success('MFA er ikke satt opp, og heller ikke påkrevd for elever')
+      return user.expectedType === 'employee' ? error('Feide2Faktor er ikke satt opp 🤭', data) : success('Feide2Faktor er ikke satt opp, og heller ikke påkrevd for elever')
     }
     const smsAuth = systemData.norEduPersonAuthnMethod.filter(auth => auth.includes(SYSTEMS.FEIDE.MFA_SMS))
     const gaAuth = systemData.norEduPersonAuthnMethod.filter(auth => auth.includes(SYSTEMS.FEIDE.MFA_GA))
-    if (hasData(smsAuth) && hasData(gaAuth)) return success('MFA for SMS og Godkjenner/Authenticator app er satt opp', data)
-    else if (hasData(smsAuth) && !hasData(gaAuth)) return success('MFA for SMS er satt opp', data)
-    else if (!hasData(smsAuth) && hasData(gaAuth)) return success('MFA for Godkjenner/Authenticator app er satt opp', data)
-    else return warn('MFA for noe annet enn SMS og Godkjenner/Authenticator app er satt opp', data)
+    if (hasData(smsAuth) && hasData(gaAuth)) return success('Feide2Faktor for SMS og Godkjenner/Authenticator app er satt opp', data)
+    else if (hasData(smsAuth) && !hasData(gaAuth)) return success('Feide2Faktor for SMS er satt opp', data)
+    else if (!hasData(smsAuth) && hasData(gaAuth)) return success('Feide2Faktor for Godkjenner/Authenticator app er satt opp', data)
+    else return warn('Feide2Faktor for noe annet enn SMS og Godkjenner/Authenticator app er satt opp', data)
   }),
   test('feide-15', 'Organisasjon er riktig', 'Sjekker at organisasjon er riktig', () => {
     const data = {
