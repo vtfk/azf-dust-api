@@ -56,7 +56,7 @@ module.exports = (systemData, user, allData = false) => ([
       seconds: pwdCheck.seconds
     }
     if (pwdCheck.result) return success('Passord synkronisert til FEIDE', data)
-    else return error('Passord ikke synkronisert', data)
+    else return error('Passord ikke synkronisert. Må byttes i AD', data)
   }),
   test('feide-06', 'Brukernavn er angitt', 'Sjekker at brukernavnet er angitt', () => {
     const data = {
