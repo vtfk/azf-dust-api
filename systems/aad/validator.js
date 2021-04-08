@@ -1,4 +1,4 @@
-const { test, success, error, warn, noData } = require('../../lib/test')
+const { test, success, error, warn, waitForData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
 const isPwdLastSet = require('../../lib/helpers/is-pwd-within-timerange')
 const licenses = require('../data/licenses.json')
@@ -27,8 +27,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (user.expectedType === 'employee') return systemData.userPrincipalName.includes('@vtfk.no') ? success('UPN er korrekt', data) : error('UPN er ikke korrekt', data)
     else return systemData.userPrincipalName.includes('@skole.vtfk.no') ? success('UPN er korrekt', data) : error('UPN er ikke korrekt', data)
   }),
-  test('aad-04', 'Passord synkronisert til Azure AD', 'Sjekker at passordet er synkronisert til Azure AD innenfor 15 sekunder', () => {
-    if (!allData) return noData()
+    if (!allData) return waitForData()
     if (!hasData(allData.ad)) return error('Mangler AD-data', allData)
     const pwdCheck = isPwdLastSet(new Date(allData.ad.pwdLastSet), new Date(systemData.lastPasswordChangeDateTime))
     const data = {

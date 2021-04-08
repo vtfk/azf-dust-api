@@ -1,5 +1,5 @@
 const { SYSTEMS } = require('../../config')
-const { test, success, warn, error, noData } = require('../../lib/test')
+const { test, success, warn, error, waitForData } = require('../../lib/test')
 const isWithinDaterange = require('../../lib/helpers/is-within-daterange')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const { hasData, getArray, getArrayData } = require('../../lib/helpers/system-data')
@@ -118,8 +118,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (validationResult.type !== 'Fødselsnummer') return warn(`Fødselsnummeret som er registrert er et ${validationResult.type}. Dette kan skape problemer i enkelte systemer`, { hrm: { ssn: hrm.ssn }, validationResult })
     return success('Fødselsnummeret registrert i HRM er gyldig', { hrm: { ssn: hrm.ssn }, validationResult })
   }),
-  test('visma-05', 'E-postadressen er riktig', 'Sjekker at registrert e-post er lik som i AD', () => {
-    if (!allData || !allData.ad) return noData()
+    if (!allData || !allData.ad) return waitForData()
     if (!allData.ad.mail) return warn('Mail mangler i dataene fra AD', { ad: allData.ad ? { mail: allData.ad.mail || null } : null })
 
     const hrm = getArrayData(systemData)
@@ -133,8 +132,7 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return error('E-postadressen i AD og HRM er ulike', { ad: allData.ad.mail, hrm: hrm.contactInfo.email })
   }),
-  test('visma-06', 'Brukernavn er likt brukernavnet i AD', 'Sjekker at brukernavnet i HRM er likt samAccountName i lokalt AD', () => {
-    if (!allData || !allData.ad) return noData()
+    if (!allData || !allData.ad) return waitForData()
     if (!allData.ad.samAccountName) return warn('samAccountName mangler i dataene fra AD', { ad: allData.ad ? { samAccountName: allData.ad.samAccountName || null } : null })
 
     const hrm = getArrayData(systemData)

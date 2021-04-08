@@ -1,4 +1,4 @@
-const { test, success, warn, error, noData } = require('../../lib/test')
+const { test, success, warn, error, waitForData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const isWithinDaterange = require('../../lib/helpers/is-within-daterange')
@@ -49,8 +49,7 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return data.fnr.valid ? success(`Har gyldig ${data.fnr.type}`, data) : error(data.fnr.error, data)
   }),
-  test('pifu-04', 'Fødselsnummer er likt i AD', 'Sjekker at fødselsnummeret er likt i AD og Extens', () => {
-    if (!allData) return noData()
+    if (!allData) return waitForData()
     if (!hasData(allData.ad)) return error('Mangler AD-data', allData)
 
     if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)

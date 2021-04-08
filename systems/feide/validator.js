@@ -1,4 +1,4 @@
-const { test, success, warn, error, noData } = require('../../lib/test')
+const { test, success, warn, error, waitForData } = require('../../lib/test')
 const { SYSTEMS } = require('../../config')
 const { hasData } = require('../../lib/helpers/system-data')
 const isPwdLastSet = require('../../lib/helpers/is-pwd-within-timerange')
@@ -27,8 +27,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (!systemData.norEduPersonNIN) return error('Fødselsnummer mangler 🤭', data)
     return data.fnr.valid ? success(`Har gyldig ${data.fnr.type}`, data) : error(data.fnr.error, data)
   }),
-  test('feide-04', 'Fødselsnummer er likt i AD', 'Sjekker at fødselsnummeret er likt i AD og FEIDE', () => {
-    if (!allData) return noData()
+    if (!allData) return waitForData()
     if (!hasData(allData.ad)) return error('Mangler AD-data', allData)
 
     const data = {
@@ -42,8 +41,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (systemData.norEduPersonNIN === allData.ad.employeeNumber) return success('Fødselsnummer er likt i AD og FEIDE', data)
     else return error('Fødselsnummer er forskjellig i AD og FEIDE', data)
   }),
-  test('feide-05', 'Passord synkronisert til FEIDE', 'Sjekker at passordet er synkronisert til FEIDE innenfor 15 sekunder', () => {
-    if (!allData) return noData()
+    if (!allData) return waitForData()
     if (!hasData(allData.ad)) return error('Mangler AD-data', allData)
     const pwdCheck = isPwdLastSet(new Date(allData.ad.pwdLastSet), new Date(systemData.passwordLastSet))
     const data = {
@@ -65,8 +63,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (!systemData.name) return error('Brukernavn mangler 🤭', data)
     return success('Brukernavn er angitt', data)
   }),
-  test('feide-07', 'Brukernavn er likt i AD', 'Sjekker at brukernavnet er likt i AD og FEIDE', () => {
-    if (!allData) return noData()
+    if (!allData) return waitForData()
     if (!hasData(allData.ad)) return error('Mangler AD-data', allData)
 
     if (!systemData.name) return error('Brukernavn mangler 🤭', systemData)
@@ -114,8 +111,7 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return systemData.eduPersonPrincipalName !== `${systemData.name}${SYSTEMS.FEIDE.PRINCIPAL_NAME}` ? error('PrincipalName er feil 🤭', data) : success('PrincipalName er riktig', data)
   }),
-  test('feide-12', 'E-postadresse er lik UPN', 'Sjekker at e-postadresse er lik UPN', () => {
-    if (!allData) return noData()
+    if (!allData) return waitForData()
     if (!hasData(allData.ad)) return error('Mangler AD-data', allData)
 
     const data = {
@@ -129,8 +125,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (systemData.mail === allData.ad.userPrincipalName) return success('E-postadresse er lik UPN', data)
     else return error('E-postadresse er ikke lik UPN', data)
   }),
-  test('feide-13', 'Har knytning til en skole', 'Sjekker at det finnes knytning til minst èn skole', () => {
-    if (!allData) return noData()
+    if (!allData) return waitForData()
 
     const data = {
       eduPersonOrgUnitDN: systemData.eduPersonOrgUnitDN || null
@@ -162,8 +157,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (!hasData(systemData.eduPersonOrgDN)) return error('Organisasjon mangler 🤭', data)
     return systemData.eduPersonOrgDN === SYSTEMS.FEIDE.ORGANIZATION_DN ? success('Organisasjon er riktig', data) : error('Organisasjon er ikke riktig', data)
   }),
-  test('feide-16', 'Har riktig tilhørighet', 'Sjekker at det er satt riktig tilhørighet', () => {
-    if (!allData) return noData()
+    if (!allData) return waitForData()
 
     const data = {
       eduPersonAffiliation: systemData.eduPersonAffiliation || null
@@ -180,7 +174,7 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('feide-17', 'Har grupperettigheter', 'Sjekker at det er satt grupperettigheter', () => {
     // TODO: Bør kanskje sjekke at grupperettighetene stemmer overens med data fra PIFU
-    if (!allData) return noData()
+    if (!allData) return waitForData()
 
     const data = {
       eduPersonEntitlement: systemData.eduPersonEntitlement || null

@@ -1,4 +1,4 @@
-const { test, success, error, noData } = require('../../lib/test')
+const { test, success, error, waitForData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
 
 module.exports = (systemData, user, allData = false) => ([
@@ -9,8 +9,7 @@ module.exports = (systemData, user, allData = false) => ([
     else if (hasData(missingEnrollments)) return error('Gruppemedlemskap mangler 🤭', systemData)
     return success('Har person og gruppemedlemskap', systemData)
   }),
-  test('sds-02', 'Er medlem av SDS-gruppen(e) i Azure AD', 'Sjekker at bruker er medlem av SDS-gruppen(e) i Azure AD', () => {
-    if (!allData) return noData()
+    if (!allData) return waitForData()
     if (!hasData(allData.aad)) return error('Mangler Azure AD data', allData)
 
     const aadMemberGroups = allData.aad.transitiveMemberOf.filter(member => member && hasData(member.displayName)).map(member => member.displayName)
