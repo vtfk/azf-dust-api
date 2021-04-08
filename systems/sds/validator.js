@@ -1,14 +1,23 @@
-const { test, success, error, waitForData } = require('../../lib/test')
+const { test, success, error, waitForData, noData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
 
+let dataPresent = true
+
 module.exports = (systemData, user, allData = false) => ([
-  test('sds-01', 'Har person- og gruppemedlemskap', 'Sjekker at det finnes person og gruppemedlemskap', () => {
+  test('sds-01', 'Har data', 'Sjekker at det finnes data her', () => {
+    dataPresent = hasData(systemData)
+    return dataPresent ? success('Har data') : noData()
+  }),
+  test('sds-02', 'Har person- og gruppemedlemskap', 'Sjekker at det finnes person og gruppemedlemskap', () => {
+    if (!dataPresent) return noData()
     const missingPerson = systemData.filter(obj => !obj.person)
     const missingEnrollments = systemData.filter(obj => !obj.enrollments)
     if (hasData(missingPerson)) return error('Person-objekt mangler 🤭', systemData)
     else if (hasData(missingEnrollments)) return error('Gruppemedlemskap mangler 🤭', systemData)
     return success('Har person og gruppemedlemskap', systemData)
   }),
+  test('sds-03', 'Er medlem av SDS-gruppen(e) i Azure AD', 'Sjekker at bruker er medlem av SDS-gruppen(e) i Azure AD', () => {
+    if (!dataPresent) return noData()
     if (!allData) return waitForData()
     if (!hasData(allData.aad)) return error('Mangler Azure AD data', allData)
 

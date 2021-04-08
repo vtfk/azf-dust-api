@@ -1,4 +1,4 @@
-const { test, success, warn, error, waitForData } = require('../../lib/test')
+const { test, success, warn, error, waitForData, noData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const isWithinDaterange = require('../../lib/helpers/is-within-daterange')
@@ -15,15 +15,23 @@ const getActiveMemberships = data => hasData(data) ? data.filter(item => !!item.
 const getAllMemberships = data => hasData(data) ? data : false
 const getUserIdType = (data, userType) => hasData(data) ? data.filter(item => item.useridtype === userType).map(item => item.useridtype) : false
 
+let dataPresent = true
+
 module.exports = (systemData, user, allData = false) => ([
-  test('pifu-01', 'Har et person-objekt', 'Sjekker at det finnes et person-objekt', () => {
+  test('pifu-01', 'Har data', 'Sjekker at det finnes data her', () => {
+    dataPresent = hasData(systemData)
+    return dataPresent ? success('Har data') : noData()
+  }),
+  test('pifu-02', 'Har et person-objekt', 'Sjekker at det finnes et person-objekt', () => {
+    if (!dataPresent) return noData()
     if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)
     const data = {
       person: systemData.person
     }
     return success('Har et person-objekt', data)
   }),
-  test('pifu-02', 'Har riktig person-type', 'Sjekker at det er riktig person-type', () => {
+  test('pifu-03', 'Har riktig person-type', 'Sjekker at det er riktig person-type', () => {
+    if (!dataPresent) return noData()
     if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)
     else if (!hasData(systemData.person.userid)) return error('Person-objekt mangler userid oppføringer', systemData)
 
@@ -39,7 +47,8 @@ module.exports = (systemData, user, allData = false) => ([
       else return error('Peron-objektet mangler person-type 🤭', systemData.person.userid)
     }
   }),
-  test('pifu-03', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
+  test('pifu-04', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
+    if (!dataPresent) return noData()
     if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)
     else if (!hasData(systemData.person.userid)) return error('Person-objekt mangler userid oppføringer 🤭', systemData)
     const employee = getEmployeeNumber(systemData.person.userid)
@@ -49,6 +58,8 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return data.fnr.valid ? success(`Har gyldig ${data.fnr.type}`, data) : error(data.fnr.error, data)
   }),
+  test('pifu-05', 'Fødselsnummer er likt i AD', 'Sjekker at fødselsnummeret er likt i AD og Extens', () => {
+    if (!dataPresent) return noData()
     if (!allData) return waitForData()
     if (!hasData(allData.ad)) return error('Mangler AD-data', allData)
 
@@ -66,16 +77,18 @@ module.exports = (systemData, user, allData = false) => ([
     if (data.pifu.id === data.ad.employeeNumber) return success('Fødselsnummer er likt i AD og Extens', data)
     else return error('Fødselsnummer er forskjellig i AD og Extens', data)
   }),
-  test('pifu-05', 'Har aktive gruppemedlemskap', 'Sjekker at det finnes aktive gruppemedlemskap', () => {
+  test('pifu-06', 'Har aktive gruppemedlemskap', 'Sjekker at det finnes aktive gruppemedlemskap', () => {
     // TODO: Bør det sjekkes noe mere here? Er det noen ganger det er riktig at det ikke er noen gruppemedlemskap?
+    if (!dataPresent) return noData()
     const activeMemberships = getActiveMemberships(systemData.memberships)
     const allMemberships = getAllMemberships(systemData.memberships)
     if (!hasData(activeMemberships)) return hasData(allMemberships) ? error('Har ingen aktive gruppemedlemskap', systemData) : error('Har ingen gruppemedlemskap 🤭', systemData)
     else return success(`Har ${activeMemberships.length} aktive gruppemedlemskap`, activeMemberships)
   }),
-  test('pifu-06', 'Har riktig rolletype', 'Sjekker at det er riktig rolletype i gruppemedlemskapene', () => {
+  test('pifu-07', 'Har riktig rolletype', 'Sjekker at det er riktig rolletype i gruppemedlemskapene', () => {
+    if (!dataPresent) return noData()
     const activeMemberships = getActiveMemberships(systemData.memberships)
-    if (!hasData(activeMemberships)) return
+    if (!hasData(activeMemberships)) return noData('Mangler aktive gruppemedlemskap')
     const data = activeMemberships.map(membership => ({ id: membership.sourcedid.id, type: membership.member.role.roletype }))
     if (user.expectedType === 'employee') {
       const wrongMemberships = data.filter(item => item.type !== SYSTEMS.PIFU.MEMBERSHIP_EMPLOYEE_ROLETYPE)
@@ -85,9 +98,10 @@ module.exports = (systemData, user, allData = false) => ([
       return hasData(wrongMemberships) ? error(`Har ${wrongMemberships.length} aktive gruppemedlemskap med feil rolletype`, data) : success('Har riktig rolletype i alle aktive gruppemedlemskap', data)
     }
   }),
-  test('pifu-07', 'Gruppemedlemskapet er gyldig', 'Sjekker at gruppemedlemskapene ikke er avsluttet', () => {
+  test('pifu-08', 'Gruppemedlemskapet er gyldig', 'Sjekker at gruppemedlemskapene ikke er avsluttet', () => {
+    if (!dataPresent) return noData()
     const activeMemberships = getActiveMemberships(systemData.memberships)
-    if (!hasData(activeMemberships)) return
+    if (!hasData(activeMemberships)) return noData('Mangler aktive gruppemedlemskap')
     const invalidMemberships = activeMemberships.filter(item => !isWithinDaterange(item.member.role.timeframe.begin.text, item.member.role.timeframe.end.text))
     return hasData(invalidMemberships) ? error(`Har ${invalidMemberships.length} avsluttede gruppemedlemskap av totalt ${activeMemberships.length} gruppemedlemskap`, invalidMemberships) : success('Alle gruppemedlemskap er gyldige', activeMemberships)
   })
