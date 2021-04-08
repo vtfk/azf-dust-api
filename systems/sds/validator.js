@@ -1,11 +1,14 @@
-const { test, success, error, waitForData, noData } = require('../../lib/test')
+const { test, success, error, warn, waitForData, noData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
+const schools = require('../data/schools.json')
 
 let dataPresent = true
 
 module.exports = (systemData, user, allData = false) => ([
   test('sds-01', 'Har data', 'Sjekker at det finnes data her', () => {
     dataPresent = hasData(systemData)
+    if (!dataPresent && user.company && schools.includes(user.company)) return error('Mangler data 😬', systemData)
+    else if (!dataPresent && !user.company) return warn('Mangler data. Dessverre er det ikke nok informasjon tilstede på brukerobjektet for å utføre testene')
     return dataPresent ? success('Har data') : noData()
   }),
   test('sds-02', 'Har person- og gruppemedlemskap', 'Sjekker at det finnes person og gruppemedlemskap', () => {

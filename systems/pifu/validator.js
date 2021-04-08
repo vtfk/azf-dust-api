@@ -2,6 +2,7 @@ const { test, success, warn, error, waitForData, noData } = require('../../lib/t
 const { hasData } = require('../../lib/helpers/system-data')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const isWithinDaterange = require('../../lib/helpers/is-within-daterange')
+const schools = require('../data/schools.json')
 const { SYSTEMS } = require('../../config')
 
 const getEmployeeNumber = data => {
@@ -20,6 +21,8 @@ let dataPresent = true
 module.exports = (systemData, user, allData = false) => ([
   test('pifu-01', 'Har data', 'Sjekker at det finnes data her', () => {
     dataPresent = hasData(systemData)
+    if (!dataPresent && user.company && schools.includes(user.company)) return error('Mangler data 😬', systemData)
+    else if (!dataPresent && !user.company) return warn('Mangler data. Dessverre er det ikke nok informasjon tilstede på brukerobjektet for å utføre testene')
     return dataPresent ? success('Har data') : noData()
   }),
   test('pifu-02', 'Har et person-objekt', 'Sjekker at det finnes et person-objekt', () => {

@@ -8,6 +8,9 @@ let dataPresent = true
 module.exports = (systemData, user, allData = false) => ([
   test('aad-01', 'Har data', 'Sjekker at det finnes data her', () => {
     dataPresent = hasData(systemData)
+    if (!dataPresent && !allData) return waitForData()
+    else if (!dataPresent && allData && !allData.ad) return success('Data mangler grunnet ingen data i AD')
+    else if (!dataPresent && allData && allData.ad) return error('Mangler data 😬', systemData)
     return dataPresent ? success('Har data') : noData()
   }),
   test('aad-02', 'Kontoen er aktivert', 'Sjekker at kontoen er aktivert i Azure AD', () => {

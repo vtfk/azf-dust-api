@@ -1,3 +1,5 @@
+const schools = require('../systems/data/schools.json')
+
 const systems = [
   'AD',
   'FEIDE',
@@ -1219,6 +1221,7 @@ const mockData = {
 const mockUser = {
   employeeNumber: '12128015478',
   departmentShort: 'BDK-TEK',
+  company: schools[0],
   expectedType: 'employee'
 }
 

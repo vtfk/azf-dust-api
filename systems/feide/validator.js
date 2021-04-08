@@ -3,12 +3,15 @@ const { SYSTEMS } = require('../../config')
 const { hasData } = require('../../lib/helpers/system-data')
 const isPwdLastSet = require('../../lib/helpers/is-pwd-within-timerange')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
+const schools = require('../data/schools.json')
 
 let dataPresent = true
 
 module.exports = (systemData, user, allData = false) => ([
   test('feide-01', 'Har data', 'Sjekker at det finnes data her', () => {
     dataPresent = hasData(systemData)
+    if (!dataPresent && user.company && schools.includes(user.company)) return error('Mangler data 😬', systemData)
+    else if (!dataPresent && !user.company) return warn('Mangler data. Dessverre er det ikke nok informasjon tilstede på brukerobjektet for å utføre testene')
     return dataPresent ? success('Har data') : noData()
   }),
   test('feide-02', 'Kontoen er aktivert', 'Sjekker at kontoen er aktivert i FEIDE', () => {
