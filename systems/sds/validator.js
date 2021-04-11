@@ -1,16 +1,27 @@
-const { test, success, error, noData } = require('../../lib/test')
+const { test, success, error, warn, waitForData, noData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
+const schools = require('../data/schools.json')
+
+let dataPresent = true
 
 module.exports = (systemData, user, allData = false) => ([
-  test('sds-01', 'Har person- og gruppemedlemskap', 'Sjekker at det finnes person og gruppemedlemskap', () => {
+  test('sds-01', 'Har data', 'Sjekker at det finnes data her', () => {
+    dataPresent = hasData(systemData)
+    if (!dataPresent && user.company && schools.includes(user.company)) return error('Mangler data 😬', systemData)
+    else if (!dataPresent && !user.company) return warn('Mangler data. Dessverre er det ikke nok informasjon tilstede på brukerobjektet for å kontrollere om dette er korrekt')
+    return dataPresent ? success('Har data') : success('Bruker har ikke data i dette systemet')
+  }),
+  test('sds-02', 'Har person- og gruppemedlemskap', 'Sjekker at det finnes person og gruppemedlemskap', () => {
+    if (!dataPresent) return noData()
     const missingPerson = systemData.filter(obj => !obj.person)
     const missingEnrollments = systemData.filter(obj => !obj.enrollments)
     if (hasData(missingPerson)) return error('Person-objekt mangler 🤭', systemData)
     else if (hasData(missingEnrollments)) return error('Gruppemedlemskap mangler 🤭', systemData)
     return success('Har person og gruppemedlemskap', systemData)
   }),
-  test('sds-02', 'Er medlem av SDS-gruppen(e) i Azure AD', 'Sjekker at bruker er medlem av SDS-gruppen(e) i Azure AD', () => {
-    if (!allData) return noData()
+  test('sds-03', 'Er medlem av SDS-gruppen(e) i Azure AD', 'Sjekker at bruker er medlem av SDS-gruppen(e) i Azure AD', () => {
+    if (!dataPresent) return noData()
+    if (!allData) return waitForData()
     if (!hasData(allData.aad)) return error('Mangler Azure AD data', allData)
 
     const aadMemberGroups = allData.aad.transitiveMemberOf.filter(member => member && hasData(member.displayName)).map(member => member.displayName)
