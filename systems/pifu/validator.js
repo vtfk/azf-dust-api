@@ -22,8 +22,7 @@ module.exports = (systemData, user, allData = false) => ([
   test('pifu-01', 'Har data', 'Sjekker at det finnes data her', () => {
     dataPresent = hasData(systemData)
     if (!dataPresent && user.company && schools.includes(user.company)) return error('Mangler data 😬', systemData)
-    else if (!dataPresent && !user.company) return warn('Mangler data. Dessverre er det ikke nok informasjon tilstede på brukerobjektet for å utføre testene')
-    return dataPresent ? success('Har data') : noData()
+    else if (!dataPresent && !user.company) return warn('Mangler data. Dessverre er det ikke nok informasjon tilstede på brukerobjektet for å kontrollere om dette er korrekt')
   }),
   test('pifu-02', 'Har et person-objekt', 'Sjekker at det finnes et person-objekt', () => {
     if (!dataPresent) return noData()
