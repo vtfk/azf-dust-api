@@ -9,6 +9,7 @@ module.exports = (systemData, user, allData = false) => ([
     dataPresent = hasData(systemData)
     if (!dataPresent && user.company && schools.includes(user.company)) return error('Mangler data 😬', systemData)
     else if (!dataPresent && !user.company) return warn('Mangler data. Dessverre er det ikke nok informasjon tilstede på brukerobjektet for å kontrollere om dette er korrekt')
+    return dataPresent ? success('Har data') : success('Bruker har ikke data i dette systemet')
   }),
   test('sds-02', 'Har person- og gruppemedlemskap', 'Sjekker at det finnes person og gruppemedlemskap', () => {
     if (!dataPresent) return noData()

@@ -8,7 +8,7 @@ let dataPresent = true
 module.exports = (systemData, user, allData = false) => ([
   test('ad-01', 'Har data', 'Sjekker at det finnes data her', () => {
     dataPresent = hasData(systemData)
-    return dataPresent ? success('Har data') : noData()
+    return dataPresent ? success('Har data') : error('Mangler data 😬') // TODO: MÅ sjekkes om bruker skal ha AD-objekt via PIFU eller Visma
   }),
   test('ad-02', 'Kontoen er aktivert', 'Sjekker at kontoen er aktivert i AD', () => {
     if (!dataPresent) return noData()

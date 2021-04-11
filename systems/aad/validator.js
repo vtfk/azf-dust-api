@@ -11,7 +11,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (!dataPresent && !allData) return waitForData()
     else if (!dataPresent && allData && !allData.ad) return success('Data mangler grunnet ingen data i AD')
     else if (!dataPresent && allData && allData.ad) return error('Mangler data 😬', systemData)
-    return dataPresent ? success('Har data') : noData()
+    return dataPresent ? success('Har data') : success('Bruker har ikke data i dette systemet')
   }),
   test('aad-02', 'Kontoen er aktivert', 'Sjekker at kontoen er aktivert i Azure AD', () => {
     if (!dataPresent) return noData()
