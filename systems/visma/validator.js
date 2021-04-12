@@ -20,6 +20,113 @@ const getPositions = employment => {
   }))
 }
 
+const getPerson = (data, user) => {
+  const hrm = getArrayData(data)
+  const personIdHRM = hasData(hrm) && hrm['@personIdHRM']
+  if (!personIdHRM) {
+    if (user.expectedType === 'student') return success('Personen ble ikke funnet i HRM, men siden dette er en elev er det helt normalt', { hrm })
+    return error('Personen ble ikke funnet i HRM', { hrm })
+  }
+
+  if (user.expectedType === 'student') return warn('Personen ble funnet i HRM', { personIdHRM })
+  return success('Personen ble funnet i HRM', { personIdHRM })
+}
+
+const getActivePosition = (data, user) => {
+  const hrm = getArrayData(data)
+  const employment = hasData(hrm) && getEmployment(hrm)
+  if (!employment) {
+    if (user.expectedType === 'student') return success('Ingen ansettelsesforhold ble funnet i HRM, og siden dette er en elev er det helt normalt', { hrm })
+    return error('Ingen ansettelsesforhold ble funnet i HRM', { hrm })
+  }
+
+  const positions = getPositions(employment)
+  if (!positions) {
+    if (user.expectedType === 'student') return warn('Ansettelsesforhold ble funnet i HRM, men ingen aktive stillinger ble funnet', { employment, positions: (positions || null) })
+    return error('Ingen stillinger ble funnet i HRM', { employment, positions: (positions || null) })
+  }
+
+  const primaryPositions = positions.filter(position => position['@isPrimaryPosition'] === 'true')
+  const activePrimaryPositions = primaryPositions.map(position => position.active)
+  const activePrimaryPosition = activePrimaryPositions.includes(true)
+
+  const activePositions = positions.map(position => position.active)
+  const activePosition = activePositions.includes(true)
+
+  // Sjekk at det finnes et aktivt ansettelsesforhold og minst én aktiv stilling
+  if (employment.active && activePrimaryPosition) {
+    if (user.expectedType === 'student') return warn('Fant aktivt ansettelsesforhold og stilling i HRM', { employment, positions })
+    return success('Fant aktivt ansettelsesforhold og stilling i HRM', { employment, positions })
+  }
+
+  // Fant kun et ansettelsesforhold
+  if (employment.active) {
+    // Krøss i taket om dette noen gang skjer, men..
+    if (!activePrimaryPosition && activePosition) {
+      if (user.expectedType === 'student') return warn('Fant et aktivt ansettelsesforhold i HRM, men ingen av de aktive stillingene er en hovedstilling', { employment, positions })
+      return error('Fant et aktivt ansettelsesforhold i HRM, men ingen av de aktive stillingene er en hovedstilling', { employment, positions })
+    }
+
+    if (user.expectedType === 'student') return warn('Fant et aktivt ansettelsesforhold i HRM, men ingen aktiv hovedstilling', { employment, positions })
+    return error('Fant et aktivt ansettelsesforhold i HRM, men ingen aktiv hovedstilling', { employment, positions })
+  }
+
+  // Fant kun aktiv(e) stilling(er)
+  if (activePrimaryPosition) {
+    const message = `Fant ${activePrimaryPositions.length > 1 ? 'flere aktive hovedstillinger' : 'én aktiv hovedstilling'}, men ikke noe ansettelsesforhold`
+    if (user.expectedType === 'student') return warn(message, { employment, positions })
+    return error(message, { employment, positions })
+  }
+
+  // Verken aktive stillinger eller ansettelsesforhold ble funnet
+  if (user.expectedType === 'student') return success('Det ble ikke funnet noe aktivt ansettelsesforhold i HRM', { employment, positions })
+  return error('Det ble ikke funnet noe aktivt ansettelsesforhold eller stillinger i HRM', { employment, positions })
+}
+
+const getActivePositionCategory = (data, user) => {
+  const hrm = getArrayData(data)
+  const employment = hasData(hrm) && getEmployment(hrm)
+  if (!employment) {
+    if (user.expectedType === 'student') return success('Ingen ansettelsesforhold ble funnet i HRM, men siden dette er en elev er det helt normalt', { hrm })
+    return error('Ingen ansettelsesforhold ble funnet i HRM', { hrm })
+  }
+
+  if (!employment.category || !employment.category['@id']) return error('Ingen kategori ble funnet i HRM', { employment })
+  const category = employment.category['@id'].toUpperCase()
+  const description = employment.category.description || ''
+  const excludedCategories = SYSTEMS.VISMA.CATEGORIES.split(',').filter(cat => !!cat).map(cat => cat.toUpperCase())
+
+  if (excludedCategories.includes(category)) {
+    const message = `Kategorien på ansettelsesforholdet (${category}) er ekskludert, som tilsier at det ikke skal opprettes noen brukerkonto`
+    if (user.expectedType === 'student') return success(message, { category, description })
+    return error(message, { category, description })
+  }
+
+  const message = `Kategorien på ansettelsesforholdet (${category}) er ikke ekskludert, som tilsier at det skal opprettes brukerkonto`
+  if (user.expectedType === 'student') return warn(message, { category, description })
+  return success(message, { category, description })
+}
+
+const getActiveData = (data, user) => {
+  const personHrm = getPerson(data, user)
+  const activePosition = getActivePosition(data, user)
+  const activePositionCategory = getActivePositionCategory(data, user)
+  return {
+    person: {
+      message: personHrm.message,
+      raw: personHrm.raw
+    },
+    activePosition: {
+      message: activePosition.message,
+      raw: activePosition.raw
+    },
+    activePositionCategory: {
+      message: activePositionCategory.message,
+      raw: activePositionCategory.raw
+    }
+  }
+}
+
 let dataPresent = true
 
 module.exports = (systemData, user, allData = false) => ([
@@ -30,90 +137,15 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('visma-02', 'Personen finnes', 'Sjekker at det ble funnet en person i HRM', () => {
     if (!dataPresent) return noData()
-    const hrm = getArrayData(systemData)
-    const personIdHRM = hasData(hrm) && hrm['@personIdHRM']
-    if (!personIdHRM) {
-      if (user.expectedType === 'student') return success('Personen ble ikke funnet i HRM, men siden dette er en elev er det helt normalt', { hrm })
-      return error('Personen ble ikke funnet i HRM', { hrm })
-    }
-
-    if (user.expectedType === 'student') return warn('Personen ble funnet i HRM', { personIdHRM })
-    return success('Personen ble funnet i HRM', { personIdHRM })
+    return getPerson(systemData, user)
   }),
   test('visma-03', 'Aktiv stilling', 'Kontrollerer at personen har en aktiv stilling', () => {
     if (!dataPresent) return noData()
-    const hrm = getArrayData(systemData)
-    const employment = hasData(hrm) && getEmployment(hrm)
-    if (!employment) {
-      if (user.expectedType === 'student') return success('Ingen ansettelsesforhold ble funnet i HRM, og siden dette er en elev er det helt normalt', { hrm })
-      return error('Ingen ansettelsesforhold ble funnet i HRM', { hrm })
-    }
-
-    const positions = getPositions(employment)
-    if (!positions) {
-      if (user.expectedType === 'student') return warn('Ansettelsesforhold ble funnet i HRM, men ingen aktive stillinger ble funnet', { employment, positions: (positions || null) })
-      return error('Ingen stillinger ble funnet i HRM', { employment, positions: (positions || null) })
-    }
-
-    const primaryPositions = positions.filter(position => position['@isPrimaryPosition'] === 'true')
-    const activePrimaryPositions = primaryPositions.map(position => position.active)
-    const activePrimaryPosition = activePrimaryPositions.includes(true)
-
-    const activePositions = positions.map(position => position.active)
-    const activePosition = activePositions.includes(true)
-
-    // Sjekk at det finnes et aktivt ansettelsesforhold og minst én aktiv stilling
-    if (employment.active && activePrimaryPosition) {
-      if (user.expectedType === 'student') return warn('Fant aktivt ansettelsesforhold og stilling i HRM', { employment, positions })
-      return success('Fant aktivt ansettelsesforhold og stilling i HRM', { employment, positions })
-    }
-
-    // Fant kun et ansettelsesforhold
-    if (employment.active) {
-      // Krøss i taket om dette noen gang skjer, men..
-      if (!activePrimaryPosition && activePosition) {
-        if (user.expectedType === 'student') return warn('Fant et aktivt ansettelsesforhold i HRM, men ingen av de aktive stillingene er en hovedstilling', { employment, positions })
-        return error('Fant et aktivt ansettelsesforhold i HRM, men ingen av de aktive stillingene er en hovedstilling', { employment, positions })
-      }
-
-      if (user.expectedType === 'student') return warn('Fant et aktivt ansettelsesforhold i HRM, men ingen aktiv hovedstilling', { employment, positions })
-      return error('Fant et aktivt ansettelsesforhold i HRM, men ingen aktiv hovedstilling', { employment, positions })
-    }
-
-    // Fant kun aktiv(e) stilling(er)
-    if (activePrimaryPosition) {
-      const message = `Fant ${activePrimaryPositions.length > 1 ? 'flere aktive hovedstillinger' : 'én aktiv hovedstilling'}, men ikke noe ansettelsesforhold`
-      if (user.expectedType === 'student') return warn(message, { employment, positions })
-      return error(message, { employment, positions })
-    }
-
-    // Verken aktive stillinger eller ansettelsesforhold ble funnet
-    if (user.expectedType === 'student') return success('Det ble ikke funnet noe aktivt ansettelsesforhold i HRM', { employment, positions })
-    return error('Det ble ikke funnet noe aktivt ansettelsesforhold eller stillinger i HRM', { employment, positions })
+    return getActivePosition(systemData, user)
   }),
   test('visma-04', 'Ansettelsesforholdet har korrekt kategori', 'Kontrollerer at ansettelsesforholdet ikke har en kategori som er unntatt fra å få brukerkonto', () => {
     if (!dataPresent) return noData()
-    const hrm = getArrayData(systemData)
-    const employment = hasData(hrm) && getEmployment(hrm)
-    if (!employment) {
-      if (user.expectedType === 'student') return success('Ingen ansettelsesforhold ble funnet i HRM, men siden dette er en elev er det helt normalt', { hrm })
-      return error('Ingen ansettelsesforhold ble funnet i HRM', { hrm })
-    }
-
-    if (!employment.category || !employment.category['@id']) return error('Ingen kategori ble funnet i HRM', { employment })
-    const category = employment.category['@id'].toUpperCase()
-    const description = employment.category.description || ''
-    const excludedCategories = SYSTEMS.VISMA.CATEGORIES.split(',').filter(cat => !!cat).map(cat => cat.toUpperCase())
-
-    if (excludedCategories.includes(category)) {
-      const message = `Kategorien på ansettelsesforholdet (${category}) er ekskludert, som tilsier at det ikke skal opprettes noen brukerkonto`
-      if (user.expectedType === 'student') return success(message, { category, description })
-      return error(message, { category, description })
-    }
-
-    const message = `Kategorien på ansettelsesforholdet (${category}) er ikke ekskludert, som tilsier at det skal opprettes brukerkonto`
-    if (user.expectedType === 'student') return warn(message, { category, description })
-    return success(message, { category, description })
+    return getActivePositionCategory(systemData, user)
   }),
   test('visma-05', 'Fødselsnummeret er gyldig', 'Sjekker at fødselsnummeret som er registrert er gyldig', () => {
     if (!dataPresent) return noData()
@@ -162,3 +194,5 @@ module.exports = (systemData, user, allData = false) => ([
     return error('Brukernavnene i AD og HRM er ulike', { ad: allData.ad.samAccountName, hrm: hrm.authentication.alias })
   })
 ])
+
+module.exports.getActiveData = getActiveData

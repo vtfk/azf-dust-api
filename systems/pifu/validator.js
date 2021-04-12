@@ -16,6 +16,46 @@ const getActiveMemberships = data => hasData(data) ? data.filter(item => !!item.
 const getAllMemberships = data => hasData(data) ? data : false
 const getUserIdType = (data, userType) => hasData(data) ? data.filter(item => item.useridtype === userType).map(item => item.useridtype) : false
 
+const getPerson = systemData => {
+  if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)
+  const data = {
+    person: systemData.person
+  }
+  return success('Har et person-objekt', data)
+}
+
+const getPersonType = (systemData, user) => {
+  if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)
+  else if (!hasData(systemData.person.userid)) return error('Person-objekt mangler userid oppføringer', systemData)
+
+  const employeeType = getUserIdType(systemData.person.userid, SYSTEMS.PIFU.PERSON_EMPLOYEE_TYPE)
+  const studentType = getUserIdType(systemData.person.userid, SYSTEMS.PIFU.PERSON_STUDENT_TYPE)
+  if (user.expectedType === 'employee') {
+    if (hasData(employeeType)) return success('Person-objekt har riktig person-type', employeeType)
+    else if (hasData(studentType)) return error('Person-objekt har feil person-type', studentType)
+    else return error('Peron-objektet mangler person-type 🤭', systemData.person.userid)
+  } else {
+    if (hasData(studentType)) return success('Person-objekt har riktig person-type', studentType)
+    else if (hasData(employeeType)) return error('Person-objekt har feil person-type', employeeType)
+    else return error('Peron-objektet mangler person-type 🤭', systemData.person.userid)
+  }
+}
+
+const getActiveData = (data, user) => {
+  const person = getPerson(data)
+  const personType = getPersonType(data, user)
+  return {
+    person: {
+      message: person.message,
+      raw: person.raw
+    },
+    personType: {
+      message: personType.message,
+      raw: personType.raw
+    }
+  }
+}
+
 let dataPresent = true
 
 module.exports = (systemData, user, allData = false) => ([
@@ -27,28 +67,11 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('pifu-02', 'Har et person-objekt', 'Sjekker at det finnes et person-objekt', () => {
     if (!dataPresent) return noData()
-    if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)
-    const data = {
-      person: systemData.person
-    }
-    return success('Har et person-objekt', data)
+    return getPerson(systemData)
   }),
   test('pifu-03', 'Har riktig person-type', 'Sjekker at det er riktig person-type', () => {
     if (!dataPresent) return noData()
-    if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)
-    else if (!hasData(systemData.person.userid)) return error('Person-objekt mangler userid oppføringer', systemData)
-
-    const employeeType = getUserIdType(systemData.person.userid, SYSTEMS.PIFU.PERSON_EMPLOYEE_TYPE)
-    const studentType = getUserIdType(systemData.person.userid, SYSTEMS.PIFU.PERSON_STUDENT_TYPE)
-    if (user.expectedType === 'employee') {
-      if (hasData(employeeType)) return success('Person-objekt har riktig person-type', employeeType)
-      else if (hasData(studentType)) return error('Person-objekt har feil person-type', studentType)
-      else return error('Peron-objektet mangler person-type 🤭', systemData.person.userid)
-    } else {
-      if (hasData(studentType)) return success('Person-objekt har riktig person-type', studentType)
-      else if (hasData(employeeType)) return error('Person-objekt har feil person-type', employeeType)
-      else return error('Peron-objektet mangler person-type 🤭', systemData.person.userid)
-    }
+    return getPersonType(systemData, user)
   }),
   test('pifu-04', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
     if (!dataPresent) return noData()
@@ -109,3 +132,5 @@ module.exports = (systemData, user, allData = false) => ([
     return hasData(invalidMemberships) ? error(`Har ${invalidMemberships.length} avsluttede gruppemedlemskap av totalt ${activeMemberships.length} gruppemedlemskap`, invalidMemberships) : success('Alle gruppemedlemskap er gyldige', activeMemberships)
   })
 ])
+
+module.exports.getActiveData = getActiveData
