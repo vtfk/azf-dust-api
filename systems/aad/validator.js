@@ -1,6 +1,7 @@
 const { test, success, error, warn, waitForData, noData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
 const isPwdLastSet = require('../../lib/helpers/is-pwd-within-timerange')
+const getActiveSourceData = require('../../lib/helpers/get-active-source-data')
 const licenses = require('../data/licenses.json')
 
 let dataPresent = true
@@ -18,8 +19,14 @@ module.exports = (systemData, user, allData = false) => ([
     const data = {
       accountEnabled: systemData.accountEnabled
     }
-    if (systemData.accountEnabled) return success('Kontoen er aktivert', data)
-    return error('Kontoen er deaktivert', data)
+
+    if (user.expectedType === 'employee') {
+      if (allData.visma) data.visma = getActiveSourceData(allData.visma, user)
+    } else {
+      if (allData.pifu) data.pifu = getActiveSourceData(allData.pifu, user)
+    }
+
+    return systemData.accountEnabled ? success('Kontoen er aktivert', data) : error('Kontoen er deaktivert', data)
   }),
   test('aad-03', 'UPN er lik e-postadressen', 'Sjekker at UPN-et er lik e-postadressen i AD', () => {
     if (!dataPresent) return noData()
