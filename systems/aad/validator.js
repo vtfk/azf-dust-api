@@ -46,11 +46,11 @@ module.exports = (systemData, user, allData = false) => ([
     if (user.expectedType === 'employee') return systemData.userPrincipalName.includes('@vtfk.no') ? success('UPN er korrekt', data) : error('UPN er ikke korrekt', data)
     else return systemData.userPrincipalName.includes('@skole.vtfk.no') ? success('UPN er korrekt', data) : error('UPN er ikke korrekt', data)
   }),
-  test('aad-05', 'Passord synkronisert til Azure AD', 'Sjekker at passordet er synkronisert til Azure AD innenfor 15 sekunder', () => {
+  test('aad-05', 'Passord synkronisert til Azure AD', 'Sjekker at passordet er synkronisert til Azure AD innenfor 40 minutter', () => {
     if (!dataPresent) return noData()
     if (!allData) return waitForData()
     if (!hasData(allData.ad)) return error('Mangler AD-data', allData)
-    const pwdCheck = isPwdLastSet(new Date(allData.ad.pwdLastSet), new Date(systemData.lastPasswordChangeDateTime))
+    const pwdCheck = isPwdLastSet(new Date(allData.ad.pwdLastSet), new Date(systemData.lastPasswordChangeDateTime), 40*60)
     const data = {
       aad: {
         lastPasswordChangeDateTime: systemData.lastPasswordChangeDateTime
