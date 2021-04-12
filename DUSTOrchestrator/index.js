@@ -129,7 +129,7 @@ module.exports = df.orchestrator(function * (context) {
 
     yield context.df.callActivity('WorkerActivity', {
       type: 'logger',
-      variant: 'info',
+      variant: 'warn',
       query: ['orchestrator', 'Systems missing data', 'Retrying with flipped user.expectedType', user.expectedType, retrySystems]
     })
     parallelTasks.push(...callSystems(context, instanceId, retrySystems, user, token))
