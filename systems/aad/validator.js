@@ -109,5 +109,14 @@ module.exports = (systemData, user, allData = false) => ([
     })
 
     return hasData(data.missingLicenses) ? error(`Mangler ${data.missingLicenses.length} lisens(er)`, data) : success('Lisenser er riktig', data)
+  }),
+  test('aad-09', 'Har satt opp MFA', 'Sjekker at MFA er satt opp', () => {
+    if (!dataPresent) return noData()
+    const data = {
+      authenticationMethods: systemData.authenticationMethods
+    }
+    if (!hasData(systemData.authenticationMethods)) {
+      return user.expectedType === 'employee' ? error('MFA er ikke satt opp 🤭', data) : success('MFA er ikke satt opp, og heller ikke påkrevd for elever')
+    } else return success(`${systemData.authenticationMethods.length} MFA-metode${systemData.authenticationMethods.length > 1 ? 'r' : ''} er satt opp`, data)
   })
 ])
