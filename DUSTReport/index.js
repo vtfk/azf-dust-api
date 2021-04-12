@@ -7,7 +7,7 @@ const report = async function (context, req) {
   const client = df.getClient(context)
   const instanceId = await client.startNew('DUSTOrchestrator', context.invocationId, req)
 
-  return getStatusResponse(client, instanceId, RETRY_WAIT)
+  return { ...getStatusResponse(client, instanceId, RETRY_WAIT), status: 200 }
 }
 
 module.exports = (context, req) => withTokenAuth(context, req, report)
