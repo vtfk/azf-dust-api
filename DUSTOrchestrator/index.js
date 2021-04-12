@@ -97,6 +97,12 @@ module.exports = df.orchestrator(function * (context) {
     parallelTasks.push(...callSystems(context, instanceId, failedValidation, user, token))
   } else {
     // all systems failed validation
+    yield context.df.callActivity('WorkerActivity', {
+      type: 'logger',
+      variant: 'error',
+      query: ['orchestrator', 'Expected user type', user.expectedType, 'All systems failed validation']
+    })
+
     return {
       status: 400,
       user,
