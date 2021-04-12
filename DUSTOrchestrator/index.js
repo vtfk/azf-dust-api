@@ -62,7 +62,7 @@ module.exports = df.orchestrator(function * (context) {
     yield context.df.callActivity('WorkerActivity', {
       type: 'logger',
       variant: 'info',
-      query: ['orchestrator', 'All systems succeeded validation', 'Starting all systems', systems]
+      query: ['orchestrator', 'Expected user type', user.expectedType, 'All systems succeeded validation', 'Starting all systems', systems]
     })
     parallelTasks.push(...callSystems(context, instanceId, systems, user, token))
   } else if (succeededValidation.length > 0) {
@@ -70,7 +70,7 @@ module.exports = df.orchestrator(function * (context) {
     yield context.df.callActivity('WorkerActivity', {
       type: 'logger',
       variant: 'info',
-      query: ['orchestrator', 'Some systems failed validation', 'Starting validated systems first and then the failed systems afterwards', succeededValidation, failedValidation]
+      query: ['orchestrator', 'Expected user type', user.expectedType, 'Some systems failed validation', 'Starting validated systems first and then the failed systems afterwards', succeededValidation, failedValidation]
     })
     parallelTasks.push(...callSystems(context, instanceId, succeededValidation, user, token))
 
