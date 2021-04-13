@@ -187,7 +187,7 @@ module.exports = (systemData, user, allData = false) => ([
       if (user.expectedType === 'student' && !hrm) return success('Ingen profil ble funnet i HRM', { hrm })
       return warn('Brukernavnet er ikke registrert i HRM slik det skal', { hrm })
     }
-    
+
     if (Array.isArray(hrm.authentication.alias)) {
       const aliases = hrm.authentication.alias.map(alias => ({ name: alias, result: allData.ad.samAccountName.toLowerCase() === alias.toLowerCase() }))
       const aliasesNotEqual = aliases.filter(alias => !alias.result)
