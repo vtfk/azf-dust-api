@@ -28,7 +28,7 @@ module.exports = df.orchestrator(function * (context) {
     if (!systems.includes(system.toLowerCase())) systems.push(system.toLowerCase())
   })
 
-  // set current user object to customStatus
+  // set current user object and systems to customStatus
   context.df.setCustomStatus({
     user,
     systems
@@ -87,7 +87,7 @@ module.exports = df.orchestrator(function * (context) {
       }
     })
 
-    // set current user object to customStatus
+    // set current user object and systems to customStatus
     context.df.setCustomStatus({
       user,
       systems
@@ -124,7 +124,7 @@ module.exports = df.orchestrator(function * (context) {
     user.initialExpectedType = user.expectedType
     user.expectedType = user.initialExpectedType === 'employee' ? 'student' : 'employee'
 
-    // set current user object to customStatus
+    // set current user object and systems to customStatus
     context.df.setCustomStatus({
       user,
       systems
