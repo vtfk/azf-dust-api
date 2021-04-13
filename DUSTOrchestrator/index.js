@@ -23,6 +23,9 @@ module.exports = df.orchestrator(function * (context) {
   // lowercase all system names
   systems = systems.map(system => system.toLowerCase())
 
+  // add vigobas to systems to get last runtime
+  if (!systems.includes('vigobas')) systems.push('vigobas')
+
   // add source data systems to systems if not already present
   SOURCE_DATA_SYSTEMS.forEach(system => {
     if (!systems.includes(system.toLowerCase())) systems.push(system.toLowerCase())
@@ -156,13 +159,15 @@ module.exports = df.orchestrator(function * (context) {
   })
 
   // update request with a finish timestamp and user object
+  const vigobas = parallelTasks.filter(task => task.result.name === 'vigobas')[0].result.data
   const updatedEntry = yield context.df.callActivity('WorkerActivity', {
     type: 'db',
     variant: 'update',
     query: {
       instanceId,
       timestamp: new Date().toISOString(),
-      user
+      user,
+      vigobas
     }
   })
 
@@ -170,7 +175,8 @@ module.exports = df.orchestrator(function * (context) {
     user,
     started: newEntry.started,
     finished: updatedEntry.$set.finished,
-    data: parallelTasks.map(task => {
+    vigobas,
+    data: parallelTasks.filter(task => task.result.name !== 'vigobas').map(task => {
       return {
         name: task.result.name,
         timestamp: task.timestamp,
