@@ -187,9 +187,17 @@ module.exports = (systemData, user, allData = false) => ([
       if (user.expectedType === 'student' && !hrm) return success('Ingen profil ble funnet i HRM', { hrm })
       return warn('Brukernavnet er ikke registrert i HRM slik det skal', { hrm })
     }
-
-    if (allData.ad.samAccountName.toLowerCase() === hrm.authentication.alias.toLowerCase()) {
-      return success('Brukernavnene i AD og HRM er like', { ad: allData.ad.samAccountName, hrm: hrm.authentication.alias })
+    
+    if (Array.isArray(hrm.authentication.alias)) {
+      const aliases = hrm.authentication.alias.map(alias => ({ name: alias, result: allData.ad.samAccountName.toLowerCase() === alias.toLowerCase() }))
+      const aliasesNotEqual = aliases.filter(alias => !alias.result)
+      const aliasesEqual = aliases.filter(alias => alias.result)
+      if (aliasesEqual.length > 0 && aliasesNotEqual.length === 0) return success('Brukernavnene i AD og HRM er like', { ad: allData.ad.samAccountName, hrm: aliases })
+      else if (aliasesEqual.length > 0 && aliasesNotEqual.length > 0) return warn('Noen brukernavn i HRM er like i AD', { ad: allData.ad.samAccountName, hrm: aliases })
+    } else {
+      if (allData.ad.samAccountName.toLowerCase() === hrm.authentication.alias.toLowerCase()) {
+        return success('Brukernavnene i AD og HRM er like', { ad: allData.ad.samAccountName, hrm: hrm.authentication.alias })
+      }
     }
     return error('Brukernavnene i AD og HRM er ulike', { ad: allData.ad.samAccountName, hrm: hrm.authentication.alias })
   })
