@@ -44,7 +44,8 @@ module.exports = df.orchestrator(function * (context) {
     query: {
       instanceId,
       user,
-      systems
+      systems,
+      caller: token.upn
     }
   })
 
