@@ -7,7 +7,7 @@ const { hasData, getArray, getArrayData } = require('../../lib/helpers/system-da
 const getEmployment = hrm => {
   if (!hasData(hrm) || !hrm.employments || !hrm.employments.employment) return null
   const employment = getArray(hrm.employments.employment).find(employment => employment.company && employment.company.companyId === SYSTEMS.VISMA.COMPANY_ID)
-  employment.active = isWithinDaterange(employment.startDate, employment.endDate)
+  if (hasData(employment)) employment.active = isWithinDaterange(employment.startDate, employment.endDate)
 
   return employment
 }
