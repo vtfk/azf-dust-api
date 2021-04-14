@@ -24,13 +24,13 @@ module.exports = (systemData, user, allData = false) => ([
     if (!allData) return waitForData()
     if (!hasData(allData.aad)) return error('Mangler Azure AD data', allData)
 
-    const aadMemberGroups = allData.aad.transitiveMemberOf.filter(member => member && hasData(member.displayName)).map(member => member.displayName)
+    const aadMemberGroups = allData.aad.transitiveMemberOf.filter(member => member && hasData(member.mailNickname)).map(member => member.mailNickname)
     const wrongEnrollments = []
     systemData.forEach(obj => {
       // implement check for each group in enrollments for existens in aad data
       if (!hasData(obj.enrollments)) return
 
-      const wrongInnerEnrollments = obj.enrollments.filter(innerObj => !aadMemberGroups.includes(innerObj.sectionName) && !aadMemberGroups.includes(innerObj.sectionId))
+      const wrongInnerEnrollments = obj.enrollments.filter(innerObj => !aadMemberGroups.includes(`Section_${innerObj.sectionId}`))
       if (hasData(wrongInnerEnrollments)) {
         wrongEnrollments.push({
           person: obj.person,
