@@ -2,7 +2,7 @@ const { test, success, error, warn, waitForData, noData } = require('../../lib/t
 const { hasData } = require('../../lib/helpers/system-data')
 const isPwdLastSet = require('../../lib/helpers/is-pwd-within-timerange')
 const getActiveSourceData = require('../../lib/helpers/get-active-source-data')
-const licenses = require('../data/licenses.json')
+// const licenses = require('../data/licenses.json')
 
 let dataPresent = true
 
@@ -80,8 +80,9 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('aad-08', 'Har riktig lisens(er)', 'Sjekker at riktig lisens(er) er aktivert', () => {
     if (!dataPresent) return noData()
-    if (!hasData(systemData.assignedLicenses)) return error('Har ingen Azure AD lisenser 🤭', systemData.assignedLicenses)
-    if (!hasData(user.departmentShort)) return warn('Ikke nok informasjon tilstede for å utføre testen', user)
+    return !hasData(systemData.assignedLicenses) ? error('Har ingen Azure AD lisenser 🤭', systemData.assignedLicenses) : success('Har Azure AD lisenser', systemData.assignedLicenses)
+
+    /* if (!hasData(user.departmentShort)) return warn('Ikke nok informasjon tilstede for å utføre testen', user)
 
     const expectedLicenseTable = licenses.filter(item => item.personType === user.expectedType)[0]
     if (!hasData(expectedLicenseTable)) return error(`Feilet ved innhenting av lisenstabell for '${user.expectedType}' 🤭`, expectedLicenseTable)
@@ -108,7 +109,7 @@ module.exports = (systemData, user, allData = false) => ([
       if (!hasData(assigned)) data.missingLicenses.push(license)
     })
 
-    return hasData(data.missingLicenses) ? error(`Mangler ${data.missingLicenses.length} lisens(er)`, data) : success('Lisenser er riktig', data)
+    return hasData(data.missingLicenses) ? error(`Mangler ${data.missingLicenses.length} lisens(er)`, data) : success('Lisenser er riktig', data) */
   }),
   test('aad-09', 'Har satt opp MFA', 'Sjekker at MFA er satt opp', () => {
     if (!dataPresent) return noData()
