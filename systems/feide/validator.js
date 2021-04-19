@@ -193,9 +193,7 @@ module.exports = (systemData, user, allData = false) => ([
     const data = {
       eduPersonAffiliation: systemData.eduPersonAffiliation || null
     }
-    if (!hasData(systemData.eduPersonAffiliation)) {
-      return hasData(allData.pifu) ? error('Tilhørighet mangler 🤭', data) : success('Ingen tilhørighet funnet. Dette er riktig da bruker ikke finnes i Extens')
-    }
+    if (!hasData(systemData.eduPersonAffiliation)) return error('Tilhørighet mangler 🤭', data)
     if (systemData.eduPersonAffiliation.includes('member') && systemData.eduPersonAffiliation.includes(user.expectedType)) return success('Tilhørighet er riktig', data)
     if (user.expectedType === 'employee') {
       return systemData.eduPersonAffiliation.includes('member') && systemData.eduPersonAffiliation.includes('student') ? warn('Tilhørighet er satt som en elev til tross for at dette er en ansatt', data) : error('Tilhørighet er feil', data)
