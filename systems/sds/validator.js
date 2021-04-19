@@ -32,13 +32,10 @@ module.exports = (systemData, user, allData = false) => ([
 
       const wrongInnerEnrollments = obj.enrollments.filter(innerObj => !aadMemberGroups.includes(`Section_${innerObj.sectionId}`))
       if (hasData(wrongInnerEnrollments)) {
-        wrongEnrollments.push({
-          person: obj.person,
-          enrollments: wrongInnerEnrollments
-        })
+        wrongEnrollments.push(...wrongInnerEnrollments)
       }
     })
-    if (hasData(wrongEnrollments)) return error('Mangler medlemskap i en eller flere SDS-grupper i Azure AD 🤭', wrongEnrollments)
+    if (hasData(wrongEnrollments)) return error(`Mangler medlemskap i ${wrongEnrollments.length} SDS-gruppe${wrongEnrollments.length > 1 ? 'r' : ''} i Azure AD 🤭`, wrongEnrollments)
     else return success('Har medlemskap i alle sine SDS-grupper i Azure AD', systemData)
   })
 ])
