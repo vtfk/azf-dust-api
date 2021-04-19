@@ -1,6 +1,6 @@
 const { test, success, error, warn, waitForData, noData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
-const isPwdLastSet = require('../../lib/helpers/is-pwd-within-timerange')
+const isWithinTimeRange = require('../../lib/helpers/is-within-timerange')
 const getActiveSourceData = require('../../lib/helpers/get-active-source-data')
 // const licenses = require('../data/licenses.json')
 
@@ -50,7 +50,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (!dataPresent) return noData()
     if (!allData) return waitForData()
     if (!hasData(allData.ad)) return error('Mangler AD-data', allData)
-    const pwdCheck = isPwdLastSet(new Date(allData.ad.pwdLastSet), new Date(systemData.lastPasswordChangeDateTime), 40 * 60)
+    const pwdCheck = isWithinTimeRange(new Date(allData.ad.pwdLastSet), new Date(systemData.lastPasswordChangeDateTime), 40 * 60)
     const data = {
       aad: {
         lastPasswordChangeDateTime: systemData.lastPasswordChangeDateTime

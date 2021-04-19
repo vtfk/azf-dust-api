@@ -1,6 +1,6 @@
-const isPwdWithinTimerange = require('../../lib/helpers/is-pwd-within-timerange')
+const isWithinTimeRange = require('../../lib/helpers/is-within-timerange')
 
-const getResult = (one, two) => isPwdWithinTimerange(new Date(one), new Date(two)).result
+const getResult = (one, two) => isWithinTimeRange(new Date(one), new Date(two)).result
 
 test('Returnerer false om ingen datoer er gyldige', () => {
   expect(getResult(undefined, undefined)).toBe(false)

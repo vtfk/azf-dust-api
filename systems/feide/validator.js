@@ -1,7 +1,7 @@
 const { test, success, warn, error, waitForData, noData } = require('../../lib/test')
 const { SYSTEMS } = require('../../config')
 const { hasData } = require('../../lib/helpers/system-data')
-const isPwdLastSet = require('../../lib/helpers/is-pwd-within-timerange')
+const isWithinTimeRange = require('../../lib/helpers/is-within-timerange')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const schools = require('../data/schools.json')
 
@@ -59,7 +59,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (!dataPresent) return noData()
     if (!allData) return waitForData()
     if (!hasData(allData.ad)) return error('Mangler AD-data', allData)
-    const pwdCheck = isPwdLastSet(new Date(allData.ad.pwdLastSet), new Date(systemData.passwordLastSet))
+    const pwdCheck = isWithinTimeRange(new Date(allData.ad.pwdLastSet), new Date(systemData.passwordLastSet))
     const data = {
       feide: {
         passwordLastSet: systemData.passwordLastSet
