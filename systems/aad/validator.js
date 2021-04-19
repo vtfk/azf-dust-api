@@ -73,14 +73,41 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('aad-07', 'Ingen feil i synkroniseringen', 'Sjekker at det ikke er noen feil i synkroniseringen fra lokalt AD', () => {
     if (!dataPresent) return noData()
+    if (!allData) return waitForData()
     const data = {
-      onPremisesProvisioningErrors: systemData.onPremisesProvisioningErrors || null
+      aad: {
+        onPremisesProvisioningErrors: systemData.onPremisesProvisioningErrors || null,
+        displayName: systemData.displayName,
+        userPrincipalName: systemData.userPrincipalName,
+        onPremisesSamAccountName: systemData.onPremisesSamAccountName,
+        mail: systemData.mail,
+        onPremisesLastSyncDateTime: systemData.onPremisesLastSyncDateTime
+      }
     }
-    return hasData(systemData.onPremisesProvisioningErrors) ? error('Synkroniseringsproblemer funnet 🤭', data) : success('Ingen synkroniseringsproblemer funnet', data)
+    if (hasData(allData.ad)) {
+      data.ad = {
+        displayName: allData.ad.displayName,
+        userPrincipalName: allData.ad.userPrincipalName,
+        samAccountName: allData.ad.samAccountName,
+        mail: allData.ad.mail,
+        whenChanged: allData.ad.whenChanged
+      }
+    }
+    if (hasData(systemData.onPremisesProvisioningErrors)) return error('Synkroniseringsproblemer funnet 🤭', data)
+    if (data.ad) {
+      const aadSyncInSeconds = 40 * 60
+      const isLastChanged = isWithinTimeRange(new Date(data.ad.whenChanged), new Date(data.aad.onPremisesLastSyncDateTime), aadSyncInSeconds)
+      if (data.aad.displayName !== data.ad.displayName) return (isLastChanged.seconds > 0 && isLastChanged.seconds < aadSyncInSeconds) || (isLastChanged.seconds < 0 && isLastChanged.seconds > -aadSyncInSeconds) ? warn('Forskjellig visningsnavn i Azure og AD. Synkronisering utføres snart', data) : error('Forskjellig visningsnavn i Azure og AD 🤭', data)
+      if (data.aad.userPrincipalName !== data.ad.userPrincipalName) return (isLastChanged.seconds > 0 && isLastChanged.seconds < aadSyncInSeconds) || (isLastChanged.seconds < 0 && isLastChanged.seconds > -aadSyncInSeconds) ? warn('Forskjellig UPN i Azure og AD. Synkronisering utføres snart', data) : error('Forskjellig UPN i Azure og AD 🤭', data)
+      if (data.aad.onPremisesSamAccountName !== data.ad.samAccountName) return (isLastChanged.seconds > 0 && isLastChanged.seconds < aadSyncInSeconds) || (isLastChanged.seconds < 0 && isLastChanged.seconds > -aadSyncInSeconds) ? warn('Forskjellig brukernavn i Azure og AD. Synkronisering utføres snart', data) : error('Forskjellig brukernavn i Azure og AD 🤭', data)
+      if (data.aad.mail !== data.ad.mail) return (isLastChanged.seconds > 0 && isLastChanged.seconds < aadSyncInSeconds) || (isLastChanged.seconds < 0 && isLastChanged.seconds > -aadSyncInSeconds) ? warn('Forskjellig primær e-postadresse i Azure og AD. Synkronisering utføres snart', data) : error('Forskjellig primær e-postadresse i Azure og AD 🤭', data)
+    }
+
+    return success('Ingen synkroniseringsproblemer funnet', data)
   }),
   test('aad-08', 'Har riktig lisens(er)', 'Sjekker at riktig lisens(er) er aktivert', () => {
     if (!dataPresent) return noData()
-    return !hasData(systemData.assignedLicenses) ? error('Har ingen Azure AD lisenser 🤭', systemData.assignedLicenses) : success('Har Azure AD lisenser', systemData.assignedLicenses)
+    return !hasData(systemData.assignedLicenses) ? error('Har ingen Azure AD-lisenser 🤭', systemData.assignedLicenses) : success('Har Azure AD-lisenser', systemData.assignedLicenses)
 
     /* if (!hasData(user.departmentShort)) return warn('Ikke nok informasjon tilstede for å utføre testen', user)
 
