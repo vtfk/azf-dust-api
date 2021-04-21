@@ -158,7 +158,7 @@ module.exports = (systemData, user, allData = false) => ([
       eduPersonOrgUnitDN: systemData.eduPersonOrgUnitDN || null
     }
     if (!hasData(systemData.eduPersonOrgUnitDN)) {
-      return hasData(allData.pifu) ? error('Knytning til skole mangler 🤭', data) : success('Ingen knytning til skole funnet. Dette er riktig da bruker ikke finnes i Extens')
+      return hasData(allData.pifu) ? error('Knytning til skole mangler 🤭', data) : success('Ingen knytning til skole funnet. Dette er riktig da bruker ikke finnes i Extens', data)
     }
     return success('Knytning til skole funnet', data)
   }),
