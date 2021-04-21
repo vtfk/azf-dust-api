@@ -144,3 +144,4 @@ module.exports = (systemData, user, allData = false) => ([
 ])
 
 module.exports.getActiveData = getActiveData
+module.exports.getActiveMemberships = getMembershipsWithTimeframe
