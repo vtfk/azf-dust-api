@@ -115,11 +115,10 @@ module.exports = (systemData, user, allData = false) => ([
     else return error('Fødselsnummer er forskjellig i AD og Extens', data)
   }),
   test('pifu-06', 'Har aktive gruppemedlemskap', 'Sjekker at det finnes aktive gruppemedlemskap', () => {
-    // TODO: Bør det sjekkes noe mere here? Er det noen ganger det er riktig at det ikke er noen gruppemedlemskap?
     if (!dataPresent) return noData()
     const activeMemberships = getMembershipsWithTimeframe(systemData.memberships)
     const allMemberships = getAllMemberships(systemData.memberships)
-    if (!hasData(activeMemberships)) return hasData(allMemberships) ? error('Har ingen aktive gruppemedlemskap', systemData) : error('Har ingen gruppemedlemskap 🤭', systemData)
+    if (!hasData(activeMemberships)) return hasData(allMemberships) ? warn('Har ingen aktive gruppemedlemskap (MinElev)', systemData) : error('Har ingen gruppemedlemskap 🤭', systemData)
     else return success(`Har ${activeMemberships.length} aktive gruppemedlemskap`, activeMemberships)
   }),
   test('pifu-07', 'Har riktig rolletype', 'Sjekker at det er riktig rolletype i gruppemedlemskapene', () => {
