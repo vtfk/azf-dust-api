@@ -12,7 +12,8 @@ const getEmployeeNumber = data => {
     else return false
   } else return false
 }
-const getMembershipsWithTimeframe = data => hasData(data) ? data.filter(item => !!item.member.role.timeframe) : false
+const isTeachingGroup = data => data.startsWith('1_') || data.startsWith('2_') || data.startsWith('3_') || data.startsWith('4_') || data.startsWith('5_') || data.startsWith('6_') || data.startsWith('7_')
+const getMembershipsWithTimeframe = data => hasData(data) ? data.filter(item => !!item.member.role.timeframe && isTeachingGroup(item.sourcedid.id)) : false
 const getAllMemberships = data => hasData(data) ? data : false
 const getUserIdType = (data, userType) => hasData(data) ? data.filter(item => item.useridtype === userType).map(item => item.useridtype) : false
 
