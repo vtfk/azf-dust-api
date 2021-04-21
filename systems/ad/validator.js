@@ -41,7 +41,7 @@ module.exports = (systemData, user, allData = false) => ([
     const firstName = systemData.givenName.substring(0, 3).toLowerCase()
     const samDate = systemData.samAccountName.substring(3, 7)
     const employeeDate = systemData.employeeNumber.substring(0, 4)
-    return samName === firstName && samDate === employeeDate ? success('Brukernavn samsvarer med navn', systemData.samAccountName) : error('Brukernavn samsvarer ikke med navn', { samAccountName: systemData.samAccountName, firstName: systemData.givenName, employeeNumber: systemData.employeeNumber })
+    return samName === firstName && samDate === employeeDate ? success('Brukernavn samsvarer med navn', { samAccountName: systemData.samAccountName }) : error('Brukernavn samsvarer ikke med navn', { samAccountName: systemData.samAccountName, firstName: systemData.givenName, employeeNumber: systemData.employeeNumber })
   }),
   test('ad-05', 'UPN er lik e-postadressen', 'Sjekker at UPN-et er lik e-postadressen i AD', () => {
     if (!dataPresent) return noData()
