@@ -33,7 +33,17 @@ module.exports = (systemData, user, allData = false) => ([
     if (!systemData.lockedOut) return success('Kontoen er ikke sperret for pålogging', data)
     return error('Kontoen er sperret for pålogging', data)
   }),
-  test('ad-04', 'UPN er lik e-postadressen', 'Sjekker at UPN-et er lik e-postadressen i AD', () => {
+  test('ad-04', 'Brukernavn følger riktig algoritme', 'Sjekker at brukernavnet stemmer med fornavn og fødselsdato', () => {
+    if (!dataPresent) return noData()
+    if (!systemData.samAccountName) return error('Brukernavn mangler 🤭', systemData)
+
+    const samName = systemData.samAccountName.substring(0, 3).toLowerCase()
+    const firstName = systemData.givenName.substring(0, 3).toLowerCase()
+    const samDate = systemData.samAccountName.substring(3, 7)
+    const employeeDate = systemData.employeeNumber.substring(0, 4)
+    return samName === firstName && samDate === employeeDate ? success('Brukernavn samsvarer med navn', systemData.samAccountName) : error('Brukernavn samsvarer ikke med navn', { samAccountName: systemData.samAccountName, firstName: systemData.givenName, employeeNumber: systemData.employeeNumber })
+  }),
+  test('ad-05', 'UPN er lik e-postadressen', 'Sjekker at UPN-et er lik e-postadressen i AD', () => {
     if (!dataPresent) return noData()
     if (!systemData.userPrincipalName) return error('UPN mangler 🤭', systemData)
     const data = {
@@ -42,7 +52,7 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return systemData.userPrincipalName.toLowerCase() === systemData.mail.toLowerCase() ? success('UPN er lik e-postadressen', data) : error('UPN er ikke lik e-postadressen', data)
   }),
-  test('ad-05', 'UPN er korrekt', 'Sjekker at UPN er @vtfk.no for ansatte, og @skole.vtfk.no for elever', () => {
+  test('ad-06', 'UPN er korrekt', 'Sjekker at UPN er @vtfk.no for ansatte, og @skole.vtfk.no for elever', () => {
     if (!dataPresent) return noData()
     if (!systemData.userPrincipalName) return error('UPN mangler 🤭', systemData)
     const data = {
@@ -51,7 +61,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (user.expectedType === 'employee') return systemData.userPrincipalName.includes('@vtfk.no') ? success('UPN er korrekt', data) : error('UPN er ikke korrekt', data)
     else return systemData.userPrincipalName.includes('@skole.vtfk.no') ? success('UPN er korrekt', data) : error('UPN er ikke korrekt', data)
   }),
-  test('ad-06', 'OU er korrekt', 'Sjekker at bruker ligger i riktig OU', () => {
+  test('ad-07', 'OU er korrekt', 'Sjekker at bruker ligger i riktig OU', () => {
     if (!dataPresent) return noData()
     const data = {
       distinguishedName: systemData.distinguishedName,
@@ -69,7 +79,7 @@ module.exports = (systemData, user, allData = false) => ([
       else return systemData.distinguishedName.includes(SYSTEMS.AD.STUDENT_DISABLED_OU) ? success('OU er korrekt', data) : error('OU er ikke korrekt', data)
     }
   }),
-  test('ad-07', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
+  test('ad-08', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
     if (!dataPresent) return noData()
     if (!systemData.employeeNumber) return error('Fødselsnummer mangler 🤭', systemData)
     const data = {
@@ -78,7 +88,7 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return data.fnr.valid ? success(`Har gyldig ${data.fnr.type}`, data) : error(data.fnr.error, data)
   }),
-  test('ad-08', 'extensionAttribute6 er satt', 'Sjekker at extensionAttribute6 er satt', () => {
+  test('ad-09', 'extensionAttribute6 er satt', 'Sjekker at extensionAttribute6 er satt', () => {
     if (!dataPresent) return noData()
     const data = {
       extensionAttribute6: systemData.extensionAttribute6
@@ -86,7 +96,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (user.expectedType === 'employee') return hasData(systemData.extensionAttribute6) ? success('extensionAttribute6 er satt', data) : error('extensionAttribute6 mangler 🤭', data)
     else return hasData(systemData.extensionAttribute6) ? warn('extensionAttribute6 er satt på en elev. Elever trenger ikke denne', data) : success('extensionAttribute6 er ikke satt, men siden dette er en elev er det helt normalt', systemData)
   }),
-  test('ad-09', 'Har kun èn primær e-postadresse', 'Sjekker at brukeren har kun èn primær e-postadresse', () => {
+  test('ad-10', 'Har kun èn primær e-postadresse', 'Sjekker at brukeren har kun èn primær e-postadresse', () => {
     if (!dataPresent) return noData()
     const data = {
       proxyAddresses: systemData.proxyAddresses,
