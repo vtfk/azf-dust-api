@@ -144,7 +144,7 @@ module.exports = (systemData, user, allData = false) => ([
       authenticationMethods: systemData.authenticationMethods
     }
     if (!hasData(systemData.authenticationMethods)) {
-      return user.expectedType === 'employee' ? error('MFA er ikke satt opp 🤭', data) : success('MFA er ikke satt opp, og heller ikke påkrevd for elever')
+      return user.expectedType === 'employee' ? error('MFA er ikke satt opp 🤭', data) : warn('MFA er ikke satt opp, blir snart påkrevd for elever')
     } else return success(`${systemData.authenticationMethods.length} MFA-metode${systemData.authenticationMethods.length > 1 ? 'r' : ''} er satt opp`, data)
   }),
   test('aad-10', 'Har skrevet feil passord', 'Sjekker om bruker har skrevet feil passord idag', () => {
