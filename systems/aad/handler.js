@@ -36,8 +36,9 @@ module.exports = async (params) => {
   const graphUserGroups = await getGraphData(graphUserGroupsOptions, token)
   logger('info', ['aad', 'graph-user-groups', params.userPrincipalName, 'finish', 'received', (graphUserGroups && graphUserGroups.value && graphUserGroups.value.length) || 0])
 
-  logger('info', ['aad', 'graph-user-mfa', params.userPrincipalName, 'start'])
+  logger('info', ['aad', 'graph-user-mfa-methods', params.userPrincipalName, 'start'])
   const graphUserAuth = await getGraphData(graphUserAuthOptions, token)
+  logger('info', ['aad', 'graph-user-mfa-methods', params.userPrincipalName, 'finish', 'received', (graphUserAuth && graphUserAuth.value && graphUserAuth.value.length) || 0])
 
   logger('info', ['aad', 'graph-user-mfa-phone', params.userPrincipalName, 'start'])
   const graphUserAuthPhone = await getGraphData(graphUserAuthPhoneOptions, token)
