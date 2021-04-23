@@ -7,7 +7,7 @@ const { getActiveMemberships } = require('../pifu/validator')
 const schools = require('../data/schools.json')
 
 const repackEntitlements = data => data.filter(entitlement => entitlement.startsWith('urn:mace:feide.no:go:group:u:')).map(entitlement => entitlement.replace('urn:mace:feide.no:go:group:u:', '').split(':')[2].replace('%2F', '/').toLowerCase())
-const repackMemberships = data => data.filter(membership => membership.sourcedid.id.includes('/')).map(membership => membership.sourcedid.id.split('_')[1].toLowerCase())
+const repackMemberships = data => data.filter(membership => membership.sourcedid.id.includes('/') && !/\/ord|_ord|\/atf|_atf/.test(membership.sourcedid.id.toLowerCase())).map(membership => membership.sourcedid.id.split('_')[1].toLowerCase())
 
 let dataPresent = true
 
