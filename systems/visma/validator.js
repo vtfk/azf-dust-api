@@ -200,6 +200,15 @@ module.exports = (systemData, user, allData = false) => ([
       }
     }
     return error('Brukernavnene i AD og HRM er ulike', { ad: allData.ad.samAccountName, hrm: hrm.authentication.alias })
+  }),
+  test('visma-08', 'Har organisasjonstilknytning', 'Sjekker at bruker har en organisasjonstilknytning', () => {
+    if (!dataPresent) return noData()
+
+    const { raw: { positions } } = getActivePosition(systemData, user)
+    if (positions === null || positions === undefined) return noData()
+
+    const missingOrg = positions.filter(position => !position.chart)
+    return hasData(missingOrg) ? error('Mangler organisasjonstilknytning. Må rettes i Visma', missingOrg) : success('Har organisasjonstilknytning', positions)
   })
 ])
 
