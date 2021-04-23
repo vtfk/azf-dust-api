@@ -38,7 +38,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (!systemData.samAccountName) return error('Brukernavn mangler 🤭', systemData)
 
     const samName = systemData.samAccountName.substring(0, 3).toLowerCase()
-    const firstName = systemData.givenName.substring(0, 3).toLowerCase().replace('å', 'a').replace('ø', 'o').replace('æ', 'e')
+    const firstName = systemData.givenName.toLowerCase().replace('å', 'aa').replace('ø', 'o').replace('æ', 'e').substring(0, 3)
     const samDate = systemData.samAccountName.substring(3, 7)
     const employeeDate = systemData.employeeNumber.substring(0, 4)
     return samName === firstName && samDate === employeeDate ? success('Brukernavn samsvarer med navn', { samAccountName: systemData.samAccountName }) : error('Brukernavn samsvarer ikke med navn', { samAccountName: systemData.samAccountName, firstName: systemData.givenName, employeeNumber: systemData.employeeNumber })
