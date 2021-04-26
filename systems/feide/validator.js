@@ -4,7 +4,7 @@ const { hasData } = require('../../lib/helpers/system-data')
 const isWithinTimeRange = require('../../lib/helpers/is-within-timerange')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const { getActiveMemberships } = require('../pifu/validator')
-const schools = require('../data/schools.json')
+const isTeacher = require('../../lib/helpers/is-teacher')
 
 const repackEntitlements = data => data.filter(entitlement => entitlement.startsWith('urn:mace:feide.no:go:group:u:')).map(entitlement => entitlement.replace('urn:mace:feide.no:go:group:u:', '').split(':')[2].replace('%2F', '/').toLowerCase())
 const repackMemberships = data => data.filter(membership => membership.sourcedid.id.includes('/') && !/\/ord|_ord|\/atf|_atf/.test(membership.sourcedid.id.toLowerCase())).map(membership => membership.sourcedid.id.split('_')[1].toLowerCase())
@@ -14,9 +14,12 @@ let dataPresent = true
 module.exports = (systemData, user, allData = false) => ([
   test('feide-01', 'Har data', 'Sjekker at det finnes data her', () => {
     dataPresent = hasData(systemData)
-    if (!dataPresent && user.company && schools.includes(user.company)) return error('Mangler data 😬', systemData)
-    else if (!dataPresent && !user.company) return warn('Mangler data. Dessverre er det ikke nok informasjon tilstede på brukerobjektet for å kontrollere om dette er korrekt')
-    return dataPresent ? success('Har data') : success('Bruker har ikke data i dette systemet')
+    if (!dataPresent) {
+      if (user.expectedType === 'student') return error('Mangler data 😬', systemData)
+      else if (!user.company || !user.title) return warn('Mangler data. Dessverre er det ikke nok informasjon tilstede på brukerobjektet for å kontrollere om dette er korrekt')
+      else if (isTeacher(user.company, user.title)) return error('Mangler data 😬', systemData)
+      else return success('Bruker har ikke data i dette systemet')
+    } else return dataPresent ? success('Har data') : success('Bruker har ikke data i dette systemet')
   }),
   test('feide-02', 'Kontoen er aktivert', 'Sjekker at kontoen er aktivert i FEIDE', () => {
     if (!dataPresent) return noData()

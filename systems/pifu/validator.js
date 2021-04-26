@@ -2,7 +2,7 @@ const { test, success, warn, error, waitForData, noData } = require('../../lib/t
 const { hasData } = require('../../lib/helpers/system-data')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const isWithinDaterange = require('../../lib/helpers/is-within-daterange')
-const schools = require('../data/schools.json')
+const isTeacher = require('../../lib/helpers/is-teacher')
 const { SYSTEMS } = require('../../config')
 
 const getEmployeeNumber = data => {
@@ -71,10 +71,12 @@ let dataPresent = true
 module.exports = (systemData, user, allData = false) => ([
   test('pifu-01', 'Har data', 'Sjekker at det finnes data her', () => {
     dataPresent = hasData(systemData)
-    if (!dataPresent && user.company && schools.includes(user.company)) return error('Mangler data 😬', systemData)
-    else if (!dataPresent && user.expectedType === 'student') return error('Mangler data 😬', systemData)
-    else if (!dataPresent && !user.company) return warn('Mangler data. Dessverre er det ikke nok informasjon tilstede på brukerobjektet for å kontrollere om dette er korrekt')
-    return dataPresent ? success('Har data') : success('Bruker har ikke data i dette systemet')
+    if (!dataPresent) {
+      if (user.expectedType === 'student') return error('Mangler data 😬', systemData)
+      else if (!user.company || !user.title) return warn('Mangler data. Dessverre er det ikke nok informasjon tilstede på brukerobjektet for å kontrollere om dette er korrekt')
+      else if (isTeacher(user.company, user.title)) return error('Mangler data 😬', systemData)
+      else return success('Bruker har ikke data i dette systemet')
+    } else return dataPresent ? success('Har data') : success('Bruker har ikke data i dette systemet')
   }),
   test('pifu-02', 'Har et person-objekt', 'Sjekker at det finnes et person-objekt', () => {
     if (!dataPresent) return noData()
@@ -118,8 +120,16 @@ module.exports = (systemData, user, allData = false) => ([
     if (!dataPresent) return noData()
     const activeMemberships = getMembershipsWithTimeframe(systemData.memberships)
     const allMemberships = getAllMemberships(systemData.memberships)
-    if (!hasData(activeMemberships)) return hasData(allMemberships) ? warn('Har ingen aktive gruppemedlemskap (MinElev)', systemData) : error('Har ingen gruppemedlemskap 🤭', systemData)
-    else return success(`Har ${activeMemberships.length} aktive gruppemedlemskap`, activeMemberships)
+    const userIsTeacher = isTeacher(user.company, user.title)
+    if (!hasData(activeMemberships)) {
+      if (hasData(allMemberships)) {
+        if (userIsTeacher) return error('Har ingen aktive gruppemedlemskap (MinElev)', systemData)
+        else return success('Har ingen aktive gruppemedlemskap (MinElev)', systemData)
+      } else {
+        if (userIsTeacher) return error('Har ingen gruppemedlemskap (MinElev) 🤭', systemData)
+        else return success('Har ingen gruppemedlemskap (MinElev)', systemData)
+      }
+    } else return success(`Har ${activeMemberships.length} aktive gruppemedlemskap (MinElev)`, activeMemberships)
   }),
   test('pifu-07', 'Har riktig rolletype', 'Sjekker at det er riktig rolletype i gruppemedlemskapene', () => {
     if (!dataPresent) return noData()
@@ -128,7 +138,7 @@ module.exports = (systemData, user, allData = false) => ([
     const data = activeMemberships.map(membership => ({ id: membership.sourcedid.id, type: membership.member.role.roletype }))
     if (user.expectedType === 'employee') {
       const wrongMemberships = data.filter(item => item.type !== SYSTEMS.PIFU.MEMBERSHIP_EMPLOYEE_ROLETYPE)
-      return hasData(wrongMemberships) ? warn(`Har ${wrongMemberships.length} aktive gruppemedlemskap med feil rolletype. Dersom vedkommende faktisk er elev i disse gruppene er dette allikevel riktig`, data) : success('Har riktig rolletype i alle aktive gruppemedlemskap', data)
+      return hasData(wrongMemberships) ? warn(`Har ${wrongMemberships.length} aktive gruppemedlemskap med feil rolletype. Dersom vedkommende skal være elev i disse gruppene er dette allikevel riktig`, data) : success('Har riktig rolletype i alle aktive gruppemedlemskap', data)
     } else {
       const wrongMemberships = data.filter(item => item.type !== SYSTEMS.PIFU.MEMBERSHIP_STUDENT_ROLETYPE)
       return hasData(wrongMemberships) ? error(`Har ${wrongMemberships.length} aktive gruppemedlemskap med feil rolletype`, data) : success('Har riktig rolletype i alle aktive gruppemedlemskap', data)
@@ -137,7 +147,11 @@ module.exports = (systemData, user, allData = false) => ([
   test('pifu-08', 'Gruppemedlemskapet er gyldig', 'Sjekker at gruppemedlemskapene ikke er avsluttet', () => {
     if (!dataPresent) return noData()
     const activeMemberships = getMembershipsWithTimeframe(systemData.memberships)
-    if (!hasData(activeMemberships)) return noData('Mangler aktive gruppemedlemskap')
+    const userIsTeacher = isTeacher(user.company, user.title)
+    if (!hasData(activeMemberships)) {
+      if (userIsTeacher) return warn('Mangler aktive gruppemedlemskap (MinElev)', systemData)
+      else return noData('Mangler aktive gruppemedlemskap (MinElev)')
+    }
     const expiredMemberships = getExpiredMemberships(activeMemberships)
     return hasData(expiredMemberships) ? error(`Har ${expiredMemberships.length} avsluttede gruppemedlemskap av totalt ${activeMemberships.length} gruppemedlemskap`, expiredMemberships) : success('Alle gruppemedlemskap er gyldige', activeMemberships)
   })
