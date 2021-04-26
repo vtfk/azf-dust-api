@@ -8,9 +8,8 @@ const padDate = num => {
   return num >= 10 ? num : `0${num}`
 }
 
-const getYesterdaysDate = () => {
+const getTodaysDate = () => {
   const d = new Date()
-  d.setDate(d.getDate() - 1)
   return `${d.getFullYear()}-${padDate(d.getMonth() + 1)}-${padDate(d.getDate())}`
 }
 
@@ -39,7 +38,7 @@ module.exports = async (params) => {
   }, true)
   const graphSignInsOptions = getGraphOptions({
     ...params,
-    rootQuery: `auditLogs/signIns?$filter=userPrincipalName eq '${params.userPrincipalName}' and createdDateTime gt ${getYesterdaysDate()} and status/errorCode eq 50126`,
+    rootQuery: `auditLogs/signIns?$filter=userPrincipalName eq '${params.userPrincipalName}' and createdDateTime gt ${getTodaysDate()} and status/errorCode eq 50126`,
     properties: undefined
   })
 
