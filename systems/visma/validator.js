@@ -99,7 +99,7 @@ const getActivePositionCategory = (data, user) => {
   if (excludedCategories.includes(category)) {
     const message = `Kategorien på ansettelsesforholdet (${category}) er ekskludert, som tilsier at det ikke skal opprettes noen brukerkonto`
     if (user.expectedType === 'student') return success(message, { category, description })
-    return error(message, { category, description })
+    return warn(message, { category, description })
   }
 
   const message = `Kategorien på ansettelsesforholdet (${category}) er ikke ekskludert, som tilsier at det skal opprettes brukerkonto`
