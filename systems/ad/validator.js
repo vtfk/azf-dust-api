@@ -110,5 +110,13 @@ module.exports = (systemData, user, allData = false) => ([
       else if (data.primary.length === 1) return success('Har 1 primær e-postadresse, dette er også korrekt for en elev', data)
       else return error(`Har ${data.primary.length} primær e-postadresser`, data)
     }
+  }),
+  test('ad-11', 'Har state satt for ansatt', 'Sjekker at state er satt på ansatt', () => {
+    if (!dataPresent) return noData()
+    if (user.expectedType === 'student') return noData()
+    if (user.expectedType === 'employee') {
+      if (hasData(systemData.state)) return success('Felt for lisens er fylt ut', { state: systemData.state })
+      else return error('Felt for lisens mangler 🤭', systemData)
+    }
   })
 ])
