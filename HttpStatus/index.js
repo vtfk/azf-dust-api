@@ -43,6 +43,7 @@ const status = async function (context, req) {
           user: entry.user,
           started: entry.started,
           finished: entry.finished,
+          vigobas: entry.vigobas,
           data: entry.systems
         },
         headers: {}
