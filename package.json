@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "func start",
     "test": "jest && standard",
     "test:lint": "standard",
     "test:jest": "jest",
