@@ -33,7 +33,7 @@ module.exports = async function (context) {
     }
   } catch (error) {
     result.status = error.statusCode || 400
-    result.error = error.message
+    result.error = { error: error.message }
     logger('error', ['dust-activity', system, 'error', result.status, result.error])
   }
 
