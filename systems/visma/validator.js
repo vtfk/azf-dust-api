@@ -210,7 +210,7 @@ module.exports = (systemData, user, allData = false) => ([
     const missingOrg = positions.filter(position => !position.chart)
     return hasData(missingOrg) ? error('Mangler organisasjonstilknytning. Må rettes i Visma', missingOrg) : success('Har organisasjonstilknytning', positions)
   }),
-  test('visma-09', 'Har mobilPhone satt', 'Sjekker at bruker har satt mobilePhone i Visma', () => {
+  test('visma-09', 'Har mobilePhone satt', 'Sjekker at bruker har satt mobilePhone i Visma', () => {
     if (!dataPresent) return noData()
     return hasData(systemData.contactInfo.mobilePhone) ? success('Bruker har fylt ut ☎️ på MinSide') : warn('Bruker har ikke fylt ut ☎️ på MinSide og vil ikke kunne motta informasjon på SMS')
   })
