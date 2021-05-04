@@ -35,8 +35,8 @@ const getPerson = systemData => {
 }
 
 const getPersonType = (systemData, user) => {
-  if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)
-  else if (!hasData(systemData.person.userid)) return error('Person-objekt mangler userid oppføringer', systemData)
+  if (!hasData(systemData.person)) return noData()
+  else if (!hasData(systemData.person.userid)) return error('Person-objekt mangler userid-oppføringer', systemData)
 
   const employeeType = getUserIdType(systemData.person.userid, SYSTEMS.PIFU.PERSON_EMPLOYEE_TYPE)
   const studentType = getUserIdType(systemData.person.userid, SYSTEMS.PIFU.PERSON_STUDENT_TYPE)
@@ -88,8 +88,8 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('pifu-04', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
     if (!dataPresent) return noData()
-    if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)
-    else if (!hasData(systemData.person.userid)) return error('Person-objekt mangler userid oppføringer 🤭', systemData)
+    if (!hasData(systemData.person)) return noData()
+    else if (!hasData(systemData.person.userid)) return noData()
     const employee = getEmployeeNumber(systemData.person.userid)
     const data = {
       id: employee,
@@ -102,8 +102,8 @@ module.exports = (systemData, user, allData = false) => ([
     if (!allData) return waitForData()
     if (!hasData(allData.ad)) return error('Mangler AD-data', allData)
 
-    if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)
-    else if (!hasData(systemData.person.userid)) return error('Person-objekt mangler userid oppføringer 🤭', systemData)
+    if (!hasData(systemData.person)) return noData()
+    else if (!hasData(systemData.person.userid)) return noData()
     const employee = getEmployeeNumber(systemData.person.userid)
     const data = {
       pifu: {
