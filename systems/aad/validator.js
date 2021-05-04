@@ -161,7 +161,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (!allData) return waitForData()
     if (!allData.sds) return noData('Mangler SDS data', allData.sds)
     if (user.expectedType !== 'student') return noData()
-    
+
     const sdsGroups = getSdsGroups(allData.sds)
     const aadSdsGroups = getAadGroups(systemData.transitiveMemberOf).filter(group => group.mailNickname.startsWith('Section_') && !sdsGroups.includes(group.mailNickname.replace('Section_', ''))).map(group => group.mailNickname.replace('Section_', ''))
 
