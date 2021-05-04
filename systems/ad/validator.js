@@ -118,5 +118,25 @@ module.exports = (systemData, user, allData = false) => ([
       if (hasData(systemData.state)) return success('Felt for lisens er fylt ut', { state: systemData.state })
       else return error('Felt for lisens mangler 🤭', systemData)
     }
+  }),
+  test('ad-12', 'Navn har ropebokstaver', 'Sjekker om navnet er skrevet med ropebokstaver', () => {
+    if (!dataPresent) return noData()
+
+    const data = {
+      displayName: systemData.displayName,
+      givenName: systemData.givenName,
+      surName: systemData.sn
+    }
+    return systemData.displayName === systemData.displayName.toUpperCase() ? warn('Navn er skrevet med ropebokstaver', data) : noData()
+  }),
+  test('ad-13', 'Fornavn har punktum', 'Sjekker om fornavn har punktum', () => {
+    if (!dataPresent) return noData()
+
+    const data = {
+      displayName: systemData.displayName,
+      givenName: systemData.givenName,
+      surName: systemData.sn
+    }
+    return systemData.givenName.includes('.') ? warn('Navn har punktum', data) : noData()
   })
 ])
