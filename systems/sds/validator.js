@@ -1,6 +1,8 @@
 const { test, success, error, warn, waitForData, noData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
 const isTeacher = require('../../lib/helpers/is-teacher')
+const getAadGroups = require('../../lib/get-aad-groups')
+const getSdsGroups = require('../../lib/get-sds-groups')
 
 let dataPresent = true
 
@@ -27,17 +29,9 @@ module.exports = (systemData, user, allData = false) => ([
     if (!allData) return waitForData()
     if (!hasData(allData.aad)) return error('Mangler Azure AD data', allData)
 
-    const aadMemberGroups = allData.aad.transitiveMemberOf.filter(member => member && hasData(member.mailNickname)).map(member => member.mailNickname)
-    const wrongEnrollments = []
-    systemData.forEach(obj => {
-      // implement check for each group in enrollments for existens in aad data
-      if (!hasData(obj.enrollments)) return
-
-      const wrongInnerEnrollments = obj.enrollments.filter(innerObj => !aadMemberGroups.includes(`Section_${innerObj.sectionId}`))
-      if (hasData(wrongInnerEnrollments)) {
-        wrongEnrollments.push(...wrongInnerEnrollments)
-      }
-    })
+    const aadGroups = getAadGroups(allData.aad.transitiveMemberOf).map(group => group.mailNickname)
+    const sdsGroups = getSdsGroups(systemData)
+    const wrongEnrollments = sdsGroups.filter(group => !aadGroups.includes(`Section_${group}`))
     if (hasData(wrongEnrollments)) return error(`Mangler medlemskap i ${wrongEnrollments.length} SDS-gruppe${wrongEnrollments.length > 1 ? 'r' : ''} i Azure AD 🤭`, wrongEnrollments)
     else return success('Har medlemskap i alle sine SDS-grupper i Azure AD', systemData)
   })

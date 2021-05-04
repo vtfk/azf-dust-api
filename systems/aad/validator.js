@@ -2,6 +2,8 @@ const { test, success, error, warn, waitForData, noData } = require('../../lib/t
 const { hasData } = require('../../lib/helpers/system-data')
 const isWithinTimeRange = require('../../lib/helpers/is-within-timerange')
 const getActiveSourceData = require('../../lib/helpers/get-active-source-data')
+const getAadGroups = require('../../lib/get-aad-groups')
+const getSdsGroups = require('../../lib/get-sds-groups')
 // const licenses = require('../data/licenses.json')
 
 let dataPresent = true
@@ -153,5 +155,16 @@ module.exports = (systemData, user, allData = false) => ([
       userSignInErrors: systemData.userSignInErrors
     }
     return hasData(systemData.userSignInErrors) ? error(`Har skrevet feil passord ${systemData.userSignInErrors.length} gang${systemData.userSignInErrors.length > 1 ? 'er' : ''} idag 🤦‍♂️`, data) : success('Ingen klumsing med passord idag', data)
+  }),
+  test('aad-11', 'Ikke for mange SDS-grupper', 'Sjekker at bruker ikke har medlemskap i avsluttede SDS-grupper', () => {
+    if (!dataPresent) return noData()
+    if (!allData) return waitForData()
+    if (!allData.sds) return noData('Mangler SDS data', allData.sds)
+    if (user.expectedType !== 'student') return noData()
+    
+    const sdsGroups = getSdsGroups(allData.sds)
+    const aadSdsGroups = getAadGroups(systemData.transitiveMemberOf).filter(group => group.mailNickname.startsWith('Section_') && !sdsGroups.includes(group.mailNickname.replace('Section_', ''))).map(group => group.mailNickname.replace('Section_', ''))
+
+    return hasData(aadSdsGroups) ? error(`Bruker er medlem av ${aadSdsGroups.length} team${aadSdsGroups.length > 1 ? 's' : ''} som burde vært avsluttet`, aadSdsGroups) : noData()
   })
 ])
