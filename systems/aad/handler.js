@@ -3,15 +3,7 @@ const getGraphToken = require('../../lib/graph/get-graph-token')
 const getGraphOptions = require('../../lib/graph/get-graph-options')
 const getGraphData = require('../../lib/graph/get-graph-data')
 const getResponse = require('../../lib/get-response-object')
-
-const padDate = num => {
-  return num >= 10 ? num : `0${num}`
-}
-
-const getTodaysDate = () => {
-  const d = new Date()
-  return `${d.getFullYear()}-${padDate(d.getMonth() + 1)}-${padDate(d.getDate())}`
-}
+const { azureADDate } = require('../../lib/helpers/date-time-output')
 
 module.exports = async (params) => {
   // get token
@@ -38,7 +30,7 @@ module.exports = async (params) => {
   }, true)
   const graphSignInsOptions = getGraphOptions({
     ...params,
-    rootQuery: `auditLogs/signIns?$filter=userPrincipalName eq '${params.userPrincipalName}' and createdDateTime gt ${getTodaysDate()} and status/errorCode eq 50126`,
+    rootQuery: `auditLogs/signIns?$filter=userPrincipalName eq '${params.userPrincipalName}' and createdDateTime gt ${azureADDate()} and status/errorCode eq 50126`,
     properties: undefined
   })
 
