@@ -6,7 +6,7 @@ const callHandler = require('../lib/call-handlers')
 const test = require('../lib/call-test')
 
 module.exports = async function (context) {
-  const { instanceId, system, user, token, testData = true, saveData = true } = context.bindings.request
+  const { instanceId, system, user, token } = context.bindings.request
   const caller = (token && token.upn) || DEFAULT_CALLER
   const result = { name: system }
 
@@ -29,7 +29,7 @@ module.exports = async function (context) {
       logger('error', ['dust-activity', system, 'error', result.status, result.error])
     } else {
       result.data = body
-      result.tests = testData ? test(system, body, user) : []
+      result.tests = test(system, body, user)
     }
   } catch (error) {
     result.status = error.statusCode || 400
@@ -37,16 +37,14 @@ module.exports = async function (context) {
     logger('error', ['dust-activity', system, 'error', result.status, result.error])
   }
 
-  if (saveData) {
-    try {
-      logger('info', ['dust-activity', system, 'request-update', result.data ? 'data' : 'error', 'start'])
-      await updateRequest({ instanceId, ...result })
-      logger('info', ['dust-activity', system, 'request-update', result.data ? 'data' : 'error', 'finish'])
-    } catch (error) {
-      logger('error', ['dust-activity', system, 'request-update', 'error', error.message])
-      result.status = 500
-      result.error = error.message
-    }
+  try {
+    logger('info', ['dust-activity', system, 'request-update', result.data ? 'data' : 'error', 'start'])
+    await updateRequest({ instanceId, ...result })
+    logger('info', ['dust-activity', system, 'request-update', result.data ? 'data' : 'error', 'finish'])
+  } catch (error) {
+    logger('error', ['dust-activity', system, 'request-update', 'error', error.message])
+    result.status = 500
+    result.error = error.message
   }
 
   return result

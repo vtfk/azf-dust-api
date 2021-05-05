@@ -23,8 +23,8 @@ module.exports = {
     handle: require('./aad/handler'),
     validate: require('./aad/validator')
   },
-  vigobas: {
-    handle: require('./vigobas/handler'),
-    validate: require('./vigobas/validator')
+  sync: {
+    handle: require('./sync/handler'),
+    validate: require('./sync/validator')
   }
 }

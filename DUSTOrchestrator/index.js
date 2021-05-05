@@ -1,9 +1,6 @@
 const df = require('durable-functions')
 const { SOURCE_DATA_SYSTEMS } = require('../config')
 const { hasData } = require('../lib/helpers/system-data')
-const nonSystems = ['vigobas']
-
-const isNonSystem = system => nonSystems.includes(system)
 
 const callSystems = (context, instanceId, systems, user, token) => {
   return systems.map(system => {
@@ -11,9 +8,7 @@ const callSystems = (context, instanceId, systems, user, token) => {
       instanceId,
       system,
       user,
-      token,
-      testData: isNonSystem(system) ? false : undefined,
-      saveData: isNonSystem(system) ? false : undefined
+      token
     })
   })
 }
@@ -28,14 +23,6 @@ module.exports = df.orchestrator(function * (context) {
   // lowercase all system names
   systems = systems.map(system => system.toLowerCase())
 
-  // systems to present out
-  const publicSystems = [...systems]
-
-  // add non systems to systems
-  nonSystems.forEach(system => {
-    if (!systems.includes(system)) systems.push(system)
-  })
-
   // add source data systems to systems if not already present
   SOURCE_DATA_SYSTEMS.forEach(system => {
     if (!systems.includes(system.toLowerCase())) systems.push(system.toLowerCase())
@@ -44,7 +31,7 @@ module.exports = df.orchestrator(function * (context) {
   // set current user object and systems to customStatus
   context.df.setCustomStatus({
     user,
-    systems: publicSystems
+    systems
   })
 
   // create a new request in the db
@@ -54,7 +41,7 @@ module.exports = df.orchestrator(function * (context) {
     query: {
       instanceId,
       user,
-      systems: publicSystems,
+      systems,
       caller: token.upn
     }
   })
@@ -104,7 +91,7 @@ module.exports = df.orchestrator(function * (context) {
     // set current user object and systems to customStatus
     context.df.setCustomStatus({
       user,
-      systems: publicSystems
+      systems
     })
 
     // start systems which failed validation
@@ -121,7 +108,7 @@ module.exports = df.orchestrator(function * (context) {
       status: 400,
       user,
       data: {
-        systems: publicSystems,
+        systems,
         error: 'All systems failed validation'
       }
     }
@@ -141,7 +128,7 @@ module.exports = df.orchestrator(function * (context) {
     // set current user object and systems to customStatus
     context.df.setCustomStatus({
       user,
-      systems: publicSystems
+      systems
     })
 
     const retrySystems = parallelTasks.filter(task => !hasData(task.result.data) && !task.result.error).map(task => task.result.name)
@@ -157,12 +144,6 @@ module.exports = df.orchestrator(function * (context) {
     // wait for all retry system requests to finish
     yield context.df.Task.all(parallelTasks)
   }
-
-  // extract non systems
-  const vigobas = parallelTasks.filter(task => task.result.name === 'vigobas')[0].result.data
-
-  // remove non systems from tasks to prevent testing and final output
-  parallelTasks = parallelTasks.filter(task => !isNonSystem(task.result.name))
 
   // run all tests on all systems
   parallelTasks = yield context.df.callActivity('WorkerActivity', {
@@ -182,8 +163,7 @@ module.exports = df.orchestrator(function * (context) {
     query: {
       instanceId,
       timestamp: new Date().toISOString(),
-      user,
-      vigobas
+      user
     }
   })
 
@@ -191,7 +171,6 @@ module.exports = df.orchestrator(function * (context) {
     user,
     started: newEntry.started,
     finished: updatedEntry.$set.finished,
-    vigobas,
     data: parallelTasks.map(task => {
       return {
         name: task.result.name,
