@@ -18,12 +18,24 @@ module.exports = (systemData, user, allData = false) => ([
     }
 
     if (user.expectedType === 'employee') {
-      if (allData.visma) data.visma = getActiveSourceData(allData.visma, user)
+      if (allData.visma) {
+        data.visma = getActiveSourceData(allData.visma, user)
+        if (systemData.enabled && data.visma.active) return success('Kontoen er aktivert', data)
+        else if (systemData.enabled && !data.visma.active) return error('Kontoen er aktivert selvom ansatt har sluttet', data)
+        else if (!systemData.enabled && data.visma.active) return warn('Kontoen er deaktivert. Ansatt må aktivere sin konto', data)
+        else if (!systemData.enabled && !data.visma.active) return warn('Kontoen er deaktivert', data)
+      }
     } else {
-      if (allData.pifu) data.pifu = getActiveSourceData(allData.pifu, user)
+      if (allData.pifu) {
+        data.pifu = getActiveSourceData(allData.pifu, user)
+        if (systemData.enabled && data.pifu.active) return success('Kontoen er aktivert', data)
+        else if (systemData.enabled && !data.pifu.active) return error('Kontoen er aktivert selvom elev har sluttet', data)
+        else if (!systemData.enabled && data.pifu.active) return warn('Kontoen er deaktivert. Eleven må aktivere sin konto', data)
+        else if (!systemData.enabled && !data.pifu.active) return warn('Kontoen er deaktivert', data)
+      }
     }
 
-    return systemData.enabled ? success('Kontoen er aktivert', data) : error('Kontoen er deaktivert', data)
+    if (!allData.visma && !allData.pifu) return systemData.enabled ? success('Kontoen er aktivert', data) : error('Kontoen er deaktivert', data)
   }),
   test('ad-03', 'Kontoen er ulåst', 'Sjekker at kontoen ikke er sperret for pålogging i AD', () => {
     if (!dataPresent) return noData()
