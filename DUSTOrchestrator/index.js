@@ -104,13 +104,36 @@ module.exports = df.orchestrator(function * (context) {
       query: ['orchestrator', 'Expected user type', user.expectedType, 'All systems failed validation']
     })
 
+    // update request with a finish timestamp, user object and set error on all systems
+    const updatedEntry = []
+    for (let i = 0; i < systems.length; i++) { // this needs to be a for loop because of scoping
+      updatedEntry.push(yield context.df.callActivity('WorkerActivity', {
+        type: 'db',
+        variant: 'update',
+        query: {
+          instanceId,
+          timestamp: new Date().toISOString(),
+          user,
+          name: systems[i],
+          error: { error: 'System failed validation' }
+        }
+      }))
+    }
+
     return {
       status: 400,
       user,
-      data: {
-        systems,
-        error: 'All systems failed validation'
-      }
+      started: newEntry.started,
+      finished: updatedEntry[0].$set.finished,
+      data: systems.map(system => ({
+        name: system,
+        timestamp: new Date().toISOString(),
+        error: {
+          error: 'System failed validation'
+        },
+        status: 400,
+        tests: []
+      }))
     }
   }
 
