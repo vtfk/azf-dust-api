@@ -29,7 +29,10 @@ const status = async function (context, req) {
       }
     } else {
       // orchestrator is either (Canceled, Completed, ContinuedAsNew, Failed, Terminated or Unknown) - return 200
+      const httpStatus = status.output.status || 200
+      if (status.output.status) delete status.output.status
       res = {
+        status: httpStatus,
         body: status.output,
         headers: {}
       }
