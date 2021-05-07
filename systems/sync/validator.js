@@ -1,7 +1,7 @@
 const { test, success, error, noData, warn } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
 const isWithinTimeRange = require('../../lib/helpers/is-within-timerange')
-const { prettifyDate } = require('../../lib/helpers/date-time-output')
+const { prettifyDateToLocaleString } = require('../../lib/helpers/date-time-output')
 
 let dataPresent = true
 
@@ -19,7 +19,7 @@ module.exports = (systemData, user, allData = false) => ([
       lastRunTime: systemData.vigobas.lastRunTime,
       check: lastRunTimeCheck
     }
-    return lastRunTimeCheck.result ? success(`Vigobas sist kjørt ${prettifyDate(new Date(systemData.vigobas.lastRunTime))}`, data) : warn('Det er mer enn 24 timer siden siste kjøring av Vigobas', data)
+    return lastRunTimeCheck.result ? success(`Vigobas sist kjørt ${prettifyDateToLocaleString(new Date(systemData.vigobas.lastRunTime))}`, data) : warn('Det er mer enn 24 timer siden siste kjøring av Vigobas', data)
   }),
   test('sync-03', 'Har aad lastAzureADSyncTime', 'Sjekker siste synkroniseringstidspunkt for Azure AD', () => {
     if (!dataPresent) return noData()
@@ -30,6 +30,6 @@ module.exports = (systemData, user, allData = false) => ([
       lastAzureADSyncTime: systemData.aadSync.lastAzureADSyncTime,
       check: lastRunTimeCheck
     }
-    return lastRunTimeCheck.result ? success(`AAD sist synkronisert: ${prettifyDate(new Date(systemData.aadSync.lastAzureADSyncTime))}`, data) : warn('Det er mer enn 40 minutter siden siste synkronisering av Azure AD', data)
+    return lastRunTimeCheck.result ? success(`AAD sist synkronisert: ${prettifyDateToLocaleString(new Date(systemData.aadSync.lastAzureADSyncTime))}`, data) : warn('Det er mer enn 40 minutter siden siste synkronisering av Azure AD', data)
   })
 ])
