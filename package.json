@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/vtfk/azf-dust-api#readme",
   "dependencies": {
-    "@vtfk/logger": "2.5.1",
+    "@vtfk/logger": "2.5.2",
     "axios": "0.21.1",
     "azure-ad-verify-token": "1.1.1",
     "durable-functions": "1.4.6",
