@@ -6,6 +6,7 @@ const getAadGroups = require('../../lib/get-aad-groups')
 const getSdsGroups = require('../../lib/get-sds-groups')
 // const licenses = require('../data/licenses.json')
 
+const aadSyncInSeconds = 40 * 60
 let dataPresent = true
 
 module.exports = (systemData, user, allData = false) => ([
@@ -64,7 +65,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (!dataPresent) return noData()
     if (!allData) return waitForData()
     if (!hasData(allData.ad)) return error('Mangler AD-data', allData)
-    const pwdCheck = isWithinTimeRange(new Date(allData.ad.pwdLastSet), new Date(systemData.lastPasswordChangeDateTime), 40 * 60)
+    const pwdCheck = isWithinTimeRange(new Date(allData.ad.pwdLastSet), new Date(systemData.lastPasswordChangeDateTime), aadSyncInSeconds)
     const data = {
       aad: {
         lastPasswordChangeDateTime: systemData.lastPasswordChangeDateTime
@@ -109,7 +110,6 @@ module.exports = (systemData, user, allData = false) => ([
     }
     if (hasData(systemData.onPremisesProvisioningErrors)) return error('Synkroniseringsproblemer funnet 🤭', data)
     if (data.ad) {
-      const aadSyncInSeconds = 40 * 60
       const isLastChanged = isWithinTimeRange(new Date(data.ad.whenChanged), new Date(data.aad.onPremisesLastSyncDateTime), aadSyncInSeconds)
       if (data.aad.displayName !== data.ad.displayName) return (isLastChanged.seconds > 0 && isLastChanged.seconds < aadSyncInSeconds) || (isLastChanged.seconds < 0 && isLastChanged.seconds > -aadSyncInSeconds) ? warn('Forskjellig visningsnavn i Azure og AD. Synkronisering utføres snart', data) : error('Forskjellig visningsnavn i Azure og AD 🤭', data)
       if (data.aad.userPrincipalName !== data.ad.userPrincipalName) return (isLastChanged.seconds > 0 && isLastChanged.seconds < aadSyncInSeconds) || (isLastChanged.seconds < 0 && isLastChanged.seconds > -aadSyncInSeconds) ? warn('Forskjellig UPN i Azure og AD. Synkronisering utføres snart', data) : error('Forskjellig UPN i Azure og AD 🤭', data)
@@ -178,5 +178,27 @@ module.exports = (systemData, user, allData = false) => ([
     const aadSdsGroups = getAadGroups(systemData.transitiveMemberOf).filter(group => group.mailNickname.startsWith('Section_') && !sdsGroups.includes(group.mailNickname.replace('Section_', ''))).map(group => group.mailNickname.replace('Section_', ''))
 
     return hasData(aadSdsGroups) ? error(`Bruker er medlem av ${aadSdsGroups.length} team${aadSdsGroups.length > 1 ? 's' : ''} som burde vært avsluttet`, aadSdsGroups) : noData()
+  }),
+  test('aad-12', 'AD- og AzureAD-attributtene er like', 'Sjekker at attributtene i AD og AzureAD er like', () => {
+    if (!dataPresent) return noData()
+    if (!allData) return waitForData()
+    if (!allData.ad) return noData('Mangler AD-data')
+
+    const data = {
+      aad: {
+        accountEnabled: systemData.accountEnabled,
+        onPremisesLastSyncDateTime: systemData.onPremisesLastSyncDateTime
+      },
+      ad: {
+        enabled: allData.ad.enabled,
+        whenChanged: allData.ad.whenChanged
+      }
+    }
+
+    if (systemData.accountEnabled !== allData.ad.enabled) {
+      data.isInsideSyncWindow = isWithinTimeRange(new Date(), new Date(data.ad.whenChanged), aadSyncInSeconds)
+      if (!data.isInsideSyncWindow.result) return error(`AzureAD-kontoen er fremdeles ${systemData.accountEnabled ? '' : 'in'}aktiv`, data)
+      else return warn(`AzureAD-kontoen vil bli ${allData.ad.enabled ? '' : 'de'}aktivert ved neste synkronisering (innenfor ${aadSyncInSeconds / 60} minutter)`, data)
+    } else return noData()
   })
 ])
