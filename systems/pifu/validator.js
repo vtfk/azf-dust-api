@@ -43,11 +43,11 @@ const getPersonType = (systemData, user) => {
   if (user.expectedType === 'employee') {
     if (hasData(employeeType)) return success('Person-objekt har riktig person-type', employeeType)
     else if (hasData(studentType)) return error('Person-objekt har feil person-type', studentType)
-    else return error('Peron-objektet mangler person-type 🤭', systemData.person.userid)
+    else return error('Person-objektet mangler person-type 🤭', systemData.person.userid)
   } else {
     if (hasData(studentType)) return success('Person-objekt har riktig person-type', studentType)
     else if (hasData(employeeType)) return error('Person-objekt har feil person-type', employeeType)
-    else return error('Peron-objektet mangler person-type 🤭', systemData.person.userid)
+    else return error('Person-objektet mangler person-type 🤭', systemData.person.userid)
   }
 }
 
