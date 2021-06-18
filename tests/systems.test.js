@@ -1,13 +1,9 @@
+const { readdirSync } = require('fs')
 const schools = require('../systems/data/schools.json')
 
-const systems = [
-  'AD',
-  'FEIDE',
-  'PIFU',
-  'SDS',
-  'VISMA',
-  'AAD'
-]
+// get all system directories (except excluded ones)
+const excludedDirectories = ['data']
+const systems = readdirSync('./systems', { withFileTypes: true }).filter(entry => entry.isDirectory() && !excludedDirectories.includes(entry.name)).map(dir => dir.name)
 
 const mockData = {
   ad: {
@@ -721,6 +717,14 @@ const mockData = {
       ]
     }
   ],
+  sync: {
+    vigobas: {
+      lastRunTime: '2021-06-18T02:35:03.0852857+00:00'
+    },
+    aadSync: {
+      lastAzureADSyncTime: '2021-06-18T20:00:00Z'
+    }
+  },
   visma: {
     '@personIdHRM': '12345',
     '@xsi:noNamespaceSchemaLocation': 'http://vsm01/hrm_ws/schemas/person/enterprisePersonExport.xsd',
