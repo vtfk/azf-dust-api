@@ -19,7 +19,7 @@ module.exports = (systemData, user, allData = false) => ([
       else if (!user.company || !user.title) return warn('Mangler data. Dessverre er det ikke nok informasjon tilstede på brukerobjektet for å kontrollere om dette er korrekt')
       else if (isTeacher(user.company, user.title)) return error('Mangler data 😬', systemData)
       else return success('Bruker har ikke data i dette systemet')
-    } else return dataPresent ? success('Har data') : success('Bruker har ikke data i dette systemet')
+    } else return success('Har data')
   }),
   test('feide-02', 'Kontoen er aktivert', 'Sjekker at kontoen er aktivert i FEIDE', () => {
     if (!dataPresent) return noData()
