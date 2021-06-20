@@ -3,6 +3,7 @@ const { hasData } = require('../../lib/helpers/system-data')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const isWithinDaterange = require('../../lib/helpers/is-within-daterange')
 const isTeacher = require('../../lib/helpers/is-teacher')
+const isSchoolEmployee = require('../../lib/helpers/is-school-employee')
 const { SYSTEMS } = require('../../config')
 
 const getEmployeeNumber = data => {
@@ -75,6 +76,7 @@ module.exports = (systemData, user, allData = false) => ([
       if (user.expectedType === 'student') return error('Mangler data 😬', systemData)
       else if (!user.company || !user.title) return warn('Mangler data. Dessverre er det ikke nok informasjon tilstede på brukerobjektet for å kontrollere om dette er korrekt')
       else if (isTeacher(user.company, user.title)) return error('Mangler data 😬', systemData)
+      else if (isSchoolEmployee(user)) return warn('Data mangler til tross for skoletilhørighet 😬', systemData)
       else return success('Bruker har ikke data i dette systemet')
     } else return success('Har data')
   }),

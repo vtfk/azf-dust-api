@@ -5,6 +5,7 @@ const isWithinTimeRange = require('../../lib/helpers/is-within-timerange')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const { getActiveMemberships } = require('../pifu/validator')
 const isTeacher = require('../../lib/helpers/is-teacher')
+const isSchoolEmployee = require('../../lib/helpers/is-school-employee')
 
 const repackEntitlements = data => data.filter(entitlement => entitlement.startsWith('urn:mace:feide.no:go:group:u:')).map(entitlement => entitlement.replace('urn:mace:feide.no:go:group:u:', '').split(':')[2].replace('%2F', '/').toLowerCase())
 const repackMemberships = data => data.filter(membership => membership.sourcedid.id.includes('/') && !/\/ord|_ord|\/atf|_atf/.test(membership.sourcedid.id.toLowerCase())).map(membership => membership.sourcedid.id.split('_')[1].toLowerCase())
@@ -18,6 +19,7 @@ module.exports = (systemData, user, allData = false) => ([
       if (user.expectedType === 'student') return error('Mangler data 😬', systemData)
       else if (!user.company || !user.title) return warn('Mangler data. Dessverre er det ikke nok informasjon tilstede på brukerobjektet for å kontrollere om dette er korrekt')
       else if (isTeacher(user.company, user.title)) return error('Mangler data 😬', systemData)
+      else if (isSchoolEmployee(user)) return warn('Data mangler til tross for skoletilhørighet 😬', systemData)
       else return success('Bruker har ikke data i dette systemet')
     } else return success('Har data')
   }),
