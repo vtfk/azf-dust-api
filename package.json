@@ -44,7 +44,7 @@
   },
   "jest": {
     "testMatch": [
-      "**/tests/**/*.[jt]s?(x)",
+      "**/tests/**/*test.[jt]s?(x)",
       "**/?(*.)+.(spec|test).[jt]s?(x)"
     ]
   }
