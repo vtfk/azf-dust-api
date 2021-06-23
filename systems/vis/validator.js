@@ -27,15 +27,15 @@ const getExpiredMemberships = data => {
   })
 }
 
-const getPerson = systemData => {
+/* const getPerson = systemData => {
   if (!hasData(systemData.person)) return error('Person-objekt mangler 🤭', systemData)
   const data = {
     person: systemData.person
   }
   return success('Har et person-objekt', data)
-}
+} */
 
-const getPersonType = (systemData, user) => {
+/* const getPersonType = (systemData, user) => {
   if (!hasData(systemData.person)) return noData()
   else if (!hasData(systemData.person.userid)) return error('Person-objekt mangler userid-oppføringer', systemData)
 
@@ -50,9 +50,10 @@ const getPersonType = (systemData, user) => {
     else if (hasData(employeeType)) return error('Person-objekt har feil person-type', employeeType)
     else return error('Person-objektet mangler person-type 🤭', systemData.person.userid)
   }
-}
+} */
 
 const getActiveData = (data, user) => {
+  // TODO: Noe må gjørras her....
   const person = getPerson(data)
   const personType = getPersonType(data, user)
   return {
@@ -70,7 +71,7 @@ const getActiveData = (data, user) => {
 let dataPresent = true
 
 module.exports = (systemData, user, allData = false) => ([
-  test('pifu-01', 'Har data', 'Sjekker at det finnes data her', () => {
+  test('vis-01', 'Har data', 'Sjekker at det finnes data her', () => {
     dataPresent = hasData(systemData)
     if (!dataPresent) {
       if (user.expectedType === 'student') return error('Mangler data 😬', systemData)
@@ -80,15 +81,21 @@ module.exports = (systemData, user, allData = false) => ([
       else return success('Bruker har ikke data i dette systemet')
     } else return success('Har data')
   }),
-  test('pifu-02', 'Har et person-objekt', 'Sjekker at det finnes et person-objekt', () => {
+  test('vis-02', 'Har riktig forhold', 'Sjekker at bruker har riktig forhold', () => {
     if (!dataPresent) return noData()
-    return getPerson(systemData)
+    if (user.expectedType === 'student') {
+      if (systemData.person.personalressurs !== null && systemData.person.elev !== null) return error('Bruker har både elev- og ansattforhold 😬', systemData)
+      else if (systemData.person.personalressurs !== null && systemData.person.elev === null) return error('Elev har bare ansattforhold 😬', systemData)
+      else if (systemData.person.personalressurs === null && systemData.person.elev === null) return error('Mangler elevforhold 😬😬', systemData)
+      return success('Bruker har elevforhold', systemData)
+    } else {
+      if (systemData.person.personalressurs !== null && systemData.person.elev !== null) return error('Bruker har både elev- og ansattforhold 😬', systemData)
+      else if (systemData.person.personalressurs === null && systemData.person.elev !== null) return error('Ansatt har bare elevforhold 😬', systemData)
+      else if (systemData.person.personalressurs === null && systemData.person.elev === null) return error('Mangler ansattforhold 😬😬', systemData)
+      return success('Bruker har ansattforhold', systemData)
+    }
   }),
-  test('pifu-03', 'Har riktig person-type', 'Sjekker at det er riktig person-type', () => {
-    if (!dataPresent) return noData()
-    return getPersonType(systemData, user)
-  }),
-  test('pifu-04', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
+  test('vis-03', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
     if (!dataPresent) return noData()
     if (!hasData(systemData.person)) return noData()
     else if (!hasData(systemData.person.userid)) return noData()
@@ -99,7 +106,7 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return data.fnr.valid ? success(`Har gyldig ${data.fnr.type}`, data) : error(data.fnr.error, data)
   }),
-  test('pifu-05', 'Fødselsnummer er likt i AD', 'Sjekker at fødselsnummeret er likt i AD og Extens', () => {
+  test('vis-04', 'Fødselsnummer er likt i AD', 'Sjekker at fødselsnummeret er likt i AD og Extens', () => {
     if (!dataPresent) return noData()
     if (!allData) return waitForData()
     if (!hasData(allData.ad)) return error('Mangler AD-data', allData)
@@ -118,7 +125,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (data.pifu.id === data.ad.employeeNumber) return success('Fødselsnummer er likt i AD og Extens', data)
     else return error('Fødselsnummer er forskjellig i AD og Extens', data)
   }),
-  test('pifu-06', 'Har aktive gruppemedlemskap', 'Sjekker at det finnes aktive gruppemedlemskap', () => {
+  test('vis-05', 'Har aktive gruppemedlemskap', 'Sjekker at det finnes aktive gruppemedlemskap', () => {
     if (!dataPresent) return noData()
     const activeMemberships = getMembershipsWithTimeframe(systemData.memberships)
     const allMemberships = getAllMemberships(systemData.memberships)
@@ -133,7 +140,7 @@ module.exports = (systemData, user, allData = false) => ([
       }
     } else return success(`Har ${activeMemberships.length} aktive gruppemedlemskap (MinElev)`, activeMemberships)
   }),
-  test('pifu-07', 'Har riktig rolletype', 'Sjekker at det er riktig rolletype i gruppemedlemskapene', () => {
+  test('vis-06', 'Har riktig rolletype', 'Sjekker at det er riktig rolletype i gruppemedlemskapene', () => {
     if (!dataPresent) return noData()
     const activeMemberships = getMembershipsWithTimeframe(systemData.memberships)
     if (!hasData(activeMemberships)) return noData('Mangler aktive gruppemedlemskap')
@@ -146,7 +153,7 @@ module.exports = (systemData, user, allData = false) => ([
       return hasData(wrongMemberships) ? error(`Har ${wrongMemberships.length} aktive gruppemedlemskap med feil rolletype`, data) : success('Har riktig rolletype i alle aktive gruppemedlemskap', data)
     }
   }),
-  test('pifu-08', 'Gruppemedlemskapet er gyldig', 'Sjekker at gruppemedlemskapene ikke er avsluttet', () => {
+  test('vis-07', 'Gruppemedlemskapet er gyldig', 'Sjekker at gruppemedlemskapene ikke er avsluttet', () => {
     if (!dataPresent) return noData()
     const activeMemberships = getMembershipsWithTimeframe(systemData.memberships)
     const userIsTeacher = isTeacher(user.company, user.title)

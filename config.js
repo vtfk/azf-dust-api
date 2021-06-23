@@ -49,6 +49,11 @@ module.exports = {
       MEMBERSHIP_EMPLOYEE_ROLETYPE: process.env.PIFU_MEMBERSHIP_EMPLOYEE_ROLETYPE || '02',
       MEMBERSHIP_STUDENT_ROLETYPE: process.env.PIFU_MEMBERSHIP_STUDENT_ROLETYPE || '01'
     },
+    VIS: {
+      FINT_API_URL: process.env.FINT_API_URL || '',
+      FINT_BETA: (process.env.FINT_BETA && process.env.FINT_BETA === 'true') || false,
+      FINT_JWT_SECRET: process.env.FINT_JWT_SECRET || false
+    },
     VISMA: {
       COMPANY_ID: process.env.VISMA_COMPANY_ID || '1',
       CATEGORIES: process.env.VISMA_CATEGORIES || 'O,SE,TK,X,XA,XB,FW'

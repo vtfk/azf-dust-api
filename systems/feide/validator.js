@@ -3,7 +3,7 @@ const { SYSTEMS } = require('../../config')
 const { hasData } = require('../../lib/helpers/system-data')
 const isWithinTimeRange = require('../../lib/helpers/is-within-timerange')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
-const { getActiveMemberships } = require('../pifu/validator')
+const { getActiveMemberships } = require('../vis/validator')
 const isTeacher = require('../../lib/helpers/is-teacher')
 const isSchoolEmployee = require('../../lib/helpers/is-school-employee')
 
