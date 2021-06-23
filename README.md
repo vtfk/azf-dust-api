@@ -13,10 +13,14 @@ When all calls are finished, tests across all retrieved data will be executed.
   "systems": [
     "aad",
     "ad",
-    "feide"
+    "feide",
+    "sds",
+    "sync",
+    "vis",
+    "visma"
   ],
   "user": {
-    "userPrincipalName": "bjarne.betjent@vtfk.no",
+    "userPrincipalName": "bjarne.betjent@vtfk.no", // can also be "displayName", "samAccountName" or "employeeNumber"
     "expectedType": "employee|student",
     ...userProps
   }
