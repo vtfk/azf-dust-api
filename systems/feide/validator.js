@@ -167,7 +167,7 @@ module.exports = (systemData, user, allData = false) => ([
       eduPersonOrgUnitDN: systemData.eduPersonOrgUnitDN || null
     }
     if (!hasData(systemData.eduPersonOrgUnitDN)) {
-      return hasData(allData.pifu) ? error('Knytning til skole mangler 🤭', data) : success('Ingen knytning til skole funnet. Dette er riktig da bruker ikke finnes i Extens', data)
+      return hasData(allData.vis) ? error('Knytning til skole mangler 🤭', data) : success('Ingen knytning til skole funnet. Dette er riktig da bruker ikke finnes i ViS', data)
     }
     return success('Knytning til skole funnet', data)
   }),
@@ -213,21 +213,21 @@ module.exports = (systemData, user, allData = false) => ([
   test('feide-18', 'Har grupperettigheter', 'Sjekker at det er satt grupperettigheter', () => {
     if (!dataPresent) return noData()
     if (!allData) return waitForData()
-    if (!hasData(allData.pifu)) return success('Ingen grupperettigheter funnet. Dette er riktig da bruker ikke finnes i Extens', allData.pifu)
+    if (!hasData(allData.vis)) return success('Ingen grupperettigheter funnet. Dette er riktig da bruker ikke finnes i ViS', allData.vis)
 
     const repackedEntitlements = repackEntitlements(systemData.eduPersonEntitlement)
-    const activeMemberships = getActiveMemberships(allData.pifu.memberships)
+    const activeMemberships = getActiveMemberships(allData.vis)
     const repackedMemberships = repackMemberships(activeMemberships)
     const data = {
       feide: {
         eduPersonEntitlement: systemData.eduPersonEntitlement || null
       },
-      pifu: {
+      vis: {
         activeMemberships
       }
     }
     if (!hasData(systemData.eduPersonEntitlement)) {
-      return hasData(activeMemberships) ? error('Grupperettigheter mangler 🤭', data) : success('Ingen grupperettigheter funnet. Dette er riktig da bruker ikke har noen grupper i Extens', data)
+      return hasData(activeMemberships) ? error('Grupperettigheter mangler 🤭', data) : success('Ingen grupperettigheter funnet. Dette er riktig da bruker ikke har noen grupper i ViS', data)
     } else {
       const missingEntitlements = repackedMemberships.filter(membership => !repackedEntitlements.includes(membership))
       if (hasData(missingEntitlements)) {

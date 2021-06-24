@@ -43,12 +43,6 @@ module.exports = {
       MFA_SMS: process.env.FEIDE_MFA_SMS || 'urn:mace:feide.no:auth:method:sms',
       MFA_GA: process.env.FEIDE_MFA_GA || 'urn:mace:feide.no:auth:method:ga'
     },
-    PIFU: {
-      PERSON_EMPLOYEE_TYPE: process.env.PIFU_PERSON_EMPLOYEE_TYPE || 'workforceID',
-      PERSON_STUDENT_TYPE: process.env.PIFU_PERSON_STUDENT_TYPE || 'studentID',
-      MEMBERSHIP_EMPLOYEE_ROLETYPE: process.env.PIFU_MEMBERSHIP_EMPLOYEE_ROLETYPE || '02',
-      MEMBERSHIP_STUDENT_ROLETYPE: process.env.PIFU_MEMBERSHIP_STUDENT_ROLETYPE || '01'
-    },
     VIS: {
       FINT_API_URL: process.env.FINT_API_URL || '',
       FINT_BETA: (process.env.FINT_BETA && process.env.FINT_BETA === 'true') || false,
