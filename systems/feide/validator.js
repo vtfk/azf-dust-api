@@ -8,7 +8,7 @@ const isTeacher = require('../../lib/helpers/is-teacher')
 const isSchoolEmployee = require('../../lib/helpers/is-school-employee')
 
 const repackEntitlements = data => data.filter(entitlement => entitlement.startsWith('urn:mace:feide.no:go:group:u:')).map(entitlement => entitlement.replace('urn:mace:feide.no:go:group:u:', '').split(':')[2].replace('%2F', '/').toLowerCase())
-const repackMemberships = data => data.filter(membership => membership.sourcedid.id.includes('/') && !/\/ord|_ord|\/atf|_atf/.test(membership.sourcedid.id.toLowerCase())).map(membership => membership.sourcedid.id.split('_')[1].toLowerCase())
+const repackMemberships = data => data.filter(membership => membership.navn.includes('/')).map(membership => membership.navn.toLowerCase())
 
 let dataPresent = true
 
