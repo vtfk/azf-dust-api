@@ -41,8 +41,12 @@ const getActiveData = data => {
     activeData.employee.active = data.person.personalressurs.ansettelsesperiode.slutt === null || new Date(data.person.personalressurs.ansettelsesperiode.slutt) > new Date()
   }
   if (data.person.elev) {
-    activeData.student = Object.assign(activeData.student, data.person.elev.elevforhold)
-    activeData.student.active = data.person.elev.elevforhold.gyldighetsperiode.slutt === null || new Date(data.person.elev.elevforhold.gyldighetsperiode.slutt) > new Date()
+    activeData.student = Object.assign(activeData.student, data.person.elev)
+    if (Array.isArray(data.person.elev.elevforhold) && data.person.elev.elevforhold.length > 1) {
+      activeData.student.active = data.person.elev.elevforhold.filter(forhold => forhold.gyldighetsperiode.slutt === null || new Date(forhold.gyldighetsperiode.slutt) > new Date()).length > 0
+    } else if (Array.isArray(data.person.elev.elevforhold) && data.person.elev.elevforhold.length === 1) { 
+      activeData.student.active = data.person.elev.elevforhold[0].gyldighetsperiode.slutt === null || new Date(data.person.elev.elevforhold[0].gyldighetsperiode.slutt) > new Date()
+    }
   }
   return activeData
 }
