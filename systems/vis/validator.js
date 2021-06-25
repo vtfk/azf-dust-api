@@ -70,12 +70,12 @@ module.exports = (systemData, user, allData = false) => ([
     if (user.expectedType === 'student') {
       if (activeData.employee.active && activeData.student.active) return error('Bruker har både elev- og ansattforhold 😬', activeData)
       else if (activeData.employee.active && !activeData.student.active) return error('Elev har bare ansattforhold 😬', activeData)
-      else if (!activeData.employee.active === null && !activeData.student.active) return error('Mangler elevforhold 😬😬', activeData)
+      else if (!activeData.employee.active && !activeData.student.active) return error('Mangler elevforhold 😬😬', activeData)
       return success('Bruker har elevforhold', activeData)
     } else {
       if (activeData.employee.active && activeData.student.active) return error('Bruker har både elev- og ansattforhold 😬', activeData)
       else if (!activeData.employee.active && activeData.student.active) return error('Ansatt har bare elevforhold 😬', activeData)
-      else if (!activeData.employee.active === null && !activeData.student.active) return error('Mangler ansattforhold 😬😬', activeData)
+      else if (!activeData.employee.active && !activeData.student.active) return error('Mangler ansattforhold 😬😬', activeData)
       return success('Bruker har ansattforhold', activeData)
     }
   }),
