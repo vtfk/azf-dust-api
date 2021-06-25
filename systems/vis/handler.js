@@ -30,8 +30,14 @@ module.exports = async params => {
   const token = generateJwt(FINT_JWT_SECRET)
   axios.defaults.headers.common.Authorization = `Bearer ${token}`
 
-  logger('info', ['vis', 'employeeNumber', employeeNumber, 'start'])
-  const { data } = await axios.post(FINT_API_URL, query)
-  logger('info', ['vis', 'employeeNumber', employeeNumber, 'data', 'received', Array.isArray(data) ? data.length : 1])
-  return getResponse(data)
+  try {
+    logger('info', ['vis', 'employeeNumber', employeeNumber, 'start'])
+    const { data } = await axios.post(FINT_API_URL, query)
+    logger('info', ['vis', 'employeeNumber', employeeNumber, 'data', 'received', Array.isArray(data) ? data.length : 1])
+    return getResponse(data)
+  } catch (error) {
+    logger('error', ['vis', 'employeeNumber', employeeNumber, error.response.data.message])
+    if (/Cannot return null for non-nullable type: 'Personnavn' within parent 'Person'/.exec(error.response.data.message)) return getResponse({})
+    else throw error
+  }
 }
