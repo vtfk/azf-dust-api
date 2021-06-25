@@ -68,15 +68,15 @@ module.exports = (systemData, user, allData = false) => ([
     if (!dataPresent) return noData()
     const activeData = getActiveData(systemData)
     if (user.expectedType === 'student') {
-      if (activeData.employee.active && activeData.student.active) return error('Bruker har både elev- og ansattforhold 😬', activeData)
-      else if (activeData.employee.active && !activeData.student.active) return error('Elev har bare ansattforhold 😬', activeData)
-      else if (!activeData.employee.active && !activeData.student.active) return error('Mangler elevforhold 😬😬', activeData)
-      return success('Bruker har elevforhold', activeData)
+      if (activeData.employee.active && activeData.student.active) return error('Bruker har aktive elev- og ansattforhold 😬', activeData)
+      else if (activeData.employee.active && !activeData.student.active) return error('Elev har aktivt ansattforhold 😬', activeData)
+      else if (!activeData.employee.active && !activeData.student.active) return error('Mangler aktivt elevforhold 😬😬', activeData)
+      return success('Bruker har aktivt elevforhold', activeData)
     } else {
-      if (activeData.employee.active && activeData.student.active) return error('Bruker har både elev- og ansattforhold 😬', activeData)
-      else if (!activeData.employee.active && activeData.student.active) return error('Ansatt har bare elevforhold 😬', activeData)
-      else if (!activeData.employee.active && !activeData.student.active) return error('Mangler ansattforhold 😬😬', activeData)
-      return success('Bruker har ansattforhold', activeData)
+      if (activeData.employee.active && activeData.student.active) return error('Bruker har aktive elev- og ansattforhold 😬', activeData)
+      else if (!activeData.employee.active && activeData.student.active) return error('Ansatt har aktivt elevforhold 😬', activeData)
+      else if (!activeData.employee.active && !activeData.student.active) return error('Mangler aktivt ansattforhold 😬😬', activeData)
+      return success('Bruker har aktivt ansattforhold', activeData)
     }
   }),
   test('vis-03', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
