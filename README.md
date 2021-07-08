@@ -13,10 +13,14 @@ When all calls are finished, tests across all retrieved data will be executed.
   "systems": [
     "aad",
     "ad",
-    "feide"
+    "feide",
+    "sds",
+    "sync",
+    "vis",
+    "visma"
   ],
   "user": {
-    "userPrincipalName": "bjarne.betjent@vtfk.no",
+    "userPrincipalName": "bjarne.betjent@vtfk.no", // can also be "displayName", "samAccountName" or "employeeNumber"
     "expectedType": "employee|student",
     ...userProps
   }
@@ -162,9 +166,9 @@ Get person object(s) and membership(s) for user account
 }
 ```
 
-### `/system/pifu`
+### `/system/vis`
 
-Get raw info for user
+Get user info from school source system
 
 #### employeeNumber
 ```json
@@ -208,6 +212,9 @@ Get Azure Active Directory user account + authentication methods
         "FEIDE_MFA_SMS": "urn:mace:feide.no:auth:method:sms",
         "FEIDE_PRINCIPAL_NAME": "@vtfk.no",
         "FEIDE_ORGANIZATION_DN": "O=Vestfold og Telemark fylkeskommune,DC=vtfk,DC=no",
+        "FINT_API_URL": "https://fint.dev/api",
+        "FINT_BETA": false,
+        "FINT_JWT_SECRET": "Very very secret secret",
         "GRAPH_USER_PROPERTIES": "accountEnabled,assignedLicenses,birthday,businessPhones,companyName,createdDateTime,deletedDateTime,department,displayName,givenName,jobTitle,lastPasswordChangeDateTime,mail,mobilePhone,onPremisesDistinguishedName,onPremisesExtensionAttributes,onPremisesLastSyncDateTime,onPremisesProvisioningErrors,onPremisesSamAccountName,onPremisesSyncEnabled,proxyAddresses,signInSessionsValidFromDateTime,surname,userPrincipalName",
         "MONGODB_CONNECTION": "mongodb+srv://<user>:<password>@cluster0.jlu5j.azure.mongodb.net?retryWrites=true&w=majority",
         "MONGODB_COLLECTION": "collection",
@@ -217,13 +224,9 @@ Get Azure Active Directory user account + authentication methods
         "PAPERTRAIL_PORT": 100,
         "PAPERTRAIL_HOSTNAME": "hostname",
         "PAPERTRAIL_DISABLE_LOGGING": true,
-        "PIFU_MEMBERSHIP_EMPLOYEE_ROLETYPE": "02",
-        "PIFU_MEMBERSHIP_STUDENT_ROLETYPE": "01",
-        "PIFU_PERSON_EMPLOYEE_TYPE": "workforceID",
-        "PIFU_PERSON_STUDENT_TYPE": "studentID",
         "RETRY_WAIT": 10000,
         "SCRIPT_SERVICE_URL": "https://localhost/dust/invoke",
-        "SOURCE_DATA_SYSTEMS": "ad,pifu,visma",
+        "SOURCE_DATA_SYSTEMS": "ad,vis,visma",
         "STATUS_ENDPOINT": "status",
         "STATUS_URL": "http://localhost:7071/api",
         "VISMA_COMPANY_ID": "1",

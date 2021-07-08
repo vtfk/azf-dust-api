@@ -32,16 +32,16 @@ module.exports = (systemData, user, allData = false) => ([
         else if (!systemData.accountEnabled && !data.visma.active) return warn('Kontoen er deaktivert', data)
       }
     } else {
-      if (allData.pifu) {
-        data.pifu = getActiveSourceData(allData.pifu, user)
-        if (systemData.accountEnabled && data.pifu.active) return success('Kontoen er aktivert', data)
-        else if (systemData.accountEnabled && !data.pifu.active) return error('Kontoen er aktivert selvom elev har sluttet', data)
-        else if (!systemData.accountEnabled && data.pifu.active) return warn('Kontoen er deaktivert. Eleven må aktivere sin konto', data)
-        else if (!systemData.accountEnabled && !data.pifu.active) return warn('Kontoen er deaktivert', data)
+      if (allData.vis) {
+        data.vis = getActiveSourceData(allData.vis, user)
+        if (systemData.accountEnabled && data.vis.active) return success('Kontoen er aktivert', data)
+        else if (systemData.accountEnabled && !data.vis.active) return error('Kontoen er aktivert selvom elev har sluttet', data)
+        else if (!systemData.accountEnabled && data.vis.active) return warn('Kontoen er deaktivert. Eleven må aktivere sin konto', data)
+        else if (!systemData.accountEnabled && !data.vis.active) return warn('Kontoen er deaktivert', data)
       }
     }
 
-    if (!allData.visma && !allData.pifu) return systemData.accountEnabled ? success('Kontoen er aktivert', data) : error('Kontoen er deaktivert', data)
+    if (!allData.visma && !allData.vis) return systemData.accountEnabled ? success('Kontoen er aktivert', data) : error('Kontoen er deaktivert', data)
   }),
   test('aad-03', 'UPN er lik e-postadressen', 'Sjekker at UPN-et er lik e-postadressen i AD', () => {
     if (!dataPresent) return noData()
