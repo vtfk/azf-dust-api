@@ -98,8 +98,7 @@ module.exports = (systemData, user, allData = false) => ([
           if (systemData.distinguishedName.includes(SYSTEMS.AD.EMPLOYEE_ENABLED_OU)) return error('OU er ikke korrekt', data)
           else return success('OU er korrekt', data)
         }
-      }
-      else {
+      } else {
         if (data.visma && data.visma.active) {
           data.ou.expected = SYSTEMS.AD.EMPLOYEE_ENABLED_OU
           if (systemData.distinguishedName.includes(SYSTEMS.AD.EMPLOYEE_ENABLED_OU)) return success('OU er korrekt', data)
