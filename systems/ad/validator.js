@@ -79,14 +79,37 @@ module.exports = (systemData, user, allData = false) => ([
     if (!dataPresent) return noData()
     const data = {
       distinguishedName: systemData.distinguishedName,
-      expectedOU: user.expectedType === 'employee' ? (systemData.enabled ? SYSTEMS.AD.EMPLOYEE_ENABLED_OU : SYSTEMS.AD.EMPLOYEE_DISABLED_OU) : (systemData.enabled ? SYSTEMS.AD.STUDENT_ENABLED_OU : SYSTEMS.AD.STUDENT_DISABLED_OU),
+      ou: {
+        expected: '',
+        current: systemData.distinguishedName.slice(systemData.distinguishedName.indexOf(',') + 1)
+      },
       enabled: systemData.enabled
     }
 
     if (user.expectedType === 'employee') {
       if (allData.visma) data.visma = getActiveSourceData(allData.visma, user)
-      if (systemData.enabled) return systemData.distinguishedName.includes(SYSTEMS.AD.EMPLOYEE_ENABLED_OU) ? success('OU er korrekt', data) : error('OU er ikke korrekt', data)
-      else return systemData.distinguishedName.includes(SYSTEMS.AD.EMPLOYEE_DISABLED_OU) ? success('OU er korrekt', data) : error('OU er ikke korrekt', data)
+      if (systemData.enabled) {
+        if (data.visma && data.visma.active) {
+          data.ou.expected = SYSTEMS.AD.EMPLOYEE_ENABLED_OU
+          if (systemData.distinguishedName.includes(SYSTEMS.AD.EMPLOYEE_ENABLED_OU)) return success('OU er korrekt', data)
+          else return error('OU er ikke korrekt', data)
+        } else {
+          data.ou.expected = SYSTEMS.AD.EMPLOYEE_DISABLED_OU
+          if (systemData.distinguishedName.includes(SYSTEMS.AD.EMPLOYEE_ENABLED_OU)) return error('OU er ikke korrekt', data)
+          else return success('OU er korrekt', data)
+        }
+      }
+      else {
+        if (data.visma && data.visma.active) {
+          data.ou.expected = SYSTEMS.AD.EMPLOYEE_ENABLED_OU
+          if (systemData.distinguishedName.includes(SYSTEMS.AD.EMPLOYEE_ENABLED_OU)) return success('OU er korrekt', data)
+          else return error('OU er ikke korrekt', data)
+        } else {
+          data.ou.expected = SYSTEMS.AD.EMPLOYEE_DISABLED_OU
+          if (systemData.distinguishedName.includes(SYSTEMS.AD.EMPLOYEE_DISABLED_OU)) return success('OU er korrekt', data)
+          else return error('OU er ikke korrekt', data)
+        }
+      }
     } else {
       if (allData.pifu) data.pifu = getActiveSourceData(allData.pifu, user)
       if (systemData.enabled) return systemData.distinguishedName.includes(SYSTEMS.AD.STUDENT_ENABLED_OU) ? success('OU er korrekt', data) : error('OU er ikke korrekt', data)
