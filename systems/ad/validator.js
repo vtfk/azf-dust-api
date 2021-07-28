@@ -4,6 +4,8 @@ const { hasData } = require('../../lib/helpers/system-data')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const getActiveSourceData = require('../../lib/helpers/get-active-source-data')
 
+const hasCorrectCompany = company => /(\w.+ [vV]id.+ [sS]k.+)|([Ff]agskolen [Vv]estfold og [Tt]elemark)|([Kk]ompetansebyggeren)/.test(company)
+
 let dataPresent = true
 
 module.exports = (systemData, user, allData = false) => ([
@@ -150,5 +152,17 @@ module.exports = (systemData, user, allData = false) => ([
       surName: systemData.sn
     }
     return systemData.givenName.includes('.') ? warn('Navn har punktum', data) : noData()
+  }),
+  test('ad-14', 'Riktig company', 'Sjekker at bruker har rett company-info', () => {
+    if (!dataPresent) return noData()
+
+    const data = {
+      company: user.company
+    }
+
+    if (user.expectedType === 'student') {
+      if (user.company) return hasCorrectCompany(user.company) ? success('Bruker har riktig company', data) : error('Bruker har ikke skolenavn i company-feltet', data)
+      else return error('Bruker mangler info i company-feltet', data)
+    } else return noData()
   })
 ])
