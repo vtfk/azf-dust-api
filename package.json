@@ -27,14 +27,14 @@
     "@vtfk/logger": "2.5.2",
     "axios": "0.21.1",
     "azure-ad-verify-token": "1.1.1",
-    "durable-functions": "1.4.6",
+    "durable-functions": "1.5.2",
     "jsonwebtoken": "8.5.1",
-    "mongodb": "3.6.9",
+    "mongodb": "4.0.1",
     "node-cache": "5.1.2",
     "qs": "6.10.1"
   },
   "devDependencies": {
-    "jest": "27.0.4",
+    "jest": "27.0.6",
     "standard": "16.0.3"
   },
   "standard": {
