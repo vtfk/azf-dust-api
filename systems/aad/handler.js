@@ -22,11 +22,6 @@ module.exports = async (params) => {
     ...params,
     subQuery: 'authentication/methods',
     properties: undefined
-  })
-  const graphUserAuthPhoneOptions = getGraphOptions({
-    ...params,
-    subQuery: 'authentication/phoneMethods',
-    properties: undefined
   }, true)
   const graphSignInsOptions = getGraphOptions({
     ...params,
@@ -46,10 +41,6 @@ module.exports = async (params) => {
   const graphUserAuth = await getGraphData(graphUserAuthOptions, token)
   logger('info', ['aad', 'graph-user-mfa-methods', params.userPrincipalName, 'finish', 'received', (graphUserAuth && graphUserAuth.value && graphUserAuth.value.length) || 0])
 
-  logger('info', ['aad', 'graph-user-mfa-phone', params.userPrincipalName, 'start'])
-  const graphUserAuthPhone = await getGraphData(graphUserAuthPhoneOptions, token)
-  logger('info', ['aad', 'graph-user-mfa-phone', params.userPrincipalName, 'finish', 'received', (graphUserAuthPhone && graphUserAuthPhone.value && graphUserAuthPhone.value.length) || 0])
-
   logger('info', ['aad', 'graph-user-signin-errors', params.userPrincipalName, 'start'])
   const graphUserSignIns = await getGraphData(graphSignInsOptions, token)
   logger('info', ['aad', 'graph-user-signin-errors', params.userPrincipalName, 'finish', 'received', (graphUserSignIns && graphUserSignIns.value && graphUserAuth.value.length) || 0])
@@ -57,10 +48,7 @@ module.exports = async (params) => {
   return getResponse({
     ...graphUser,
     transitiveMemberOf: graphUserGroups.value,
-    authenticationMethods: [
-      ...graphUserAuth.value,
-      ...graphUserAuthPhone.value
-    ],
+    authenticationMethods: graphUserAuth.value,
     userSignInErrors: graphUserSignIns.value
   })
 }
