@@ -213,6 +213,15 @@ module.exports = (systemData, user, allData = false) => ([
   test('visma-09', 'Har mobilePhone satt', 'Sjekker at bruker har satt mobilePhone i Visma', () => {
     if (!dataPresent) return noData()
     return hasData(systemData.contactInfo.mobilePhone) ? success('Bruker har fylt ut ☎️ på MinSide') : warn('Bruker har ikke fylt ut ☎️ på MinSide og vil ikke kunne motta informasjon på SMS')
+  }),
+  test('visma-10', 'Navn har ropebokstaver', 'Sjekker om navnet er skrevet med ropebokstaver', () => {
+    if (!dataPresent) return noData()
+
+    const data = {
+      givenName: systemData.givenName,
+      familyName: systemData.familyName
+    }
+    return (systemData.givenName === systemData.givenName.toUpperCase() || systemData.familyName === systemData.familyName.toUpperCase()) ? warn('Navn er skrevet med ropebokstaver', data) : noData()
   })
 ])
 
