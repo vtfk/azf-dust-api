@@ -48,608 +48,207 @@ const mockData = {
     whenChanged: '2021-03-18T09:47:48+00:00',
     whenCreated: '2019-03-15T07:46:11+00:00'
   },
-  pifu: {
+  vis: {
     person: {
-      sourcedid: {
-        source: 'VFK',
-        id: '12128015478'
+      navn: {
+        fornavn: 'Dyktig',
+        mellomnavn: null,
+        etternavn: 'Tusenfryd'
       },
-      userid: [
-        {
-          text: '12128015478',
-          useridtype: 'personNIN'
-        },
-        {
-          text: 'DYT12',
-          useridtype: 'username'
-        },
-        {
-          text: 'DYT12',
-          useridtype: 'workforceID'
-        }
-      ],
-      name: {
-        fn: 'Dyktig Tusenfryd',
-        n: {
-          family: 'Tusenfryd',
-          given: 'Dyktig'
-        }
+      kontaktinformasjon: {
+        epostadresse: null,
+        mobiltelefonnummer: '12345678',
+        telefonnummer: '12345678'
       },
-      demographics: {
-        gender: {
-          $numberInt: '1'
-        },
-        bday: '1980-12-12'
+      fodselsdato: '1980-12-12T00:00:00Z',
+      fodselsnummer: {
+        identifikatorverdi: '12128015478'
       },
-      email: 'dyktig.tusenfryd@vtfk.no',
-      tel: {
-        text: '+4712345678',
-        teltype: '3'
+      kjonn: {
+        kode: '2'
       },
-      adr: {
-        street: 'Veien 78611',
-        locality: 'BORDPLATE',
-        pcode: {
-          $numberInt: '9999'
-        }
-      },
-      extension: {
-        pifu_email: [
-          {
-            text: 'dyktig.tusenfryd@vtfk.no',
-            type: 'personEmailAtOrg'
-          },
-          {
-            text: 'dyktig.Tusenfryd@vtfk.no',
-            type: 'personEmailPrivate'
-          }
+      bostedsadresse: {
+        adresselinje: [
+          'Veien 78611'
         ],
-        pifu_tel: {
-          text: '+4712345678',
-          type: 'personMobileAtOrg'
+        postnummer: '9999',
+        poststed: 'BORDPLATE'
+      },
+      elev: null,
+      personalressurs: {
+        ansettelsesperiode: {
+          start: '2009-02-16T00:00:00Z',
+          slutt: null
         },
-        pifu_adr: {
-          type: 'personPostalAddressPrivate',
-          adr: {
-            street: 'Veien 78611',
-            locality: 'BORDPLATE',
-            pcode: {
-              $numberInt: '9999'
-            }
+        arbeidsforhold: [
+          {
+            stillingstittel: 'Sensor',
+            ansettelsesprosent: 0,
+            gyldighetsperiode: {
+              start: '2020-01-01T00:00:00Z',
+              slutt: '2020-08-31T23:59:59Z'
+            },
+            undervisningsforhold: [
+              {
+                navn: '3STG/HIS1002',
+                periode: [
+                  {
+                    start: '2020-08-17T00:00:00Z',
+                    slutt: '2021-06-18T00:00:00Z'
+                  }
+                ],
+                skolear: {
+                  navn: '20202021'
+                },
+                skole: {
+                  navn: 'Porsgrunn videregående skole'
+                }
+              },
+              {
+                navn: '3STG/NOR1211',
+                periode: [
+                  {
+                    start: '2020-08-17T00:00:00Z',
+                    slutt: '2021-06-18T00:00:00Z'
+                  }
+                ],
+                skolear: {
+                  navn: '20202021'
+                },
+                skole: {
+                  navn: 'Porsgrunn videregående skole'
+                }
+              },
+              {
+                navn: '3STG/KRO1006',
+                periode: [
+                  {
+                    start: '2020-08-17T00:00:00Z',
+                    slutt: '2021-06-18T00:00:00Z'
+                  }
+                ],
+                skolear: {
+                  navn: '20202021'
+                },
+                skole: {
+                  navn: 'Porsgrunn videregående skole'
+                }
+              }
+            ]
+          },
+          {
+            stillingstittel: 'Adjunkt',
+            ansettelsesprosent: 10000,
+            gyldighetsperiode: {
+              start: '2020-09-01T00:00:00Z',
+              slutt: null
+            },
+            undervisningsforhold: [
+              {
+                navn: '3STG/HIS1002',
+                periode: [
+                  {
+                    start: '2020-08-17T00:00:00Z',
+                    slutt: '2021-06-18T00:00:00Z'
+                  }
+                ],
+                skolear: {
+                  navn: '20202021'
+                },
+                skole: {
+                  navn: 'Porsgrunn videregående skole'
+                }
+              },
+              {
+                navn: '3STG/NOR1211',
+                periode: [
+                  {
+                    start: '2020-08-17T00:00:00Z',
+                    slutt: '2021-06-18T00:00:00Z'
+                  }
+                ],
+                skolear: {
+                  navn: '20202021'
+                },
+                skole: {
+                  navn: 'Porsgrunn videregående skole'
+                }
+              },
+              {
+                navn: '3STG/KRO1006',
+                periode: [
+                  {
+                    start: '2020-08-17T00:00:00Z',
+                    slutt: '2021-06-18T00:00:00Z'
+                  }
+                ],
+                skolear: {
+                  navn: '20202021'
+                },
+                skole: {
+                  navn: 'Porsgrunn videregående skole'
+                }
+              }
+            ]
+          },
+          {
+            stillingstittel: 'Sensor',
+            ansettelsesprosent: 0,
+            gyldighetsperiode: {
+              start: '2020-09-01T00:00:00Z',
+              slutt: null
+            },
+            undervisningsforhold: [
+              {
+                navn: '3STG/HIS1002',
+                periode: [
+                  {
+                    start: '2020-08-17T00:00:00Z',
+                    slutt: '2021-06-18T00:00:00Z'
+                  }
+                ],
+                skolear: {
+                  navn: '20202021'
+                },
+                skole: {
+                  navn: 'Porsgrunn videregående skole'
+                }
+              },
+              {
+                navn: '3STG/NOR1211',
+                periode: [
+                  {
+                    start: '2020-08-17T00:00:00Z',
+                    slutt: '2021-06-18T00:00:00Z'
+                  }
+                ],
+                skolear: {
+                  navn: '20202021'
+                },
+                skole: {
+                  navn: 'Porsgrunn videregående skole'
+                }
+              },
+              {
+                navn: '3STG/KRO1006',
+                periode: [
+                  {
+                    start: '2020-08-17T00:00:00Z',
+                    slutt: '2021-06-18T00:00:00Z'
+                  }
+                ],
+                skolear: {
+                  navn: '20202021'
+                },
+                skole: {
+                  navn: 'Porsgrunn videregående skole'
+                }
+              }
+            ]
           }
-        }
+        ]
       }
-    },
-    memberships: [
-      {
-        sourcedid: {
-          source: 'VFK',
-          id: 'E_NVS@38030'
-        },
-        member: {
-          sourcedid: {
-            source: 'VFK',
-            id: '12128015478'
-          },
-          idtype: {
-            $numberInt: '1'
-          },
-          role: {
-            roletype: '02',
-            status: {
-              $numberInt: '1'
-            },
-            timeframe: {
-              begin: {
-                text: '2016-08-01',
-                restrict: '0'
-              },
-              end: {
-                text: '2021-07-31',
-                restrict: '0'
-              }
-            }
-          }
-        }
-      },
-      {
-        sourcedid: {
-          source: 'VFK',
-          id: '0_NVS@38030'
-        },
-        member: {
-          sourcedid: {
-            source: 'VFK',
-            id: '12128015478'
-          },
-          idtype: {
-            $numberInt: '1'
-          },
-          role: {
-            roletype: '02',
-            status: {
-              $numberInt: '1'
-            },
-            timeframe: {
-              begin: {
-                text: '2020-08-01',
-                restrict: '0'
-              },
-              end: {
-                text: '2021-07-31',
-                restrict: '0'
-              }
-            }
-          }
-        }
-      },
-      {
-        sourcedid: {
-          source: 'VFK',
-          id: '0_NVS@38030'
-        },
-        member: {
-          sourcedid: {
-            source: 'VFK',
-            id: '12128015478'
-          },
-          idtype: {
-            $numberInt: '1'
-          },
-          role: {
-            roletype: '02',
-            status: {
-              $numberInt: '1'
-            },
-            timeframe: {
-              begin: {
-                text: '2020-08-01',
-                restrict: '0'
-              },
-              end: {
-                text: '2021-07-31',
-                restrict: '0'
-              }
-            }
-          }
-        }
-      },
-      {
-        sourcedid: {
-          source: 'VFK',
-          id: '8_NVS@38030'
-        },
-        member: {
-          sourcedid: {
-            source: 'VFK',
-            id: '12128015478'
-          },
-          idtype: {
-            $numberInt: '1'
-          },
-          role: {
-            roletype: '02',
-            status: {
-              $numberInt: '1'
-            },
-            timeframe: {
-              begin: {
-                text: '2020-08-01',
-                restrict: '0'
-              },
-              end: {
-                text: '2021-07-31',
-                restrict: '0'
-              }
-            }
-          }
-        }
-      },
-      {
-        sourcedid: {
-          source: 'VFK',
-          id: '8_NVS@38030'
-        },
-        member: {
-          sourcedid: {
-            source: 'VFK',
-            id: '12128015478'
-          },
-          idtype: {
-            $numberInt: '1'
-          },
-          role: {
-            roletype: '02',
-            status: {
-              $numberInt: '1'
-            },
-            timeframe: {
-              begin: {
-                text: '2020-08-01',
-                restrict: '0'
-              },
-              end: {
-                text: '2021-07-31',
-                restrict: '0'
-              }
-            }
-          }
-        }
-      },
-      {
-        sourcedid: {
-          source: 'VFK',
-          id: '2_NVS@38030'
-        },
-        member: {
-          sourcedid: {
-            source: 'VFK',
-            id: '12128015478'
-          },
-          idtype: {
-            $numberInt: '1'
-          },
-          role: {
-            roletype: '02',
-            status: {
-              $numberInt: '1'
-            },
-            timeframe: {
-              begin: {
-                text: '2020-08-01',
-                restrict: '0'
-              },
-              end: {
-                text: '2021-07-31',
-                restrict: '0'
-              }
-            }
-          }
-        }
-      },
-      {
-        sourcedid: {
-          source: 'VFK',
-          id: '2_NVS@38030'
-        },
-        member: {
-          sourcedid: {
-            source: 'VFK',
-            id: '12128015478'
-          },
-          idtype: {
-            $numberInt: '1'
-          },
-          role: {
-            roletype: '02',
-            status: {
-              $numberInt: '1'
-            },
-            timeframe: {
-              begin: {
-                text: '2020-08-01',
-                restrict: '0'
-              },
-              end: {
-                text: '2021-07-31',
-                restrict: '0'
-              }
-            }
-          }
-        }
-      },
-      {
-        sourcedid: {
-          source: 'VFK',
-          id: '_FRVS@38032'
-        },
-        member: {
-          sourcedid: {
-            source: 'VFK',
-            id: '12128015478'
-          },
-          idtype: {
-            $numberInt: '1'
-          },
-          role: {
-            roletype: '02',
-            status: {
-              $numberInt: '1'
-            },
-            timeframe: {
-              begin: {
-                text: '2020-08-01',
-                restrict: '0'
-              },
-              end: {
-                text: '2021-07-31',
-                restrict: '0'
-              }
-            }
-          }
-        }
-      },
-      {
-        sourcedid: {
-          source: 'VFK',
-          id: '_FRVS@38032'
-        },
-        member: {
-          sourcedid: {
-            source: 'VFK',
-            id: '12128015478'
-          },
-          idtype: {
-            $numberInt: '1'
-          },
-          role: {
-            roletype: '02',
-            status: {
-              $numberInt: '1'
-            },
-            timeframe: {
-              begin: {
-                text: '2020-08-01',
-                restrict: '0'
-              },
-              end: {
-                text: '2021-07-31',
-                restrict: '0'
-              }
-            }
-          }
-        }
-      },
-      {
-        sourcedid: {
-          source: 'VFK',
-          id: '_FRVS@38032'
-        },
-        member: {
-          sourcedid: {
-            source: 'VFK',
-            id: '12128015478'
-          },
-          idtype: {
-            $numberInt: '1'
-          },
-          role: {
-            roletype: '02',
-            status: {
-              $numberInt: '1'
-            },
-            timeframe: {
-              begin: {
-                text: '2020-08-01',
-                restrict: '0'
-              },
-              end: {
-                text: '2021-07-31',
-                restrict: '0'
-              }
-            }
-          }
-        }
-      },
-      {
-        sourcedid: {
-          source: 'VFK',
-          id: '_FRVS@38032'
-        },
-        member: {
-          sourcedid: {
-            source: 'VFK',
-            id: '12128015478'
-          },
-          idtype: {
-            $numberInt: '1'
-          },
-          role: {
-            roletype: '02',
-            status: {
-              $numberInt: '1'
-            },
-            timeframe: {
-              begin: {
-                text: '2020-08-01',
-                restrict: '0'
-              },
-              end: {
-                text: '2021-07-31',
-                restrict: '0'
-              }
-            }
-          }
-        }
-      },
-      {
-        sourcedid: {
-          source: 'VFK',
-          id: '_FRVS@38032'
-        },
-        member: {
-          sourcedid: {
-            source: 'VFK',
-            id: '12128015478'
-          },
-          idtype: {
-            $numberInt: '1'
-          },
-          role: {
-            roletype: '02',
-            status: {
-              $numberInt: '1'
-            },
-            timeframe: {
-              begin: {
-                text: '2020-08-01',
-                restrict: '0'
-              },
-              end: {
-                text: '2021-07-31',
-                restrict: '0'
-              }
-            }
-          }
-        }
-      },
-      {
-        sourcedid: {
-          source: 'VFK',
-          id: 'K_NVS@38030'
-        },
-        member: {
-          sourcedid: {
-            source: 'VFK',
-            id: '12128015478'
-          },
-          idtype: {
-            $numberInt: '1'
-          },
-          role: {
-            roletype: '02',
-            status: {
-              $numberInt: '1'
-            },
-            timeframe: {
-              begin: {
-                text: '2020-08-01',
-                restrict: '0'
-              },
-              end: {
-                text: '2021-07-31',
-                restrict: '0'
-              }
-            }
-          }
-        }
-      },
-      {
-        sourcedid: {
-          source: 'VFK',
-          id: 'G_NVS@38030'
-        },
-        member: {
-          sourcedid: {
-            source: 'VFK',
-            id: '12128015478'
-          },
-          idtype: {
-            $numberInt: '1'
-          },
-          role: {
-            roletype: '02',
-            status: {
-              $numberInt: '1'
-            },
-            timeframe: {
-              begin: {
-                text: '2020-08-01',
-                restrict: '0'
-              },
-              end: {
-                text: '2021-07-31',
-                restrict: '0'
-              }
-            }
-          }
-        }
-      },
-      {
-        sourcedid: {
-          source: 'VFK',
-          id: '6_NVS@38030'
-        },
-        member: {
-          sourcedid: {
-            source: 'VFK',
-            id: '12128015478'
-          },
-          idtype: {
-            $numberInt: '1'
-          },
-          role: {
-            roletype: '02',
-            status: {
-              $numberInt: '1'
-            },
-            timeframe: {
-              begin: {
-                text: '2020-08-01',
-                restrict: '0'
-              },
-              end: {
-                text: '2021-07-31',
-                restrict: '0'
-              }
-            }
-          }
-        }
-      },
-      {
-        sourcedid: {
-          source: 'VFK',
-          id: '0FRVS@38032'
-        },
-        member: {
-          sourcedid: {
-            source: 'VFK',
-            id: '12128015478'
-          },
-          idtype: {
-            $numberInt: '1'
-          },
-          role: {
-            roletype: '02',
-            status: {
-              $numberInt: '1'
-            }
-          }
-        }
-      },
-      {
-        sourcedid: {
-          source: 'VFK',
-          id: '00NVS@38030'
-        },
-        member: {
-          sourcedid: {
-            source: 'VFK',
-            id: '12128015478'
-          },
-          idtype: {
-            $numberInt: '1'
-          },
-          role: {
-            roletype: '02',
-            status: {
-              $numberInt: '1'
-            }
-          }
-        }
-      },
-      {
-        sourcedid: {
-          source: 'VFK',
-          id: '00000000007'
-        },
-        member: {
-          sourcedid: {
-            source: 'VFK',
-            id: '12128015478'
-          },
-          idtype: {
-            $numberInt: '1'
-          },
-          role: {
-            roletype: '02',
-            status: {
-              $numberInt: '1'
-            }
-          }
-        }
-      }
-    ]
+    }
   },
   sds: [
     {

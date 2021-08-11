@@ -3,12 +3,12 @@ const { SYSTEMS } = require('../../config')
 const { hasData } = require('../../lib/helpers/system-data')
 const isWithinTimeRange = require('../../lib/helpers/is-within-timerange')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
-const { getActiveMemberships } = require('../pifu/validator')
+const { getActiveMemberships } = require('../vis/validator')
 const isTeacher = require('../../lib/helpers/is-teacher')
 const isSchoolEmployee = require('../../lib/helpers/is-school-employee')
 
 const repackEntitlements = data => data.filter(entitlement => entitlement.startsWith('urn:mace:feide.no:go:group:u:')).map(entitlement => entitlement.replace('urn:mace:feide.no:go:group:u:', '').split(':')[2].replace('%2F', '/').toLowerCase())
-const repackMemberships = data => data.filter(membership => membership.sourcedid.id.includes('/') && !/\/ord|_ord|\/atf|_atf/.test(membership.sourcedid.id.toLowerCase())).map(membership => membership.sourcedid.id.split('_')[1].toLowerCase())
+const repackMemberships = data => data.filter(membership => membership.navn.includes('/')).map(membership => membership.navn.toLowerCase())
 
 let dataPresent = true
 
@@ -167,7 +167,7 @@ module.exports = (systemData, user, allData = false) => ([
       eduPersonOrgUnitDN: systemData.eduPersonOrgUnitDN || null
     }
     if (!hasData(systemData.eduPersonOrgUnitDN)) {
-      return hasData(allData.pifu) ? error('Knytning til skole mangler 🤭', data) : success('Ingen knytning til skole funnet. Dette er riktig da bruker ikke finnes i Extens', data)
+      return hasData(allData.vis) ? error('Knytning til skole mangler 🤭', data) : success('Ingen knytning til skole funnet. Dette er riktig da bruker ikke finnes i ViS', data)
     }
     return success('Knytning til skole funnet', data)
   }),
@@ -213,21 +213,21 @@ module.exports = (systemData, user, allData = false) => ([
   test('feide-18', 'Har grupperettigheter', 'Sjekker at det er satt grupperettigheter', () => {
     if (!dataPresent) return noData()
     if (!allData) return waitForData()
-    if (!hasData(allData.pifu)) return success('Ingen grupperettigheter funnet. Dette er riktig da bruker ikke finnes i Extens', allData.pifu)
+    if (!hasData(allData.vis)) return success('Ingen grupperettigheter funnet. Dette er riktig da bruker ikke finnes i ViS', allData.vis)
 
     const repackedEntitlements = repackEntitlements(systemData.eduPersonEntitlement)
-    const activeMemberships = getActiveMemberships(allData.pifu.memberships)
+    const activeMemberships = getActiveMemberships(allData.vis)
     const repackedMemberships = repackMemberships(activeMemberships)
     const data = {
       feide: {
         eduPersonEntitlement: systemData.eduPersonEntitlement || null
       },
-      pifu: {
+      vis: {
         activeMemberships
       }
     }
     if (!hasData(systemData.eduPersonEntitlement)) {
-      return hasData(activeMemberships) ? error('Grupperettigheter mangler 🤭', data) : success('Ingen grupperettigheter funnet. Dette er riktig da bruker ikke har noen grupper i Extens', data)
+      return hasData(activeMemberships) ? error('Grupperettigheter mangler 🤭', data) : success('Ingen grupperettigheter funnet. Dette er riktig da bruker ikke har noen grupper i ViS', data)
     } else {
       const missingEntitlements = repackedMemberships.filter(membership => !repackedEntitlements.includes(membership))
       if (hasData(missingEntitlements)) {

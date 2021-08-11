@@ -28,16 +28,16 @@ module.exports = (systemData, user, allData = false) => ([
         else if (!systemData.enabled && !data.visma.active) return warn('Kontoen er deaktivert', data)
       }
     } else {
-      if (allData.pifu) {
-        data.pifu = getActiveSourceData(allData.pifu, user)
-        if (systemData.enabled && data.pifu.active) return success('Kontoen er aktivert', data)
-        else if (systemData.enabled && !data.pifu.active) return error('Kontoen er aktivert selvom elev har sluttet', data)
-        else if (!systemData.enabled && data.pifu.active) return warn('Kontoen er deaktivert. Eleven må aktivere sin konto', data)
-        else if (!systemData.enabled && !data.pifu.active) return warn('Kontoen er deaktivert', data)
+      if (allData.vis) {
+        data.vis = getActiveSourceData(allData.vis, user)
+        if (systemData.enabled && data.vis.active) return success('Kontoen er aktivert', data)
+        else if (systemData.enabled && !data.vis.active) return error('Kontoen er aktivert selvom elev har sluttet', data)
+        else if (!systemData.enabled && data.vis.active) return warn('Kontoen er deaktivert. Eleven må aktivere sin konto', data)
+        else if (!systemData.enabled && !data.vis.active) return warn('Kontoen er deaktivert', data)
       }
     }
 
-    if (!allData.visma && !allData.pifu) return systemData.enabled ? success('Kontoen er aktivert', data) : error('Kontoen er deaktivert', data)
+    if (!allData.visma && !allData.vis) return systemData.enabled ? success('Kontoen er aktivert', data) : error('Kontoen er deaktivert', data)
   }),
   test('ad-03', 'Kontoen er ulåst', 'Sjekker at kontoen ikke er sperret for pålogging i AD', () => {
     if (!dataPresent) return noData()
@@ -110,7 +110,7 @@ module.exports = (systemData, user, allData = false) => ([
         }
       }
     } else {
-      if (allData.pifu) data.pifu = getActiveSourceData(allData.pifu, user)
+      if (allData.vis) data.vis = getActiveSourceData(allData.vis, user)
       if (systemData.enabled) return systemData.distinguishedName.includes(SYSTEMS.AD.STUDENT_ENABLED_OU) ? success('OU er korrekt', data) : error('OU er ikke korrekt', data)
       else return systemData.distinguishedName.includes(SYSTEMS.AD.STUDENT_DISABLED_OU) ? success('OU er korrekt', data) : error('OU er ikke korrekt', data)
     }

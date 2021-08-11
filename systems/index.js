@@ -7,9 +7,9 @@ module.exports = {
     handle: require('./feide/handler'),
     validate: require('./feide/validator')
   },
-  pifu: {
-    handle: require('./pifu/handler'),
-    validate: require('./pifu/validator')
+  vis: {
+    handle: require('./vis/handler'),
+    validate: require('./vis/validator')
   },
   sds: {
     handle: require('./sds/handler'),
