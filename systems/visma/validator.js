@@ -208,9 +208,9 @@ module.exports = (systemData, user, allData = false) => ([
     if (positions === null || positions === undefined) return noData()
 
     const missingOrg = positions.filter(position => !position.chart)
-    return hasData(missingOrg) ? error('Mangler organisasjonstilknytning. Må rettes i Visma', missingOrg) : success('Har organisasjonstilknytning', positions)
+    return hasData(missingOrg) ? error('Mangler organisasjonstilknytning. Må rettes i Visma HRM', missingOrg) : success('Har organisasjonstilknytning', positions)
   }),
-  test('visma-09', 'Har mobilePhone satt', 'Sjekker at bruker har satt mobilePhone i Visma', () => {
+  test('visma-09', 'Har mobilePhone satt', 'Sjekker at bruker har satt mobilePhone i Visma HRM', () => {
     if (!dataPresent) return noData()
     return hasData(systemData.contactInfo.mobilePhone) ? success('Bruker har fylt ut ☎️ på MinSide') : warn('Bruker har ikke fylt ut ☎️ på MinSide og vil ikke kunne motta informasjon på SMS')
   }),
