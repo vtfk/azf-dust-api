@@ -33,7 +33,7 @@ module.exports = (systemData, user, allData = false) => ([
         else if (systemData.enabled && !data.vis.active) return error('Kontoen er aktivert selvom elev har sluttet', data)
         else if (!systemData.enabled && data.vis.active) return warn('Kontoen er deaktivert. Eleven må aktivere sin konto', data)
         else if (!systemData.enabled && !data.vis.active) return warn('Kontoen er deaktivert', data)
-      }
+      } else return systemData.enabled ? success('Kontoen er aktivert', data) : warn('Kontoen er deaktivert. Eleven må aktivere sin konto', data) // TODO: Fjerne denne når ViS eller tilsvarende er tilstede
     }
 
     if (!allData.visma && !allData.vis) return systemData.enabled ? success('Kontoen er aktivert', data) : error('Kontoen er deaktivert', data)
