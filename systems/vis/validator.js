@@ -76,6 +76,7 @@ module.exports = (systemData, user, allData = false) => ([
       else return error('Har ikke kontaktlærer(e) 😬', data)
     } else return error('Har ikke kontaktlærer(e) 😬', data)
   })
+  /* test('vis-02', 'Har aktivt forhold', 'Sjekker at bruker har aktivt forhold', () => {
     if (!dataPresent) return noData()
     const activeData = getActiveData(systemData)
     if (user.expectedType === 'student') {
@@ -140,7 +141,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (isTeacher(user.company, user.title)) return error('Mangler aktive gruppemedlemskap 🤭', activeMemberships)
     else if (user.expectedType === 'student') return warn('Mangler aktive gruppemedlemskap 🤭', activeMemberships)
     else return noData('Har ingen aktive gruppemedlemskap')
-  })
+  }) */
 ])
 
 module.exports.getActiveData = getActiveData
