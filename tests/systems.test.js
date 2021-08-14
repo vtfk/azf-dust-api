@@ -74,7 +74,207 @@ const mockData = {
         postnummer: '9999',
         poststed: 'BORDPLATE'
       },
-      elev: null,
+      elev: {
+        elevforhold: [
+          {
+            skole: {
+              navn: 'Sandefjord videregående skole'
+            },
+            gyldighetsperiode: {
+              start: '2021-08-01T00:00:00Z',
+              slutt: '2022-07-31T00:00:00Z'
+            },
+            basisgruppe: [
+              {
+                navn: '1HSC',
+                trinn: {
+                  navn: 'VG1'
+                },
+                termin: [
+                  {
+                    navn: 'T2'
+                  },
+                  {
+                    navn: 'T1'
+                  }
+                ],
+                skolear: {
+                  navn: '20212022'
+                },
+                periode: [
+                  {
+                    start: '2021-08-01T00:00:00Z',
+                    slutt: '2022-07-31T00:00:00Z'
+                  }
+                ]
+              }
+            ],
+            undervisningsgruppe: [
+              {
+                navn: '1HSC/NAT1011',
+                periode: [
+                  {
+                    start: '2021-08-01T00:00:00Z',
+                    slutt: '2022-07-31T00:00:00Z'
+                  }
+                ],
+                skolear: {
+                  navn: '20212022'
+                },
+                skole: {
+                  navn: 'Sandefjord videregående skole'
+                }
+              },
+              {
+                navn: 'ØKT-SKAL-BRUKES-TIL-GNO-HO',
+                periode: [
+                  {
+                    start: '2021-08-01T00:00:00Z',
+                    slutt: '2022-07-31T00:00:00Z'
+                  }
+                ],
+                skolear: {
+                  navn: '20212022'
+                },
+                skole: {
+                  navn: 'Sandefjord videregående skole'
+                }
+              },
+              {
+                navn: '1HSB1HSC/KRO1017',
+                periode: [
+                  {
+                    start: '2021-08-01T00:00:00Z',
+                    slutt: '2022-07-31T00:00:00Z'
+                  }
+                ],
+                skolear: {
+                  navn: '20212022'
+                },
+                skole: {
+                  navn: 'Sandefjord videregående skole'
+                }
+              },
+              {
+                navn: '1HSC/HSF1006',
+                periode: [
+                  {
+                    start: '2021-08-01T00:00:00Z',
+                    slutt: '2022-07-31T00:00:00Z'
+                  }
+                ],
+                skolear: {
+                  navn: '20212022'
+                },
+                skole: {
+                  navn: 'Sandefjord videregående skole'
+                }
+              },
+              {
+                navn: '1HSC/MAT1117',
+                periode: [
+                  {
+                    start: '2021-08-01T00:00:00Z',
+                    slutt: '2022-07-31T00:00:00Z'
+                  }
+                ],
+                skolear: {
+                  navn: '20212022'
+                },
+                skole: {
+                  navn: 'Sandefjord videregående skole'
+                }
+              },
+              {
+                navn: '1HSC/HSF1007',
+                periode: [
+                  {
+                    start: '2021-08-01T00:00:00Z',
+                    slutt: '2022-07-31T00:00:00Z'
+                  }
+                ],
+                skolear: {
+                  navn: '20212022'
+                },
+                skole: {
+                  navn: 'Sandefjord videregående skole'
+                }
+              },
+              {
+                navn: '1HSC/HSF1008',
+                periode: [
+                  {
+                    start: '2021-08-01T00:00:00Z',
+                    slutt: '2022-07-31T00:00:00Z'
+                  }
+                ],
+                skolear: {
+                  navn: '20212022'
+                },
+                skole: {
+                  navn: 'Sandefjord videregående skole'
+                }
+              },
+              {
+                navn: '1HSC/ENG1009',
+                periode: [
+                  {
+                    start: '2021-08-01T00:00:00Z',
+                    slutt: '2022-07-31T00:00:00Z'
+                  }
+                ],
+                skolear: {
+                  navn: '20212022'
+                },
+                skole: {
+                  navn: 'Sandefjord videregående skole'
+                }
+              },
+              {
+                navn: '1HSC/YFF4106',
+                periode: [
+                  {
+                    start: '2021-08-01T00:00:00Z',
+                    slutt: '2022-07-31T00:00:00Z'
+                  }
+                ],
+                skolear: {
+                  navn: '20212022'
+                },
+                skole: {
+                  navn: 'Sandefjord videregående skole'
+                }
+              }
+            ],
+            kontaktlarergruppe: [
+              {
+                navn: '1HSC',
+                undervisningsforhold: [
+                  {
+                    skoleressurs: {
+                      person: {
+                        fodselsnummer: {
+                          identifikatorverdi: '12128015478'
+                        },
+                        navn: {
+                          fornavn: 'Barbro',
+                          mellomnavn: '',
+                          etternavn: 'Løkesen'
+                        },
+                        kontaktinformasjon: {
+                          epostadresse: 'barbro.lokesen@vtfk.no',
+                          mobiltelefonnummer: null,
+                          telefonnummer: null
+                        }
+                      }
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
       personalressurs: {
         ansettelsesperiode: {
           start: '2009-02-16T00:00:00Z',
