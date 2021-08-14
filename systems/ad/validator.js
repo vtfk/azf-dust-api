@@ -84,7 +84,7 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return data.fnr.valid ? success(`Har gyldig ${data.fnr.type}`, data) : error(data.fnr.error, data)
   }),
-  test('ad-09', 'extensionAttribute6 er satt', 'Sjekker at extensionAttribute6 er satt', () => {
+  test('ad-08', 'extensionAttribute6 er satt', 'Sjekker at extensionAttribute6 er satt', () => {
     if (!dataPresent) return noData()
     const data = {
       extensionAttribute6: systemData.extensionAttribute6
@@ -92,7 +92,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (user.expectedType === 'employee') return hasData(systemData.extensionAttribute6) ? success('extensionAttribute6 er satt', data) : error('extensionAttribute6 mangler 🤭', data)
     else return hasData(systemData.extensionAttribute6) ? warn('extensionAttribute6 er satt på en elev. Elever trenger ikke denne', data) : success('extensionAttribute6 er ikke satt, men siden dette er en elev er det helt normalt', systemData)
   }),
-  test('ad-10', 'Har kun èn primær e-postadresse', 'Sjekker at brukeren har kun èn primær e-postadresse', () => {
+  test('ad-09', 'Har kun èn primær e-postadresse', 'Sjekker at brukeren har kun èn primær e-postadresse', () => {
     if (!dataPresent) return noData()
     const data = {
       proxyAddresses: systemData.proxyAddresses,
@@ -107,7 +107,7 @@ module.exports = (systemData, user, allData = false) => ([
       else return error(`Har ${data.primary.length} primær e-postadresser`, data)
     }
   }),
-  test('ad-11', 'Har state satt for ansatt', 'Sjekker at state er satt på ansatt', () => {
+  test('ad-10', 'Har state satt for ansatt', 'Sjekker at state er satt på ansatt', () => {
     if (!dataPresent) return noData()
     if (user.expectedType === 'student') return noData()
     if (user.expectedType === 'employee') {
@@ -115,7 +115,7 @@ module.exports = (systemData, user, allData = false) => ([
       else return error('Felt for lisens mangler 🤭', systemData)
     }
   }),
-  test('ad-12', 'Fornavn har punktum', 'Sjekker om fornavn har punktum', () => {
+  test('ad-11', 'Fornavn har punktum', 'Sjekker om fornavn har punktum', () => {
     if (!dataPresent) return noData()
 
     const data = {
@@ -125,7 +125,7 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return systemData.givenName.includes('.') ? warn('Navn har punktum', data) : noData()
   }),
-  test('ad-13', 'Riktig company', 'Sjekker at bruker har rett company-info', () => {
+  test('ad-12', 'Riktig company', 'Sjekker at bruker har rett company-info', () => {
     if (!dataPresent) return noData()
 
     const data = {
