@@ -64,7 +64,18 @@ module.exports = (systemData, user, allData = false) => ([
       else return success('Bruker har ikke data i dette systemet')
     } else return success('Har data')
   }),
-  test('vis-02', 'Har aktivt forhold', 'Sjekker at bruker har aktivt forhold', () => {
+  test('vis-02', 'Har kontaktlærer', 'Sjekker at bruker har kontaktlærer', () => {
+    if (!dataPresent) return noData()
+
+    if (systemData.person.elev && systemData.person.elev.elevforhold && systemData.person.elev.elevforhold.length > 0) {
+      const data = systemData.person.elev.elevforhold.map(elevforhold => ({ skole: elevforhold.skole.navn, kontaktlærere: elevforhold.kontaktlarergruppe.map(kontaktlærer => ({ klasse: kontaktlærer.navn, lærere: kontaktlærer.undervisningsforhold.map(undervisningsforhold => ({ fornavn: undervisningsforhold.skoleressurs.person.navn.fornavn, etternavn: undervisningsforhold.skoleressurs.person.navn.etternavn, epostadresse: undervisningsforhold.skoleressurs.person.kontaktinformasjon.epostadresse })) })) }))
+      const kontaktlærerCount = data.reduce((accumulator, current) => {
+        return accumulator + current.kontaktlærere.length
+      }, 0)
+      if (kontaktlærerCount > 0) return success(`Har ${kontaktlærerCount} ${kontaktlærerCount === 0 || kontaktlærerCount > 1 ? 'kontaktlærere' : 'kontaktlærer'}. Se mer på "Se data"`, (data.length === 0 || data.length > 1 ? data : data[0]))
+      else return error('Har ikke kontaktlærer(e) 😬', data)
+    } else return error('Har ikke kontaktlærer(e) 😬', data)
+  })
     if (!dataPresent) return noData()
     const activeData = getActiveData(systemData)
     if (user.expectedType === 'student') {
