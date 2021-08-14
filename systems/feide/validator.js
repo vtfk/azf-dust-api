@@ -122,7 +122,8 @@ module.exports = (systemData, user, allData = false) => ([
         userPrincipalName: allData.ad.userPrincipalName
       }
     }
-    if (systemData.mail === allData.ad.userPrincipalName) return success('E-postadresse er lik UPN', data)
+    if (!systemData.mail) return warn('Kontoen må aktiveres før bruker får mailadresse', data)
+    else if (systemData.mail === allData.ad.userPrincipalName) return success('E-postadresse er lik UPN', data)
     else return error('E-postadresse er ikke lik UPN', data)
   }),
   test('feide-11', 'Har knytning til en skole', 'Sjekker at det finnes knytning til minst èn skole', () => {

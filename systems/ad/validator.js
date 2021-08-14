@@ -64,6 +64,7 @@ module.exports = (systemData, user, allData = false) => ([
       mail: systemData.mail,
       userPrincipalName: systemData.userPrincipalName
     }
+    if (!systemData.mail) return warn('Kontoen må aktiveres før bruker får mailadresse', data)
     return systemData.userPrincipalName.toLowerCase() === systemData.mail.toLowerCase() ? success('UPN er lik e-postadressen', data) : error('UPN er ikke lik e-postadressen', data)
   }),
   test('ad-06', 'UPN er korrekt', 'Sjekker at UPN er @vtfk.no for ansatte, og @skole.vtfk.no for elever', () => {
