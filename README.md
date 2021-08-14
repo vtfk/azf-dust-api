@@ -197,10 +197,8 @@ Get Azure Active Directory user account + authentication methods
       "Values": {
         "FUNCTIONS_WORKER_RUNTIME": "node",
         "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-        "AD_EMPLOYEE_DISABLED_OU": "OU=DISABLED,OU=USERS,DC=vtfk,DC=no",
-        "AD_EMPLOYEE_ENABLED_OU": "OU=USERS,DC=vtfk,DC=no",
-        "AD_STUDENT_DISABLED_OU": "OU=DISABLED,OU=USERS,DC=vtfks,DC=no",
-        "AD_STUDENT_ENABLED_OU": "OU=USERS,DC=vtfks,DC=no",
+        "AD_SCHOOL_EMPLOYEE_PROPERTY_NAME": "extensionAttribute7",
+        "AD_SCHOOL_EMPLOYEE_PROPERTY_VALUE": "OF-ALLE",
         "CLIENT_ID": "0000000-0000-0000-0000-000000000000",
         "CLIENT_SECRET": "ljngbølnbljkdafsbløjkadbhpiuaergpiuearwhgpuiøo",
         "DEFAULT_CALLER": "noen.andre@vtfk.no",

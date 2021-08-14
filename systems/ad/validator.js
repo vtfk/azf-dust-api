@@ -1,5 +1,4 @@
 const { test, success, error, warn, noData } = require('../../lib/test')
-const { SYSTEMS } = require('../../config')
 const { hasData } = require('../../lib/helpers/system-data')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const getActiveSourceData = require('../../lib/helpers/get-active-source-data')
@@ -76,47 +75,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (user.expectedType === 'employee') return systemData.userPrincipalName.includes('@vtfk.no') ? success('UPN er korrekt', data) : error('UPN er ikke korrekt', data)
     else return systemData.userPrincipalName.includes('@skole.vtfk.no') ? success('UPN er korrekt', data) : error('UPN er ikke korrekt', data)
   }),
-  test('ad-07', 'OU er korrekt', 'Sjekker at bruker ligger i riktig OU', () => {
-    if (!dataPresent) return noData()
-    const data = {
-      distinguishedName: systemData.distinguishedName,
-      ou: {
-        expected: '',
-        current: systemData.distinguishedName.slice(systemData.distinguishedName.indexOf(',') + 1)
-      },
-      enabled: systemData.enabled
-    }
-
-    if (user.expectedType === 'employee') {
-      if (allData.visma) data.visma = getActiveSourceData(allData.visma, user)
-      if (systemData.enabled) {
-        if (data.visma && data.visma.active) {
-          data.ou.expected = SYSTEMS.AD.EMPLOYEE_ENABLED_OU
-          if (systemData.distinguishedName.includes(SYSTEMS.AD.EMPLOYEE_ENABLED_OU)) return success('OU er korrekt', data)
-          else return error('OU er ikke korrekt', data)
-        } else {
-          data.ou.expected = SYSTEMS.AD.EMPLOYEE_DISABLED_OU
-          if (systemData.distinguishedName.includes(SYSTEMS.AD.EMPLOYEE_ENABLED_OU)) return error('OU er ikke korrekt', data)
-          else return success('OU er korrekt', data)
-        }
-      } else {
-        if (data.visma && data.visma.active) {
-          data.ou.expected = SYSTEMS.AD.EMPLOYEE_ENABLED_OU
-          if (systemData.distinguishedName.includes(SYSTEMS.AD.EMPLOYEE_ENABLED_OU)) return success('OU er korrekt', data)
-          else return error('OU er ikke korrekt', data)
-        } else {
-          data.ou.expected = SYSTEMS.AD.EMPLOYEE_DISABLED_OU
-          if (systemData.distinguishedName.includes(SYSTEMS.AD.EMPLOYEE_DISABLED_OU)) return success('OU er korrekt', data)
-          else return error('OU er ikke korrekt', data)
-        }
-      }
-    } else {
-      if (allData.vis) data.vis = getActiveSourceData(allData.vis, user)
-      if (systemData.enabled) return systemData.distinguishedName.includes(SYSTEMS.AD.STUDENT_ENABLED_OU) ? success('OU er korrekt', data) : error('OU er ikke korrekt', data)
-      else return systemData.distinguishedName.includes(SYSTEMS.AD.STUDENT_DISABLED_OU) ? success('OU er korrekt', data) : error('OU er ikke korrekt', data)
-    }
-  }),
-  test('ad-08', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
+  test('ad-07', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
     if (!dataPresent) return noData()
     if (!systemData.employeeNumber) return error('Fødselsnummer mangler 🤭', systemData)
     const data = {
