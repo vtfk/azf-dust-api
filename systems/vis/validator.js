@@ -1,6 +1,6 @@
-const { test, success, warn, error, waitForData, noData } = require('../../lib/test')
+const { test, success, warn, error, /* waitForData */ noData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
-const isValidFnr = require('../../lib/helpers/is-valid-fnr')
+// const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const isTeacher = require('../../lib/helpers/is-teacher')
 const isSchoolEmployee = require('../../lib/helpers/is-school-employee')
 
@@ -26,7 +26,7 @@ const getMemberships = (data, expectedType) => {
   return membership
 }
 const getActiveMemberships = (data, expectedType) => getMemberships(data, expectedType).filter(item => !!item.periode && !!item.periode.slutt && new Date(item.periode.slutt) > new Date()) // isTeachingGroup(item.sourcedid.id)
-const getExpiredMemberships = memberships => hasData(memberships) ? memberships.filter(item => !!item.periode && !!item.periode.slutt && new Date(item.periode.slutt) < new Date()) : []
+// const getExpiredMemberships = memberships => hasData(memberships) ? memberships.filter(item => !!item.periode && !!item.periode.slutt && new Date(item.periode.slutt) < new Date()) : []
 const getActiveData = data => {
   const activeData = {
     employee: {
@@ -74,7 +74,7 @@ module.exports = (systemData, user, allData = false) => ([
       }, 0)
       if (kontaktlærerCount > 0) return success(`Har ${kontaktlærerCount} ${kontaktlærerCount === 0 || kontaktlærerCount > 1 ? 'kontaktlærere' : 'kontaktlærer'}. Se mer på "Se data"`, (data.length === 0 || data.length > 1 ? data : data[0]))
       else return error('Har ikke kontaktlærer(e) 😬', data)
-    } else return error('Har ikke kontaktlærer(e) 😬', data)
+    } else return error('Har ikke kontaktlærer(e) 😬')
   })
   /* test('vis-02', 'Har aktivt forhold', 'Sjekker at bruker har aktivt forhold', () => {
     if (!dataPresent) return noData()
