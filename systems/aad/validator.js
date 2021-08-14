@@ -75,7 +75,8 @@ module.exports = (systemData, user, allData = false) => ([
       },
       seconds: pwdCheck.seconds
     }
-    if (pwdCheck.result) return success('Passord synkronisert til Azure AD', data)
+    if (allData.ad.pwdLastSet === 0) return warn('Kontoen er ikke aktivert', data)
+    else if (pwdCheck.result) return success('Passord synkronisert til Azure AD', data)
     else return error('Passord ikke synkronisert', data)
   }),
   test('aad-06', 'Synkroniseres fra lokalt AD', 'Sjekker at synkronisering fra lokalt AD er aktivert', () => {
