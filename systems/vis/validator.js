@@ -66,7 +66,7 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('vis-02', 'Har kontaktlærer', 'Sjekker at bruker har kontaktlærer', () => {
     if (!dataPresent) return noData()
-    else if (user.expectedType === 'employee' && !isTeacher(user.company, user.title)) return success('Bruker har ikke data i dette systemet')
+    else if (user.expectedType === 'employee' && !isTeacher(user.company, user.title)) return success('Bruker har ikke relevante data i dette systemet')
 
     if (user.expectedType === 'student') {
       if (systemData.person.elev && systemData.person.elev.elevforhold && systemData.person.elev.elevforhold.length > 0) {
