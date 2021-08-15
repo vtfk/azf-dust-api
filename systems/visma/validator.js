@@ -132,6 +132,8 @@ let dataPresent = true
 module.exports = (systemData, user, allData = false) => ([
   test('visma-01', 'Har data', 'Sjekker at det finnes data her', () => {
     dataPresent = hasData(systemData)
+    if (user.expectedType === 'student') dataPresent = false
+    
     if (dataPresent) return user.expectedType === 'employee' ? success('Har data') : warn('Har data til tross for at dette er en elev')
     else return user.expectedType === 'employee' ? error('Mangler data 😬') : success('Bruker har ikke data i dette systemet')
   }),
