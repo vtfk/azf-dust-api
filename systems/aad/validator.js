@@ -75,7 +75,7 @@ module.exports = (systemData, user, allData = false) => ([
       },
       seconds: pwdCheck.seconds
     }
-    if (allData.ad.pwdLastSet === 0) return warn('Kontoen er ikke aktivert', data)
+    if (allData.ad.pwdLastSet === 0) return warn('Passord vil synkroniseres når konto er blitt aktivert', data)
     else if (pwdCheck.result) return success('Passord synkronisert til Azure AD', data)
     else return error('Passord ikke synkronisert', data)
   }),
@@ -115,7 +115,8 @@ module.exports = (systemData, user, allData = false) => ([
       if (data.aad.displayName !== data.ad.displayName) return (isLastChanged.seconds > 0 && isLastChanged.seconds < aadSyncInSeconds) || (isLastChanged.seconds < 0 && isLastChanged.seconds > -aadSyncInSeconds) ? warn('Forskjellig visningsnavn i Azure og AD. Synkronisering utføres snart', data) : error('Forskjellig visningsnavn i Azure og AD 🤭', data)
       if (data.aad.userPrincipalName !== data.ad.userPrincipalName) return (isLastChanged.seconds > 0 && isLastChanged.seconds < aadSyncInSeconds) || (isLastChanged.seconds < 0 && isLastChanged.seconds > -aadSyncInSeconds) ? warn('Forskjellig UPN i Azure og AD. Synkronisering utføres snart', data) : error('Forskjellig UPN i Azure og AD 🤭', data)
       if (data.aad.onPremisesSamAccountName !== data.ad.samAccountName) return (isLastChanged.seconds > 0 && isLastChanged.seconds < aadSyncInSeconds) || (isLastChanged.seconds < 0 && isLastChanged.seconds > -aadSyncInSeconds) ? warn('Forskjellig brukernavn i Azure og AD. Synkronisering utføres snart', data) : error('Forskjellig brukernavn i Azure og AD 🤭', data)
-      if (data.aad.mail !== data.ad.mail) return (isLastChanged.seconds > 0 && isLastChanged.seconds < aadSyncInSeconds) || (isLastChanged.seconds < 0 && isLastChanged.seconds > -aadSyncInSeconds) ? warn('Forskjellig primær e-postadresse i Azure og AD. Synkronisering utføres snart', data) : error('Forskjellig primær e-postadresse i Azure og AD 🤭', data)
+      if (data.aad.mail !== data.ad.mail && hasData(data.ad.mail)) return (isLastChanged.seconds > 0 && isLastChanged.seconds < aadSyncInSeconds) || (isLastChanged.seconds < 0 && isLastChanged.seconds > -aadSyncInSeconds) ? warn('Forskjellig primær e-postadresse i Azure og AD. Synkronisering utføres snart', data) : error('Forskjellig primær e-postadresse i Azure og AD 🤭', data)
+      if (data.aad.mail !== data.ad.mail && !hasData(data.ad.mail)) return noData()
     }
 
     return success('Ingen synkroniseringsproblemer funnet', data)
