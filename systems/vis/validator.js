@@ -66,15 +66,21 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('vis-02', 'Har kontaktlærer', 'Sjekker at bruker har kontaktlærer', () => {
     if (!dataPresent) return noData()
+    else if (user.expectedType === 'employee' && !isTeacher(user.company, user.title)) return success('Bruker har ikke data i dette systemet')
 
-    if (systemData.person.elev && systemData.person.elev.elevforhold && systemData.person.elev.elevforhold.length > 0) {
-      const data = systemData.person.elev.elevforhold.map(elevforhold => ({ skole: elevforhold.skole.navn, kontaktlærere: elevforhold.kontaktlarergruppe.map(kontaktlærer => ({ klasse: kontaktlærer.navn, lærere: kontaktlærer.undervisningsforhold.map(undervisningsforhold => ({ fornavn: undervisningsforhold.skoleressurs.person.navn.fornavn, etternavn: undervisningsforhold.skoleressurs.person.navn.etternavn, epostadresse: undervisningsforhold.skoleressurs.person.kontaktinformasjon.epostadresse })) })) }))
-      const kontaktlærerCount = data.reduce((accumulator, current) => {
-        return accumulator + current.kontaktlærere.length
-      }, 0)
-      if (kontaktlærerCount > 0) return success(`Har ${kontaktlærerCount} ${kontaktlærerCount === 0 || kontaktlærerCount > 1 ? 'kontaktlærere' : 'kontaktlærer'}. Se mer på "Se data"`, (data.length === 0 || data.length > 1 ? data : data[0]))
-      else return error('Har ikke kontaktlærer(e) 😬', data)
-    } else return error('Har ikke kontaktlærer(e) 😬')
+    if (user.expectedType === 'student') {
+      if (systemData.person.elev && systemData.person.elev.elevforhold && systemData.person.elev.elevforhold.length > 0) {
+        const data = systemData.person.elev.elevforhold.map(elevforhold => ({ skole: elevforhold.skole.navn, kontaktlærere: elevforhold.kontaktlarergruppe.map(kontaktlærer => ({ klasse: kontaktlærer.navn, lærere: kontaktlærer.undervisningsforhold.map(undervisningsforhold => ({ fornavn: undervisningsforhold.skoleressurs.person.navn.fornavn, etternavn: undervisningsforhold.skoleressurs.person.navn.etternavn, epostadresse: undervisningsforhold.skoleressurs.person.kontaktinformasjon.epostadresse })) })) }))
+        const kontaktlærerCount = data.reduce((accumulator, current) => {
+          return accumulator + current.kontaktlærere.length
+        }, 0)
+        if (kontaktlærerCount > 0) return success(`Har ${kontaktlærerCount} ${kontaktlærerCount === 0 || kontaktlærerCount > 1 ? 'kontaktlærere' : 'kontaktlærer'}. Se mer på "Se data"`, (data.length === 0 || data.length > 1 ? data : data[0]))
+        else return error('Har ikke kontaktlærer(e) 😬', data)
+      } else return error('Har ikke kontaktlærer(e) 😬')
+    } else if (user.expectedType === 'employee' && isTeacher(user.company, user.title)) {
+      if (systemData.contactClasses.length === 0) return success('Er ikke kontaktlærer for noen klasser')
+      else return success(`Er kontaktlærer for ${systemData.contactClasses.length} ${systemData.contactClasses.length === 0 || systemData.contactClasses.length > 1 ? 'klasser' : 'klasse'}. Se mer på "Se data"`, (systemData.contactClasses.length === 0 || systemData.contactClasses.length > 1 ? systemData.contactClasses : systemData.contactClasses[0]))
+    }
   })
   /* test('vis-02', 'Har aktivt forhold', 'Sjekker at bruker har aktivt forhold', () => {
     if (!dataPresent) return noData()

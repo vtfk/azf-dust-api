@@ -2,11 +2,13 @@ const { logger } = require('@vtfk/logger')
 const axios = require('axios').default
 const generateJwt = require('../../lib/auth/generate-jwt')
 const getResponse = require('../../lib/get-response-object')
+const isTeacher = require('../../lib/helpers/is-teacher')
+const { getTeacherContactClasses } = require('../../lib/get-pifu-data')
 const HTTPError = require('../../lib/http-error')
 const { SYSTEMS: { VIS: { FINT_BETA, FINT_API_URL, FINT_JWT_SECRET } } } = require('../../config')
 
 module.exports = async params => {
-  const { employeeNumber } = params
+  const { employeeNumber, samAccountName, company, title } = params
 
   if (employeeNumber === undefined) {
     logger('error', ['vis', 'missing required parameter', 'employeeNumber'])
@@ -33,7 +35,13 @@ module.exports = async params => {
   try {
     logger('info', ['vis', 'employeeNumber', employeeNumber, 'start'])
     const { data } = await axios.post(FINT_API_URL, query)
-    logger('info', ['vis', 'employeeNumber', employeeNumber, 'data', 'received', Array.isArray(data) ? data.length : 1])
+    logger('info', ['vis', 'employeeNumber', employeeNumber, 'finish', 'data received', Array.isArray(data) ? data.length : 1])
+    if (isTeacher(company, title) && samAccountName) {
+      logger('info', ['vis', 'samAccountName', samAccountName, 'start'])
+      const contactClasses = await getTeacherContactClasses(samAccountName)
+      logger('info', ['vis', 'samAccountName', samAccountName, 'finish', 'data received', Array.isArray(contactClasses) ? contactClasses.length : 1])
+      data.contactClasses = contactClasses
+    }
     return getResponse(data)
   } catch (error) {
     logger('error', ['vis', 'employeeNumber', employeeNumber, error.response.data.message])
