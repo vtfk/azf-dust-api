@@ -96,10 +96,12 @@ module.exports = (systemData, user, allData = false) => ([
     if (!dataPresent) return noData()
     const data = {
       proxyAddresses: systemData.proxyAddresses,
-      primary: systemData.proxyAddresses.filter(address => address.startsWith('SMTP:'))
+      primary: systemData.proxyAddresses.filter(address => address.startsWith('SMTP:')),
+      mail: systemData.mail
     }
     if (user.expectedType === 'employee') {
-      if (data.primary.length === 1) return success('Har kun 1 primær e-postadresse', data)
+      if (!systemData.mail) return warn('Kontoen må aktiveres før bruker får satt en primær e-postadresse', data)
+      else if (data.primary.length === 1) return success('Har kun 1 primær e-postadresse', data)
       else return error(`Har ${data.primary.length} primær e-postadresser`, data)
     } else {
       if (data.primary.length === 0) return success('Har ingen primær e-postadresse, men siden dette er en elev er dette korrekt. Mail-attributtet vil være gjeldende', { ...data, mail: systemData.mail })
