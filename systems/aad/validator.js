@@ -50,6 +50,7 @@ module.exports = (systemData, user, allData = false) => ([
       userPrincipalName: systemData.userPrincipalName || null
     }
     if (!systemData.userPrincipalName) return error('UPN mangler 🤭', data)
+    if (!systemData.mail) return error('Epostadresse mangler 🤭', data)
     return systemData.userPrincipalName.toLowerCase() === systemData.mail.toLowerCase() ? success('UPN er lik e-postadressen', data) : error('UPN er ikke lik e-postadressen', data)
   }),
   test('aad-04', 'UPN er korrekt', 'Sjekker at UPN er @vtfk.no for ansatte, og @skole.vtfk.no for elever', () => {
