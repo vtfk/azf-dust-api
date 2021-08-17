@@ -29,10 +29,10 @@ module.exports = (systemData, user, allData = false) => ([
     } else {
       if (allData.vis) {
         data.vis = getActiveSourceData(allData.vis, user)
-        if (systemData.enabled && data.vis.active) return success('Kontoen er aktivert', data)
-        else if (systemData.enabled && !data.vis.active) return error('Kontoen er aktivert selvom elev har sluttet', data)
-        else if (!systemData.enabled && data.vis.active) return warn('Kontoen er deaktivert. Eleven må aktivere sin konto', data)
-        else if (!systemData.enabled && !data.vis.active) return warn('Kontoen er deaktivert', data)
+        if (systemData.enabled && data.vis.student.active) return success('Kontoen er aktivert', data)
+        else if (systemData.enabled && !data.vis.student.active) return error('Kontoen er aktivert selvom elev har sluttet', data)
+        else if (!systemData.enabled && data.vis.student.active) return warn('Kontoen er deaktivert. Eleven må aktivere sin konto', data)
+        else if (!systemData.enabled && !data.vis.student.active) return warn('Kontoen er deaktivert', data)
       } else return systemData.enabled ? success('Kontoen er aktivert', data) : warn('Kontoen er deaktivert. Eleven må aktivere sin konto', data) // TODO: Fjerne denne når ViS eller tilsvarende er tilstede
     }
 
