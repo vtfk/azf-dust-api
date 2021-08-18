@@ -26,15 +26,15 @@ module.exports = async function (context) {
     if (body && body.statusCode && (body.statusCode / 100 | 0) > 2) {
       result.status = body.statusCode
       result.error = body.message
-      logger('error', ['dust-activity', system, 'error', result.status, result.error])
+      logger('error', ['dust-activity', system, 'error', result.status, result.error.error || result.error])
     } else {
       result.data = body
       result.tests = test(system, body, user)
     }
   } catch (error) {
     result.status = error.statusCode || 400
-    result.error = { error: error.message }
-    logger('error', ['dust-activity', system, 'error', result.status, result.error])
+    result.error = { error: error.message, stack: error.stack }
+    logger('error', ['dust-activity', system, 'error', result.status, result.error.error || result.error])
   }
 
   try {
