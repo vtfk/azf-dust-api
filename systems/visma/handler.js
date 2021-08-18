@@ -7,7 +7,7 @@ const getData = async (caller, data) => {
   const method = 'get'
   const fileName = 'Get-DUSTVisma.ps1'
 
-  return await handleData(caller, method, fileName, data)
+  return await handleData(caller, 'visma', method, fileName, data)
 }
 
 module.exports = async (caller, params) => {

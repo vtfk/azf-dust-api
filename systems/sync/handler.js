@@ -9,7 +9,7 @@ const getData = async caller => {
   const method = 'get'
   const fileName = 'Get-DUSTVigoBas.ps1'
 
-  return await handleData(caller, method, fileName)
+  return await handleData(caller, 'sync', method, fileName)
 }
 
 module.exports = async caller => {
