@@ -30,6 +30,8 @@ module.exports = {
   },
   SYSTEMS: {
     AD: {
+      OU_AUTO_USERS: process.env.AD_AUTO_USERS || '',
+      OU_AUTO_DISABLED_USERS: process.env.AD_AUTO_DISABLED_USERS || '',
       SCHOOL_EMPLOYEE_PROPERTY_NAME: process.env.AD_SCHOOL_EMPLOYEE_PROPERTY_NAME || '',
       SCHOOL_EMPLOYEE_PROPERTY_VALUE: process.env.AD_SCHOOL_EMPLOYEE_PROPERTY_VALUE || ''
     },
