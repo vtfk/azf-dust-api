@@ -1,5 +1,5 @@
 const { SYSTEMS } = require('../../config')
-const { test, success, warn, error, waitForData, noData } = require('../../lib/test')
+const { test, success, warn, error, noData } = require('../../lib/test')
 const isWithinDaterange = require('../../lib/helpers/is-within-daterange')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const { hasData, getArray, getArrayData } = require('../../lib/helpers/system-data')
@@ -163,47 +163,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (validationResult.type !== 'Fødselsnummer') return warn(`Fødselsnummeret som er registrert er et ${validationResult.type}. Dette kan skape problemer i enkelte systemer`, { hrm: { ssn: hrm.ssn }, validationResult })
     return success('Fødselsnummeret registrert i HRM er gyldig', { hrm: { ssn: hrm.ssn }, validationResult })
   }),
-  test('visma-06', 'E-postadressen er riktig', 'Sjekker at registrert e-post er lik som i AD', () => {
-    if (!dataPresent) return noData()
-    if (!allData || !allData.ad) return waitForData()
-    if (!allData.ad.mail) return warn('Mail mangler i dataene fra AD', { ad: allData.ad ? { mail: allData.ad.mail || null } : null })
-
-    const hrm = getArrayData(systemData)
-    if (!hasData(hrm) || !hrm.contactInfo || !hrm.contactInfo.email) {
-      if (user.expectedType === 'student' && !hrm) return success('Ingen profil eller e-postadresse funnet i HRM, men siden dette er en elev er det helt normalt', { hrm })
-      return warn('Ingen e-postadresse registrert i HRM', { hrm })
-    }
-
-    if (allData.ad.mail.toLowerCase() === hrm.contactInfo.email.toLowerCase()) {
-      return success('E-postadressen i AD og HRM er like', { ad: allData.ad.mail, hrm: hrm.contactInfo.email })
-    }
-    return error('E-postadressen i AD og HRM er ulike', { ad: allData.ad.mail, hrm: hrm.contactInfo.email })
-  }),
-  test('visma-07', 'Brukernavn er likt brukernavnet i AD', 'Sjekker at brukernavnet i HRM er likt samAccountName i lokalt AD', () => {
-    if (!dataPresent) return noData()
-    if (!allData || !allData.ad) return waitForData()
-    if (!allData.ad.samAccountName) return warn('samAccountName mangler i dataene fra AD', { ad: allData.ad ? { samAccountName: allData.ad.samAccountName || null } : null })
-
-    const hrm = getArrayData(systemData)
-    if (!hasData(hrm) || !hrm.authentication || !hrm.authentication.alias) {
-      if (user.expectedType === 'student' && !hrm) return success('Ingen profil ble funnet i HRM', { hrm })
-      return warn('Brukernavnet er ikke registrert i HRM slik det skal', { hrm })
-    }
-
-    if (Array.isArray(hrm.authentication.alias)) {
-      const aliases = hrm.authentication.alias.map(alias => ({ name: alias, result: allData.ad.samAccountName.toLowerCase() === alias.toLowerCase() }))
-      const aliasesNotEqual = aliases.filter(alias => !alias.result)
-      const aliasesEqual = aliases.filter(alias => alias.result)
-      if (aliasesEqual.length > 0 && aliasesNotEqual.length === 0) return success('Brukernavnene i AD og HRM er like', { ad: allData.ad.samAccountName, hrm: aliases })
-      else if (aliasesEqual.length > 0 && aliasesNotEqual.length > 0) return warn('Noen brukernavn i HRM er like i AD', { ad: allData.ad.samAccountName, hrm: aliases })
-    } else {
-      if (allData.ad.samAccountName.toLowerCase() === hrm.authentication.alias.toLowerCase()) {
-        return success('Brukernavnene i AD og HRM er like', { ad: allData.ad.samAccountName, hrm: hrm.authentication.alias })
-      }
-    }
-    return error('Brukernavnene i AD og HRM er ulike', { ad: allData.ad.samAccountName, hrm: hrm.authentication.alias })
-  }),
-  test('visma-08', 'Har organisasjonstilknytning', 'Sjekker at bruker har en organisasjonstilknytning', () => {
+  test('visma-06', 'Har organisasjonstilknytning', 'Sjekker at bruker har en organisasjonstilknytning', () => {
     if (!dataPresent) return noData()
 
     const { raw: { positions } } = getActivePosition(systemData, user)
@@ -212,11 +172,11 @@ module.exports = (systemData, user, allData = false) => ([
     const missingOrg = positions.filter(position => !position.chart)
     return hasData(missingOrg) ? error('Mangler organisasjonstilknytning. Må rettes i Visma HRM', missingOrg) : success('Har organisasjonstilknytning', positions)
   }),
-  test('visma-09', 'Har mobilePhone satt', 'Sjekker at bruker har satt mobilePhone i Visma HRM', () => {
+  test('visma-07', 'Har mobilePhone satt', 'Sjekker at bruker har satt mobilePhone i Visma HRM', () => {
     if (!dataPresent) return noData()
     return hasData(systemData.contactInfo.mobilePhone) ? success('Bruker har fylt ut ☎️ på MinSide') : warn('Bruker har ikke fylt ut ☎️ på MinSide og vil ikke kunne motta informasjon på SMS')
   }),
-  test('visma-10', 'Navn har ropebokstaver', 'Sjekker om navnet er skrevet med ropebokstaver', () => {
+  test('visma-08', 'Navn har ropebokstaver', 'Sjekker om navnet er skrevet med ropebokstaver', () => {
     if (!dataPresent) return noData()
 
     const data = {
