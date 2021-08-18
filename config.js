@@ -44,7 +44,8 @@ module.exports = {
     VIS: {
       FINT_API_URL: process.env.FINT_API_URL || '',
       FINT_BETA: (process.env.FINT_BETA && process.env.FINT_BETA === 'true') || false,
-      FINT_JWT_SECRET: process.env.FINT_JWT_SECRET || false
+      FINT_JWT_SECRET: process.env.FINT_JWT_SECRET || false,
+      FINT_TIMEOUT: (process.env.FINT_TIMEOUT && Number.parseInt(process.env.FINT_TIMEOUT)) || 0
     },
     VISMA: {
       COMPANY_ID: process.env.VISMA_COMPANY_ID || '1',

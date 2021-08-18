@@ -215,6 +215,7 @@ Get Azure Active Directory user account + authentication methods
         "FINT_API_URL": "https://fint.dev/api",
         "FINT_BETA": false,
         "FINT_JWT_SECRET": "Very very secret secret",
+        "FINT_TIMEOUT": 10000,
         "GRAPH_USER_PROPERTIES": "accountEnabled,assignedLicenses,birthday,businessPhones,companyName,createdDateTime,deletedDateTime,department,displayName,givenName,jobTitle,lastPasswordChangeDateTime,mail,mobilePhone,onPremisesDistinguishedName,onPremisesExtensionAttributes,onPremisesLastSyncDateTime,onPremisesProvisioningErrors,onPremisesSamAccountName,onPremisesSyncEnabled,proxyAddresses,signInSessionsValidFromDateTime,surname,userPrincipalName",
         "MONGODB_CONNECTION": "mongodb+srv://<user>:<password>@cluster0.jlu5j.azure.mongodb.net?retryWrites=true&w=majority",
         "MONGODB_COLLECTION": "collection",

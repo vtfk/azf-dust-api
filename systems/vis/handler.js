@@ -5,7 +5,7 @@ const getResponse = require('../../lib/get-response-object')
 const isTeacher = require('../../lib/helpers/is-teacher')
 const { getTeacherContactClasses } = require('../../lib/get-pifu-data')
 const HTTPError = require('../../lib/http-error')
-const { SYSTEMS: { VIS: { FINT_BETA, FINT_API_URL, FINT_JWT_SECRET } } } = require('../../config')
+const { SYSTEMS: { VIS: { FINT_BETA, FINT_API_URL, FINT_JWT_SECRET, FINT_TIMEOUT } } } = require('../../config')
 
 module.exports = async params => {
   const { employeeNumber, samAccountName, company, title } = params
@@ -27,13 +27,14 @@ module.exports = async params => {
     },
     options: {
       beta: FINT_BETA
-    }
+    },
+    timeout: FINT_TIMEOUT
   }
   const token = generateJwt(FINT_JWT_SECRET)
   axios.defaults.headers.common.Authorization = `Bearer ${token}`
 
   try {
-    logger('info', ['vis', 'employeeNumber', employeeNumber, 'start'])
+    logger('info', ['vis', 'employeeNumber', employeeNumber, 'start', 'timeout', FINT_TIMEOUT])
     const { data } = await axios.post(FINT_API_URL, query)
     logger('info', ['vis', 'employeeNumber', employeeNumber, 'finish', 'data received', Array.isArray(data) ? data.length : 1])
     if (isTeacher(company, title) && samAccountName) {
