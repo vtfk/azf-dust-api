@@ -56,17 +56,7 @@ module.exports = (systemData, user, allData = false) => ([
     const employeeDate = systemData.employeeNumber.substring(0, 4)
     return samName === firstName && samDate === employeeDate ? success('Brukernavn samsvarer med navn', { samAccountName: systemData.samAccountName }) : error('Brukernavn samsvarer ikke med navn', { samAccountName: systemData.samAccountName, firstName: systemData.givenName, employeeNumber: systemData.employeeNumber })
   }),
-  test('ad-05', 'UPN er lik e-postadressen', 'Sjekker at UPN-et er lik e-postadressen i AD', () => {
-    if (!dataPresent) return noData()
-    if (!systemData.userPrincipalName) return error('UPN mangler 🤭', systemData)
-    const data = {
-      mail: systemData.mail,
-      userPrincipalName: systemData.userPrincipalName
-    }
-    if (!systemData.mail) return warn('Kontoen må aktiveres før bruker får mailadresse', data)
-    return systemData.userPrincipalName.toLowerCase() === systemData.mail.toLowerCase() ? success('UPN er lik e-postadressen', data) : error('UPN er ikke lik e-postadressen', data)
-  }),
-  test('ad-06', 'UPN er korrekt', 'Sjekker at UPN er @vtfk.no for ansatte, og @skole.vtfk.no for elever', () => {
+  test('ad-05', 'UPN er korrekt', 'Sjekker at UPN er @vtfk.no for ansatte, og @skole.vtfk.no for elever', () => {
     if (!dataPresent) return noData()
     if (!systemData.userPrincipalName) return error('UPN mangler 🤭', systemData)
     const data = {
@@ -75,7 +65,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (user.expectedType === 'employee') return systemData.userPrincipalName.includes('@vtfk.no') ? success('UPN er korrekt', data) : error('UPN er ikke korrekt', data)
     else return systemData.userPrincipalName.includes('@skole.vtfk.no') ? success('UPN er korrekt', data) : error('UPN er ikke korrekt', data)
   }),
-  test('ad-07', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
+  test('ad-06', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
     if (!dataPresent) return noData()
     if (!systemData.employeeNumber) return error('Fødselsnummer mangler 🤭', systemData)
     const data = {
@@ -84,7 +74,7 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return data.fnr.valid ? success(`Har gyldig ${data.fnr.type}`, data) : error(data.fnr.error, data)
   }),
-  test('ad-08', 'extensionAttribute6 er satt', 'Sjekker at extensionAttribute6 er satt', () => {
+  test('ad-07', 'extensionAttribute6 er satt', 'Sjekker at extensionAttribute6 er satt', () => {
     if (!dataPresent) return noData()
     const data = {
       extensionAttribute6: systemData.extensionAttribute6
@@ -92,7 +82,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (user.expectedType === 'employee') return hasData(systemData.extensionAttribute6) ? success('extensionAttribute6 er satt', data) : error('extensionAttribute6 mangler 🤭', data)
     else return hasData(systemData.extensionAttribute6) ? warn('extensionAttribute6 er satt på en elev. Elever trenger ikke denne', data) : success('extensionAttribute6 er ikke satt, men siden dette er en elev er det helt normalt', systemData)
   }),
-  test('ad-09', 'Har kun èn primær e-postadresse', 'Sjekker at brukeren har kun èn primær e-postadresse', () => {
+  test('ad-08', 'Har kun èn primær e-postadresse', 'Sjekker at brukeren har kun èn primær e-postadresse', () => {
     if (!dataPresent) return noData()
     const data = {
       proxyAddresses: systemData.proxyAddresses,
@@ -109,7 +99,7 @@ module.exports = (systemData, user, allData = false) => ([
       else return error(`Har ${data.primary.length} primær e-postadresser`, data)
     }
   }),
-  test('ad-10', 'Har state satt for ansatt', 'Sjekker at state er satt på ansatt', () => {
+  test('ad-09', 'Har state satt for ansatt', 'Sjekker at state er satt på ansatt', () => {
     if (!dataPresent) return noData()
     if (user.expectedType === 'student') return noData()
     if (user.expectedType === 'employee') {
@@ -117,7 +107,7 @@ module.exports = (systemData, user, allData = false) => ([
       else return error('Felt for lisens mangler 🤭', systemData)
     }
   }),
-  test('ad-11', 'Fornavn har punktum', 'Sjekker om fornavn har punktum', () => {
+  test('ad-10', 'Fornavn har punktum', 'Sjekker om fornavn har punktum', () => {
     if (!dataPresent) return noData()
 
     const data = {
@@ -127,7 +117,7 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return systemData.givenName.includes('.') ? warn('Navn har punktum', data) : noData()
   }),
-  test('ad-12', 'Riktig company', 'Sjekker at bruker har rett company-info', () => {
+  test('ad-11', 'Riktig company', 'Sjekker at bruker har rett company-info', () => {
     if (!dataPresent) return noData()
 
     const data = {

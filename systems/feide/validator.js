@@ -109,24 +109,7 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return systemData.eduPersonPrincipalName !== `${systemData.name}${SYSTEMS.FEIDE.PRINCIPAL_NAME}` ? error('PrincipalName er feil 🤭', data) : success('PrincipalName er riktig', data)
   }),
-  test('feide-10', 'E-postadresse er lik UPN', 'Sjekker at e-postadresse er lik UPN', () => {
-    if (!dataPresent) return noData()
-    if (!allData) return waitForData()
-    if (!hasData(allData.ad)) return error('Mangler AD-data', allData)
-
-    const data = {
-      feide: {
-        mail: systemData.mail
-      },
-      ad: {
-        userPrincipalName: allData.ad.userPrincipalName
-      }
-    }
-    if (!systemData.mail) return warn('Kontoen må aktiveres før bruker får mailadresse', data)
-    else if (systemData.mail === allData.ad.userPrincipalName) return success('E-postadresse er lik UPN', data)
-    else return error('E-postadresse er ikke lik UPN', data)
-  }),
-  test('feide-11', 'Har knytning til en skole', 'Sjekker at det finnes knytning til minst èn skole', () => {
+  test('feide-10', 'Har knytning til en skole', 'Sjekker at det finnes knytning til minst èn skole', () => {
     if (!dataPresent) return noData()
     if (!allData) return waitForData()
 
@@ -138,7 +121,7 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return success('Knytning til skole funnet', data)
   }),
-  test('feide-12', 'Har satt opp Feide2Faktor', 'Sjekker at Feide2Faktor er satt opp', () => {
+  test('feide-11', 'Har satt opp Feide2Faktor', 'Sjekker at Feide2Faktor er satt opp', () => {
     if (!dataPresent) return noData()
     const data = {
       norEduPersonAuthnMethod: systemData.norEduPersonAuthnMethod.map(auth => auth.split(' ')[0])
@@ -153,7 +136,7 @@ module.exports = (systemData, user, allData = false) => ([
     else if (!hasData(smsAuth) && hasData(gaAuth)) return success('Feide2Faktor for Godkjenner/Authenticator app er satt opp', data)
     else return warn('Feide2Faktor for noe annet enn SMS og Godkjenner/Authenticator app er satt opp', data)
   }),
-  test('feide-13', 'Organisasjon er riktig', 'Sjekker at organisasjon er riktig', () => {
+  test('feide-12', 'Organisasjon er riktig', 'Sjekker at organisasjon er riktig', () => {
     if (!dataPresent) return noData()
     const data = {
       eduPersonOrgDN: systemData.eduPersonOrgDN || null,
@@ -162,7 +145,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (!hasData(systemData.eduPersonOrgDN)) return error('Organisasjon mangler 🤭', data)
     return systemData.eduPersonOrgDN === SYSTEMS.FEIDE.ORGANIZATION_DN ? success('Organisasjon er riktig', data) : error('Organisasjon er ikke riktig', data)
   }),
-  test('feide-14', 'Har riktig tilhørighet', 'Sjekker at det er satt riktig tilhørighet', () => {
+  test('feide-13', 'Har riktig tilhørighet', 'Sjekker at det er satt riktig tilhørighet', () => {
     if (!dataPresent) return noData()
     if (!allData) return waitForData()
 
@@ -177,7 +160,7 @@ module.exports = (systemData, user, allData = false) => ([
       return systemData.eduPersonAffiliation.includes('member') && systemData.eduPersonAffiliation.includes('employee') ? warn('Tilhørighet er satt som en ansatt til tross for at dette er en elev', data) : error('Tilhørighet er feil', data)
     }
   }),
-  test('feide-15', 'Har grupperettigheter', 'Sjekker at det er satt grupperettigheter', () => {
+  test('feide-14', 'Har grupperettigheter', 'Sjekker at det er satt grupperettigheter', () => {
     if (!dataPresent) return noData()
     if (!allData) return waitForData()
     if (!hasData(allData.vis)) return success('Ingen grupperettigheter funnet. Dette er riktig da bruker ikke finnes i ViS', allData.vis)
