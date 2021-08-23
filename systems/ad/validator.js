@@ -47,7 +47,7 @@ module.exports = (systemData, user, allData = false) => ([
     }
 
     if (systemData.distinguishedName.toLowerCase().includes(OU_AUTO_USERS.toLowerCase())) return success(`Bruker ligger i OU'en ${OU_AUTO_USERS.replace('OU=', '')}`, data)
-    else if (systemData.distinguishedName.toLowerCase().includes(OU_AUTO_DISABLED_USERS.toLowerCase())) return warn(`Bruker ligger i OU'en ${OU_AUTO_DISABLED_USERS.replace('OU=', '')}`, data)
+    else if (systemData.distinguishedName.toLowerCase().includes(OU_AUTO_DISABLED_USERS.toLowerCase())) return warn(`Bruker ligger i OU'en ${OU_AUTO_DISABLED_USERS.replace('OU=', '')}. Dette må rettes i ViS`, data)
     else return error('Denne brukeren er ikke en del av automatikken vår...', data)
   }),
   test('ad-04', 'Kontoen er ulåst', 'Sjekker at kontoen ikke er sperret for pålogging i AD', () => {
