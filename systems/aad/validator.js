@@ -46,11 +46,15 @@ module.exports = (systemData, user, allData = false) => ([
   test('aad-03', 'UPN er lik e-postadressen', 'Sjekker at UPN-et er lik e-postadressen i AD', () => {
     if (!dataPresent) return noData()
     const data = {
+      accountEnabled: systemData.accountEnabled,
       mail: systemData.mail || null,
       userPrincipalName: systemData.userPrincipalName || null
     }
     if (!systemData.userPrincipalName) return error('UPN mangler 🤭', data)
-    if (!systemData.mail) return error('Epostadresse mangler 🤭', data)
+    if (!systemData.mail) {
+      if (systemData.accountEnabled) return error('E-postadresse mangler 🤭', data)
+      else return warn('E-postadresse blir satt når konto er blitt aktivert', data)
+    }
     return systemData.userPrincipalName.toLowerCase() === systemData.mail.toLowerCase() ? success('UPN er lik e-postadressen', data) : error('UPN er ikke lik e-postadressen', data)
   }),
   test('aad-04', 'UPN er korrekt', 'Sjekker at UPN er @vtfk.no for ansatte, og @skole.vtfk.no for elever', () => {
@@ -124,7 +128,14 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('aad-08', 'Har riktig lisens(er)', 'Sjekker at riktig lisens(er) er aktivert', () => {
     if (!dataPresent) return noData()
-    return !hasData(systemData.assignedLicenses) ? error('Har ingen Azure AD-lisenser 🤭', systemData.assignedLicenses) : success('Har Azure AD-lisenser', systemData.assignedLicenses)
+    if (!hasData(systemData.assignedLicenses)) {
+      const data = {
+        accountEnabled: systemData.accountEnabled,
+        assignedLicenses: systemData.assignedLicenses
+      }
+      if (systemData.accountEnabled) return error('Har ingen Azure AD-lisenser 🤭', data)
+      else return warn('Azure AD-lisenser blir satt når konto er blitt aktivert', data)
+    } else return success('Har Azure AD-lisenser', systemData.assignedLicenses)
 
     /* if (!hasData(user.departmentShort)) return warn('Ikke nok informasjon tilstede for å utføre testen', user)
 
