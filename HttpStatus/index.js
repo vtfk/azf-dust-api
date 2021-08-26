@@ -1,4 +1,5 @@
 const df = require('durable-functions')
+const { logger } = require('@vtfk/logger')
 const withTokenAuth = require('../lib/auth/with-token-auth')
 const getStatusResponse = require('../lib/get-status-response')
 const { getRequest } = require('../lib/mongo/handle-mongo')
@@ -38,6 +39,7 @@ const status = async function (context, req) {
       }
     }
   } else if (instanceId) {
+    logger('info', 'InstanceID not found in DurableFunctionsHistory. Fetching from mongo')
     // instanceId is given but not found in StorageAccount. Try finding it in the DB
     const entry = await getRequest(instanceId)
     if (entry) {
@@ -52,6 +54,7 @@ const status = async function (context, req) {
         headers: {}
       }
     } else {
+      logger('error', 'InstanceID not found in DurableFunctionsHistory nor in mongo !!')
       // instanceId not found in the DB either
       res = {
         status: 404,

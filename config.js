@@ -1,6 +1,7 @@
 const TENANT_ID = process.env.TENANT_ID || '08f3813c-9f29-482f-9aec-16ef7cbf477a'
 
 module.exports = {
+  PURGE_HISTORY_DAYS: (process.env.PURGE_HISTORY_DAYS && Number.parseInt(process.env.PURGE_HISTORY_DAYS)) || 7,
   TOKEN_AUTH: {
     jwksUri: process.env.TOKEN_AUTH_JWK_URI || `https://login.microsoftonline.com/${TENANT_ID}/discovery/v2.0/keys`,
     issuer: process.env.TOKEN_AUTH_ISS || `https://login.microsoftonline.com/${TENANT_ID}/v2.0`
