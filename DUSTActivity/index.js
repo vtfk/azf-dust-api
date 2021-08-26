@@ -8,7 +8,7 @@ const test = require('../lib/call-test')
 module.exports = async function (context) {
   const { instanceId, system, user, token } = context.bindings.request
   const caller = (token && token.upn) || DEFAULT_CALLER
-  const result = { name: system }
+  const result = { name: system, started: new Date().toISOString() }
 
   logConfig({
     azure: {
@@ -22,6 +22,8 @@ module.exports = async function (context) {
 
     logger('info', ['dust-activity', system, 'data', 'start'])
     const { body } = await callHandler(caller, result.query, system)
+    result.finished = new Date().toISOString()
+    result.runtime = (new Date(result.finished) - new Date(result.started)) / 1000
     logger('info', ['dust-activity', system, 'data', 'finish'])
     if (body && body.statusCode && (body.statusCode / 100 | 0) > 2) {
       result.status = body.statusCode
