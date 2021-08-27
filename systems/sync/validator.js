@@ -31,5 +31,16 @@ module.exports = (systemData, user, allData = false) => ([
       check: lastRunTimeCheck
     }
     return lastRunTimeCheck.result ? success(`AAD sist synkronisert: ${prettifyDateToLocaleString(new Date(systemData.aadSync.lastAzureADSyncTime))}`, data) : warn('Det er mer enn 40 minutter siden siste synkronisering av Azure AD', data)
+  }),
+  test('sync-04', 'Har sds lastSdsSyncTime', 'Sjekker siste synkroniseringstidspunkt for School Data Sync', () => {
+    if (!dataPresent) return noData()
+    if (!systemData.sdsSync || !systemData.sdsSync.lastSdsSyncTime) return warn('Mangler synkroniseringstidspunkt for School Data Sync 😬')
+
+    const lastRunTimeCheck = isWithinTimeRange(new Date(systemData.sdsSync.lastSdsSyncTime), new Date(), (12 * 60 * 60)) // is last run performed less than 12 hour ago?
+    const data = {
+      lastSdsSyncTime: systemData.sdsSync.lastSdsSyncTime,
+      check: lastRunTimeCheck
+    }
+    return lastRunTimeCheck.result ? success(`SDS sist synkronisert: ${prettifyDateToLocaleString(new Date(systemData.sdsSync.lastSdsSyncTime))}`, data) : warn('Det er mer enn 12 timer siden siste synkronisering av School Data Sync', data)
   })
 ])

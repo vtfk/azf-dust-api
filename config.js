@@ -42,6 +42,9 @@ module.exports = {
       MFA_SMS: process.env.FEIDE_MFA_SMS || 'urn:mace:feide.no:auth:method:sms',
       MFA_GA: process.env.FEIDE_MFA_GA || 'urn:mace:feide.no:auth:method:ga'
     },
+    SYNC: {
+      SDS_PROFILE_ID: process.env.SDS_PROFILE_ID || false
+    },
     VIS: {
       FINT_API_URL: process.env.FINT_API_URL || '',
       FINT_BETA: (process.env.FINT_BETA && process.env.FINT_BETA === 'true') || false,
