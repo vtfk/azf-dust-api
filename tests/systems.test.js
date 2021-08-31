@@ -1032,7 +1032,7 @@ systems.forEach(system => {
   })
 
   test(`Sjekker at alle ${system}-tester returnerer et objekt med riktig innhold`, () => {
-    const tests = validator(data, mockUser)
+    const tests = validator(data, mockUser, mockData)
     expect(Array.isArray(tests)).toBe(true)
     const wrong = tests.filter(item => typeof item !== 'object' || (!item.id || !item.title || !item.description || !item.result || typeof item.result !== 'object' || !item.result.status || !item.result.message))
     expect(wrong.length).toBe(0)
