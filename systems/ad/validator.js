@@ -16,8 +16,8 @@ module.exports = (systemData, user, allData = false) => ([
   test('ad-02', 'Kontoen er aktivert', 'Sjekker at kontoen er aktivert i AD', () => {
     if (!dataPresent) return noData()
     if (!allData || !allData.visma || !allData.vis) {
-      if (user.expectedType === 'student') return error({ message: 'Mangler data i Visma InSchool', raw: { user, vis: allData?.vis } })
-      else return error({ message: 'Mangler data i Visma HRM', raw: { user, visma: allData?.visma } })
+      if (user.expectedType === 'student') return error({ message: 'Mangler data i Visma InSchool', raw: { user, vis: allData.vis } })
+      else return error({ message: 'Mangler data i Visma HRM', raw: { user, visma: allData.visma } })
     }
 
     const data = {
