@@ -3,6 +3,7 @@ const { test, success, warn, error, noData } = require('../../lib/test')
 const isWithinDaterange = require('../../lib/helpers/is-within-daterange')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const { hasData, getArray, getArrayData } = require('../../lib/helpers/system-data')
+const { prettifyDateToLocaleString } = require('../../lib/helpers/date-time-output')
 
 const employeePositionActiveDaysAhead = 30
 
@@ -27,31 +28,27 @@ const getPerson = (data, user) => {
   const hrm = getArrayData(data)
   const personIdHRM = hasData(hrm) && hrm['@personIdHRM']
   if (!personIdHRM) {
-    if (user.expectedType === 'student') return success('Personen ble ikke funnet i HRM, men siden dette er en elev er det helt normalt', { hrm })
-    return error('Personen ble ikke funnet i HRM', { hrm })
+    return error({ message: 'Personen ble ikke funnet i HRM', raw: { hrm }, solution: 'Rettes i Visma HRM' })
   }
 
-  if (user.expectedType === 'student') return warn('Personen ble funnet i HRM', { personIdHRM })
-  return success('Personen ble funnet i HRM', { personIdHRM })
+  return success({ message: 'Personen ble funnet i HRM', raw: { personIdHRM } })
 }
 
 const getActivePosition = (data, user) => {
   const hrm = getArrayData(data)
   const employment = hasData(hrm) && getEmployment(hrm)
   if (!employment) {
-    if (user.expectedType === 'student') return success('Ingen ansettelsesforhold ble funnet i HRM, og siden dette er en elev er det helt normalt', { hrm })
-    return error('Ingen ansettelsesforhold ble funnet i HRM', { hrm })
+    return error({ message: 'Ingen ansettelsesforhold ble funnet i HRM', raw: { hrm } })
   }
 
   const positions = getPositions(employment)
-  if (!positions) {
-    if (user.expectedType === 'student') return warn('Ansettelsesforhold ble funnet i HRM, men ingen aktive stillinger ble funnet', { employment, positions: (positions || null) })
-    return error('Ingen stillinger ble funnet i HRM', { employment, positions: (positions || null) })
+  if (!positions && !employment.active) {
+    return error({ message: 'Ingen stillinger ble funnet i HRM', raw: { employment, positions: (positions || null) } })
   } else if (!positions && employment.active) {
     if (new Date(employment.startDate) > new Date()) {
-      return warn(`Bruker begynner ikke før ${prettifyDateToLocaleString(new Date(employment.startDate))}`, { employment, positions: (positions || null) }, 'Vent til bruker har startet da vel')
+      return warn({ message: `Bruker begynner ikke før ${prettifyDateToLocaleString(new Date(employment.startDate))}`, raw: { employment, positions: (positions || null) }, solution: 'Vent til bruker har startet da vel' })
     } else {
-      return error('Nå har det skjedd noe rart tror jeg', { employment, positions: (positions || null) }, 'Meld sak til arbeidsgruppe identitet')
+      return error({ message: 'Bruker har ingen aktive stillinger', raw: { employment, positions: (positions || null) }, solution: 'Rettes i Visma HRM' })
     }
   }
 
@@ -64,56 +61,45 @@ const getActivePosition = (data, user) => {
 
   // Sjekk at det finnes et aktivt ansettelsesforhold og minst én aktiv stilling
   if (employment.active && activePrimaryPosition) {
-    if (user.expectedType === 'student') return warn('Fant aktivt ansettelsesforhold og stilling i HRM', { employment, positions })
-    return success('Fant aktivt ansettelsesforhold og stilling i HRM', { employment, positions })
+    return success({ message: 'Fant aktivt ansettelsesforhold og stilling i HRM', raw: { employment, positions } })
   }
 
   // Fant kun et ansettelsesforhold
   if (employment.active) {
     // Krøss i taket om dette noen gang skjer, men..
     if (!activePrimaryPosition && activePosition) {
-      if (user.expectedType === 'student') return warn('Fant et aktivt ansettelsesforhold i HRM, men ingen av de aktive stillingene er en hovedstilling', { employment, positions })
-      return error('Fant et aktivt ansettelsesforhold i HRM, men ingen av de aktive stillingene er en hovedstilling', { employment, positions })
+      return error({ message: 'Fant et aktivt ansettelsesforhold i HRM, men ingen av de aktive stillingene er en hovedstilling', raw: { employment, positions }, solution: 'Rettes i Visma HRM' })
     }
 
-    if (user.expectedType === 'student') return warn('Fant et aktivt ansettelsesforhold i HRM, men ingen aktiv hovedstilling', { employment, positions })
-    return error('Fant et aktivt ansettelsesforhold i HRM, men ingen aktiv hovedstilling', { employment, positions })
+    return error({ message: 'Fant et aktivt ansettelsesforhold i HRM, men ingen aktiv hovedstilling', raw: { employment, positions }, solution: 'Rettes i Visma HRM' })
   }
 
   // Fant kun aktiv(e) stilling(er)
   if (activePrimaryPosition) {
-    const message = `Fant ${activePrimaryPositions.length > 1 ? 'flere aktive hovedstillinger' : 'én aktiv hovedstilling'}, men ikke noe ansettelsesforhold`
-    if (user.expectedType === 'student') return warn(message, { employment, positions })
-    return error(message, { employment, positions })
+    return error({ message: `Fant ${activePrimaryPositions.length > 1 ? 'flere aktive hovedstillinger' : 'én aktiv hovedstilling'}, men ikke noe ansettelsesforhold`, raw: { employment, positions }, solution: 'Rettes i Visma HRM' })
   }
 
   // Verken aktive stillinger eller ansettelsesforhold ble funnet
-  if (user.expectedType === 'student') return success('Det ble ikke funnet noe aktivt ansettelsesforhold i HRM', { employment, positions })
-  return error('Det ble ikke funnet noe aktivt ansettelsesforhold eller stillinger i HRM', { employment, positions })
+  return error({ message: 'Det ble ikke funnet noe aktivt ansettelsesforhold eller stillinger i HRM', raw: { employment, positions }, solution: 'Rettes i Visma HRM' })
 }
 
 const getActivePositionCategory = (data, user) => {
   const hrm = getArrayData(data)
   const employment = hasData(hrm) && getEmployment(hrm)
   if (!employment) {
-    if (user.expectedType === 'student') return success('Ingen ansettelsesforhold ble funnet i HRM, men siden dette er en elev er det helt normalt', { hrm })
-    return error('Ingen ansettelsesforhold ble funnet i HRM', { hrm })
+    return error({ message: 'Ingen ansettelsesforhold ble funnet i HRM', raw: { hrm }, solution: 'Rettes i Visma HRM' })
   }
 
-  if (!employment.category || !employment.category['@id']) return error('Ingen kategori ble funnet i HRM', { employment })
+  if (!employment.category || !employment.category['@id']) return error({ message: 'Ingen kategori ble funnet i HRM', raw: { employment }, solution: 'Rettes i Visma HRM' })
   const category = employment.category['@id'].toUpperCase()
   const description = employment.category.description || ''
   const excludedCategories = SYSTEMS.VISMA.CATEGORIES.split(',').filter(cat => !!cat).map(cat => cat.toUpperCase())
 
   if (excludedCategories.includes(category)) {
-    const message = `Kategorien på ansettelsesforholdet (${category}) er ekskludert, som tilsier at det ikke skal opprettes noen brukerkonto`
-    if (user.expectedType === 'student') return success(message, { category, description })
-    return warn(message, { category, description })
+    return warn({ message: `Kategorien på ansettelsesforholdet (${category}) er ekskludert, som tilsier at det ikke skal opprettes noen brukerkonto`, raw: { category, description }, solution: 'Rettes i Visma HRM' })
   }
 
-  const message = `Kategorien på ansettelsesforholdet (${category}) er ikke ekskludert, som tilsier at det skal opprettes brukerkonto`
-  if (user.expectedType === 'student') return warn(message, { category, description })
-  return success(message, { category, description })
+  return success({ message: `Kategorien på ansettelsesforholdet (${category}) er ikke ekskludert, som tilsier at det skal opprettes brukerkonto`, raw: { category, description } })
 }
 
 const getActiveData = (data, user) => {
@@ -144,7 +130,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (user.expectedType === 'student') dataPresent = false
 
     if (dataPresent) return user.expectedType === 'employee' ? success('Har data') : warn('Har data til tross for at dette er en elev')
-    else return user.expectedType === 'employee' ? error('Mangler data 😬') : success('Bruker har ikke data i dette systemet')
+    else return user.expectedType === 'employee' ? error({ message: 'Mangler data 😬', solution: 'Rettes i Visma HRM' }) : success('Bruker har ikke data i dette systemet. Elever registreres i Visma InSchool')
   }),
   test('visma-02', 'Personen finnes', 'Sjekker at det ble funnet en person i HRM', () => {
     if (!dataPresent) return noData()
@@ -162,15 +148,15 @@ module.exports = (systemData, user, allData = false) => ([
     if (!dataPresent) return noData()
     const hrm = getArrayData(systemData)
     if (!hasData(hrm) || !hrm.ssn) {
-      if (user.expectedType === 'student') return success('Ingen person ble funnet i HRM', { hrm })
-      return warn('Ingen person ble funnet i HRM', { hrm })
+      if (user.expectedType === 'student') return success({ message: 'Ingen person ble funnet i HRM', raw: { hrm } })
+      return warn({ message: 'Ingen person ble funnet i HRM', raw: { hrm } })
     }
 
     const validationResult = isValidFnr(hrm.ssn)
-    if (!validationResult.valid) return error(validationResult.error, { hrm: { ssn: hrm.ssn }, validationResult })
+    if (!validationResult.valid) return error({ message: validationResult.error, raw: { hrm: { ssn: hrm.ssn }, validationResult } })
 
-    if (validationResult.type !== 'Fødselsnummer') return warn(`Fødselsnummeret som er registrert er et ${validationResult.type}. Dette kan skape problemer i enkelte systemer`, { hrm: { ssn: hrm.ssn }, validationResult })
-    return success('Fødselsnummeret registrert i HRM er gyldig', { hrm: { ssn: hrm.ssn }, validationResult })
+    if (validationResult.type !== 'Fødselsnummer') return warn({ message: `Fødselsnummeret som er registrert er et ${validationResult.type}. Dette kan skape problemer i enkelte systemer`, raw: { hrm: { ssn: hrm.ssn }, validationResult } })
+    return success({ message: 'Fødselsnummeret registrert i HRM er gyldig', raw: { hrm: { ssn: hrm.ssn }, validationResult } })
   }),
   test('visma-06', 'Har organisasjonstilknytning', 'Sjekker at bruker har en organisasjonstilknytning', () => {
     if (!dataPresent) return noData()
@@ -179,11 +165,11 @@ module.exports = (systemData, user, allData = false) => ([
     if (positions === null || positions === undefined) return noData()
 
     const missingOrg = positions.filter(position => !position.chart)
-    return hasData(missingOrg) ? error('Mangler organisasjonstilknytning. Må rettes i Visma HRM', missingOrg) : success('Har organisasjonstilknytning', positions)
+    return hasData(missingOrg) ? error({ message: 'Mangler organisasjonstilknytning. Må rettes i Visma HRM', raw: missingOrg, solution: 'Rettes i Visma HRM' }) : success({ message: 'Har organisasjonstilknytning', raw: positions })
   }),
   test('visma-07', 'Har mobilePhone satt', 'Sjekker at bruker har satt mobilePhone i Visma HRM', () => {
     if (!dataPresent) return noData()
-    return hasData(systemData.contactInfo.mobilePhone) ? success('Bruker har fylt ut ☎️ på MinSide') : warn('Bruker har ikke fylt ut ☎️ på MinSide og vil ikke kunne motta informasjon på SMS')
+    return hasData(systemData.contactInfo.mobilePhone) ? success('Bruker har fylt ut ☎️ på MinSide') : warn({ message: 'Bruker har ikke fylt ut ☎️ på MinSide og vil ikke kunne motta informasjon på SMS', solution: 'Bruker må selv sette telefonnummer på MinSide i HRM' })
   }),
   test('visma-08', 'Navn har ropebokstaver', 'Sjekker om navnet er skrevet med ropebokstaver', () => {
     if (!dataPresent) return noData()
@@ -192,7 +178,7 @@ module.exports = (systemData, user, allData = false) => ([
       givenName: systemData.givenName,
       familyName: systemData.familyName
     }
-    return (systemData.givenName === systemData.givenName.toUpperCase() || systemData.familyName === systemData.familyName.toUpperCase()) ? warn('Navn er skrevet med ropebokstaver', data) : noData()
+    return (systemData.givenName === systemData.givenName.toUpperCase() || systemData.familyName === systemData.familyName.toUpperCase()) ? warn({ message: 'Navn er skrevet med ropebokstaver', raw: data, solution: 'Rettes i Visma HRM' }) : noData()
   })
 ])
 
