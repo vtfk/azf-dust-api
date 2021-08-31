@@ -4,10 +4,13 @@ const isWithinDaterange = require('../../lib/helpers/is-within-daterange')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const { hasData, getArray, getArrayData } = require('../../lib/helpers/system-data')
 
+const employeePositionActiveDaysAhead = 30
+
 const getEmployment = hrm => {
   if (!hasData(hrm) || !hrm.employments || !hrm.employments.employment) return null
   const employment = getArray(hrm.employments.employment).find(employment => employment.company && employment.company.companyId === SYSTEMS.VISMA.COMPANY_ID)
-  if (hasData(employment)) employment.active = isWithinDaterange(employment.startDate, employment.endDate)
+  const dateDaysAhead = new Date(new Date().setDate(new Date().getDate() + employeePositionActiveDaysAhead))
+  if (hasData(employment)) employment.active = isWithinDaterange(employment.startDate, employment.endDate) || isWithinDaterange(employment.startDate, employment.endDate, dateDaysAhead)
 
   return employment
 }
@@ -44,6 +47,12 @@ const getActivePosition = (data, user) => {
   if (!positions) {
     if (user.expectedType === 'student') return warn('Ansettelsesforhold ble funnet i HRM, men ingen aktive stillinger ble funnet', { employment, positions: (positions || null) })
     return error('Ingen stillinger ble funnet i HRM', { employment, positions: (positions || null) })
+  } else if (!positions && employment.active) {
+    if (new Date(employment.startDate) > new Date()) {
+      return warn(`Bruker begynner ikke før ${prettifyDateToLocaleString(new Date(employment.startDate))}`, { employment, positions: (positions || null) }, 'Vent til bruker har startet da vel')
+    } else {
+      return error('Nå har det skjedd noe rart tror jeg', { employment, positions: (positions || null) }, 'Meld sak til arbeidsgruppe identitet')
+    }
   }
 
   const primaryPositions = positions.filter(position => position['@isPrimaryPosition'] === 'true')
