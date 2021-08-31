@@ -11,33 +11,36 @@ let dataPresent = true
 module.exports = (systemData, user, allData = false) => ([
   test('ad-01', 'Har data', 'Sjekker at det finnes data her', () => {
     dataPresent = hasData(systemData)
-    return dataPresent ? success('Har data') : error('Mangler data 😬')
+    return dataPresent ? success('Har data') : error({ message: 'Mangler data 😬', solution: user.expectedType === 'employee' ? 'Rettes i Visma HRM' : 'Rettes i Visma InSchool' })
   }),
   test('ad-02', 'Kontoen er aktivert', 'Sjekker at kontoen er aktivert i AD', () => {
     if (!dataPresent) return noData()
+    if (!allData || !allData.visma || !allData.vis) {
+      if (user.expectedType === 'student') return error({ message: 'Mangler data i Visma InSchool', raw: { user, vis: allData?.vis } })
+      else return error({ message: 'Mangler data i Visma HRM', raw: { user, visma: allData?.visma } })
+    }
+
     const data = {
       enabled: systemData.enabled
     }
 
     if (user.expectedType === 'employee') {
-      if (allData.visma) {
+      if (hasData(allData.visma)) {
         data.visma = getActiveSourceData(allData.visma, user)
-        if (systemData.enabled && data.visma.active) return success('Kontoen er aktivert', data)
-        else if (systemData.enabled && !data.visma.active) return error('Kontoen er aktivert selvom ansatt har sluttet', data)
-        else if (!systemData.enabled && data.visma.active) return warn('Kontoen er deaktivert. Ansatt må aktivere sin konto', data)
-        else if (!systemData.enabled && !data.visma.active) return warn('Kontoen er deaktivert', data)
+        if (systemData.enabled && data.visma.active) return success({ message: 'Kontoen er aktivert', raw: data })
+        else if (systemData.enabled && !data.visma.active) return error({ message: 'Kontoen er aktivert selvom ansatt har sluttet', raw: data, solution: 'Rettes i Visma HRM' })
+        else if (!systemData.enabled && data.visma.active) return warn({ message: 'Kontoen er deaktivert. Ansatt må aktivere sin konto', raw: data, solution: 'Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD' })
+        else if (!systemData.enabled && !data.visma.active) return warn({ message: 'Kontoen er deaktivert', raw: data, solution: 'Rettes i Visma HRM' })
       }
     } else {
-      if (allData.vis) {
+      if (hasData(allData.vis)) {
         data.vis = getActiveSourceData(allData.vis, user)
-        if (systemData.enabled && data.vis.student.active) return success('Kontoen er aktivert', data)
-        else if (systemData.enabled && !data.vis.student.active) return error('Kontoen er aktivert selvom elev har sluttet', data)
-        else if (!systemData.enabled && data.vis.student.active) return warn('Kontoen er deaktivert. Eleven må aktivere sin konto', data)
-        else if (!systemData.enabled && !data.vis.student.active) return warn('Kontoen er deaktivert', data)
-      } else return systemData.enabled ? success('Kontoen er aktivert', data) : warn('Kontoen er deaktivert. Eleven må aktivere sin konto', data) // TODO: Fjerne denne når ViS eller tilsvarende er tilstede
+        if (systemData.enabled && data.vis.student.active) return success({ message: 'Kontoen er aktivert', raw: data })
+        else if (systemData.enabled && !data.vis.student.active) return error({ message: 'Kontoen er aktivert selvom elev har sluttet', raw: data, solution: 'Rettes i Visma InSchool' })
+        else if (!systemData.enabled && data.vis.student.active) return warn({ message: 'Kontoen er deaktivert. Eleven må aktivere sin konto', raw: data, solution: 'Eleven må aktivere sin konto via minelevkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD' })
+        else if (!systemData.enabled && !data.vis.student.active) return warn({ message: 'Kontoen er deaktivert', raw: data, solution: 'Rettes i Visma InSchool' })
+      }
     }
-
-    if (!allData.visma && !allData.vis) return systemData.enabled ? success('Kontoen er aktivert', data) : error('Kontoen er deaktivert', data)
   }),
   test('ad-03', 'Hvilken OU', 'Sjekker hvilken OU bruker ligger i', () => {
     if (!dataPresent) return noData()
@@ -46,63 +49,51 @@ module.exports = (systemData, user, allData = false) => ([
       distinguishedName: systemData.distinguishedName
     }
 
-    if (systemData.distinguishedName.toLowerCase().includes(OU_AUTO_USERS.toLowerCase())) return success(`Bruker ligger i OU'en ${OU_AUTO_USERS.replace('OU=', '')}`, data)
-    else if (systemData.distinguishedName.toLowerCase().includes(OU_AUTO_DISABLED_USERS.toLowerCase())) return warn(`Bruker ligger i OU'en ${OU_AUTO_DISABLED_USERS.replace('OU=', '')}. Dette må rettes i ViS`, data)
-    else return error('Denne brukeren er ikke en del av automatikken vår...', data)
+    if (systemData.distinguishedName.toLowerCase().includes(OU_AUTO_USERS.toLowerCase())) return success({ message: `Bruker ligger i OU'en ${OU_AUTO_USERS.replace('OU=', '')}`, raw: data })
+    else if (systemData.distinguishedName.toLowerCase().includes(OU_AUTO_DISABLED_USERS.toLowerCase())) return warn({ message: `Bruker ligger i OU'en ${OU_AUTO_DISABLED_USERS.replace('OU=', '')}`, raw: data, solution: user.expectedType === 'employee' ? 'Rettes i Visma HRM' : 'Rettes i Visma InSchool' })
   }),
   test('ad-04', 'Kontoen er ulåst', 'Sjekker at kontoen ikke er sperret for pålogging i AD', () => {
     if (!dataPresent) return noData()
     const data = {
       lockedOut: systemData.lockedOut
     }
-    if (!systemData.lockedOut) return success('Kontoen er ikke sperret for pålogging', data)
-    return error('Kontoen er sperret for pålogging', data)
+    if (!systemData.lockedOut) return success({ message: 'Kontoen er ikke sperret for pålogging', raw: data })
+    return error({ message: 'Kontoen er sperret for pålogging', raw: data, solution: 'Servicedesk må åpne brukerkontoen for pålogging i AD. Dette gjøres i Properties på brukerobjektet under fanen Account' })
   }),
-  test('ad-05', 'Brukernavn følger riktig algoritme', 'Sjekker at brukernavnet stemmer med fornavn og fødselsdato', () => {
+  test('ad-05', 'UPN er korrekt', 'Sjekker at UPN er @vtfk.no for ansatte, og @skole.vtfk.no for elever', () => {
     if (!dataPresent) return noData()
-    if (!systemData.samAccountName) return error('Brukernavn mangler 🤭', systemData)
-
-    const samName = systemData.samAccountName.substring(0, 3).toLowerCase()
-    const firstName = systemData.givenName.toLowerCase().replace('å', 'aa').replace('ø', 'o').replace('æ', 'e').substring(0, 3)
-    const samDate = systemData.samAccountName.substring(3, 7)
-    const employeeDate = systemData.employeeNumber.substring(0, 4)
-    return samName === firstName && samDate === employeeDate ? success('Brukernavn samsvarer med navn', { samAccountName: systemData.samAccountName }) : error('Brukernavn samsvarer ikke med navn', { samAccountName: systemData.samAccountName, firstName: systemData.givenName, employeeNumber: systemData.employeeNumber })
-  }),
-  test('ad-06', 'UPN er korrekt', 'Sjekker at UPN er @vtfk.no for ansatte, og @skole.vtfk.no for elever', () => {
-    if (!dataPresent) return noData()
-    if (!systemData.userPrincipalName) return error('UPN mangler 🤭', systemData)
+    if (!systemData.userPrincipalName) return error({ message: 'UPN mangler 🤭', raw: systemData })
     const data = {
       userPrincipalName: systemData.userPrincipalName
     }
-    if (user.expectedType === 'employee') return systemData.userPrincipalName.includes('@vtfk.no') ? success('UPN er korrekt', data) : error('UPN er ikke korrekt', data)
-    else return systemData.userPrincipalName.includes('@skole.vtfk.no') ? success('UPN er korrekt', data) : error('UPN er ikke korrekt', data)
+    if (user.expectedType === 'employee') return systemData.userPrincipalName.includes('@vtfk.no') ? success({ message: 'UPN er korrekt', raw: data }) : error({ message: 'UPN er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
+    else return systemData.userPrincipalName.includes('@skole.vtfk.no') ? success({ message: 'UPN er korrekt', raw: data }) : error({ message: 'UPN er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
   }),
-  test('ad-07', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
+  test('ad-06', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
     if (!dataPresent) return noData()
-    if (!systemData.employeeNumber) return error('Fødselsnummer mangler 🤭', systemData)
+    if (!systemData.employeeNumber) return error({ message: 'Fødselsnummer mangler 🤭', raw: systemData })
     const data = {
       employeeNumber: systemData.employeeNumber,
       fnr: isValidFnr(systemData.employeeNumber)
     }
-    return data.fnr.valid ? success(`Har gyldig ${data.fnr.type}`, data) : error(data.fnr.error, data)
+    return data.fnr.valid ? success({ message: `Har gyldig ${data.fnr.type}`, raw: data }) : error({ message: data.fnr.error, raw: data })
   }),
-  test('ad-08', 'extensionAttribute6 er satt', 'Sjekker at extensionAttribute6 er satt', () => {
+  test('ad-07', 'extensionAttribute6 er satt', 'Sjekker at extensionAttribute6 er satt', () => {
     if (!dataPresent) return noData()
     const data = {
       extensionAttribute6: systemData.extensionAttribute6
     }
-    if (user.expectedType === 'employee') return hasData(systemData.extensionAttribute6) ? success('extensionAttribute6 er satt', data) : error('extensionAttribute6 mangler 🤭', data)
-    else return hasData(systemData.extensionAttribute6) ? warn('extensionAttribute6 er satt på en elev. Elever trenger ikke denne', data) : success('extensionAttribute6 er ikke satt, men siden dette er en elev er det helt normalt', systemData)
+    if (user.expectedType === 'employee') return hasData(systemData.extensionAttribute6) ? success({ message: 'extensionAttribute6 er satt', raw: data }) : error({ message: 'extensionAttribute6 mangler 🤭', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
   }),
-  test('ad-09', 'Har state satt for ansatt', 'Sjekker at state er satt på ansatt', () => {
+  test('ad-08', 'Har state satt for ansatt', 'Sjekker at state er satt på ansatt', () => {
     if (!dataPresent) return noData()
     if (user.expectedType === 'student') return noData()
     if (user.expectedType === 'employee') {
-      if (hasData(systemData.state)) return success('Felt for lisens er fylt ut', { state: systemData.state })
-      else return error('Felt for lisens mangler 🤭', systemData)
+      if (hasData(systemData.state)) return success({ message: 'Felt for lisens er fylt ut', raw: { state: systemData.state } })
+      else return error({ message: 'Felt for lisens mangler 🤭', raw: systemData, solution: 'Meld sak til arbeidsgruppe identitet' })
     }
   }),
-  test('ad-10', 'Fornavn har punktum', 'Sjekker om fornavn har punktum', () => {
+  test('ad-09', 'Fornavn har punktum', 'Sjekker om fornavn har punktum', () => {
     if (!dataPresent) return noData()
 
     const data = {
@@ -110,9 +101,9 @@ module.exports = (systemData, user, allData = false) => ([
       givenName: systemData.givenName,
       surName: systemData.sn
     }
-    return systemData.givenName.includes('.') ? warn('Navn har punktum', data) : noData()
+    return systemData.givenName.includes('.') ? warn({ message: 'Navn har punktum', raw: data, solution: 'Rettes i Visma HRM. Dersom epostadresse/UPN må endres, meld sak til arbeidsgruppe identitet' }) : noData()
   }),
-  test('ad-11', 'Riktig company', 'Sjekker at elev har rett company-info', () => {
+  test('ad-10', 'Riktig company', 'Sjekker at elev har rett company-info', () => {
     if (!dataPresent) return noData()
 
     const data = {
@@ -120,8 +111,8 @@ module.exports = (systemData, user, allData = false) => ([
     }
 
     if (user.expectedType === 'student') {
-      if (user.company) return hasCorrectCompany(user.company) ? success('Bruker har riktig company', data) : error('Bruker har ikke skolenavn i company-feltet', data)
-      else return error('Bruker mangler info i company-feltet', data)
+      if (user.company) return hasCorrectCompany(user.company) ? success({ message: 'Bruker har riktig company', raw: data }) : error({ message: 'Bruker har ikke skolenavn i company-feltet', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+      else return error({ message: 'Bruker mangler info i company-feltet', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
     } else return noData()
   })
 ])
