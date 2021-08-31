@@ -22,6 +22,7 @@ const mockData = {
     pwdLastSet: '2019-11-18T14:18:10.4794903+00:00',
     samAccountName: 'dyk1212',
     sn: 'Tusenfryd',
+    state: 'OF-FRV',
     userPrincipalName: 'dyktig.tusenfryd@vtfk.no',
     whenChanged: '2021-03-11T22:43:22+00:00',
     whenCreated: '2019-02-12T19:51:31+00:00'
@@ -522,6 +523,9 @@ const mockData = {
     },
     aadSync: {
       lastAzureADSyncTime: '2021-06-18T20:00:00Z'
+    },
+    sdsSync: {
+      lastSdsSyncTime: '2021-06-18T02:35:03.0852857+00:00'
     }
   },
   visma: {
@@ -941,23 +945,12 @@ const mockData = {
       extensionAttribute15: null
     },
     onPremisesProvisioningErrors: [],
-    memberOf: [
+    transitiveMemberOf: [
       {
         '@odata.type': '#microsoft.graph.administrativeUnit',
-        id: '568a5e48-afa5-4037-b6e2-abf7918f0c8b',
+        id: '3896ceee-0fe1-48dc-bd73-65bdfe11f9b1',
         deletedDateTime: null,
-        displayName: null,
-        description: null,
-        membershipRule: null,
-        membershipType: null,
-        membershipRuleProcessingState: null,
-        visibility: null
-      },
-      {
-        '@odata.type': '#microsoft.graph.administrativeUnit',
-        id: '22cdde29-9d48-4fdd-80f0-1366f7906d8a',
-        deletedDateTime: null,
-        displayName: null,
+        displayName: 'Fagskolen i Vestfold og Telemark',
         description: null,
         membershipRule: null,
         membershipType: null,
@@ -966,37 +959,38 @@ const mockData = {
       },
       {
         '@odata.type': '#microsoft.graph.group',
-        id: '5baf07cf-2c92-4fc2-a618-117fade50d3a',
+        id: '8da45071-d508-40d8-94ad-cceeeee3937',
         deletedDateTime: null,
         classification: null,
-        createdDateTime: '2019-12-24T11:42:12Z',
-        creationOptions: [],
-        description: "Alle ansatte på 'Færder videregående skole'",
-        displayName: 'OF-FRV-ALLE-ANSATTE',
+        createdDateTime: '2021-01-18T16:23:24Z',
+        creationOptions: ['Team', 'classAssignments', 'ExchangeProvisioningFlags:2509'],
+        description: 'NIK-KRL 21 B',
+        displayName: 'NIK-KRL 21 B',
         expirationDateTime: null,
-        groupTypes: [],
+        groupTypes: ['Unified'],
         isAssignableToRole: null,
-        mail: 'OF-FRV-ALLE-ANSATTE@vtfk.no',
+        mail: 'NIK-KRL21B@vtfk.no',
         mailEnabled: true,
-        mailNickname: 'OF-FRV-ALLE-ANSATTE',
+        mailNickname: 'NIK-KRL21B',
         membershipRule: null,
         membershipRuleProcessingState: null,
-        onPremisesDomainName: 'login.top.no',
-        onPremisesLastSyncDateTime: '2021-02-02T03:51:26Z',
-        onPremisesNetBiosName: 'LOGIN',
-        onPremisesSamAccountName: 'OF-FRV-ALLE-ANSATTE',
-        onPremisesSecurityIdentifier: 'S-1-5-21-961192664-1044802044-2078469417-410897',
-        onPremisesSyncEnabled: true,
+        onPremisesDomainName: null,
+        onPremisesLastSyncDateTime: null,
+        onPremisesNetBiosName: null,
+        onPremisesSamAccountName: null,
+        onPremisesSecurityIdentifier: null,
+        onPremisesSyncEnabled: null,
         preferredDataLocation: null,
         preferredLanguage: null,
-        proxyAddresses: ['SMTP:OF-FRV-ALLE-ANSATTE@vtfk.no', 'smtp:OF-FRV-ALLE-ANSATTE@vtfk.onmicrosoft.com'],
-        renewedDateTime: '2019-12-24T11:42:12Z',
-        resourceBehaviorOptions: [],
-        resourceProvisioningOptions: [],
-        securityEnabled: true,
-        securityIdentifier: 'S-1-12-1-1538197455-1338125458-2131826854-973989293',
+        proxyAddresses: ['SPO:SPO_3eebffd7-1d85-4d65-8d80-660aaeeee5c@SPO_08f3813c-9f29-482f-eeec-16ee7cbf477a', 'SMTP:NIK-KRL21B@vtfk.no', 'smtp:NIK-KRL21B@vtfk.onmicrosoft.com'],
+        renewedDateTime: '2021-01-18T16:23:24Z',
+        resourceBehaviorOptions: ['HideGroupInOutlook', 'WelcomeEmailDisabled', 'ConnectorsDisabled', 'SubscribeNewGroupMembers'],
+        resourceProvisioningOptions: ['Team'],
+        securityEnabled: false,
+        securityIdentifier: 'S-1-12-1-2376355953-108795e36-1724e89812-926e35178',
         theme: null,
-        visibility: null,
+        visibility: 'HiddenMembership',
+        extension_fe2174665583431c953114eeee68b7b3_Education_ObjectType: 'Section',
         onPremisesProvisioningErrors: []
       }
     ],
@@ -1017,7 +1011,8 @@ const mockData = {
         phoneAppVersion: '6.4.6',
         createdDateTime: '2020-04-30T14:44:03Z'
       }
-    ]
+    ],
+    userSignInErrors: []
   }
 }
 
