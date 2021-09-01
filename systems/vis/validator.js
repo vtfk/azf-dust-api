@@ -74,12 +74,18 @@ module.exports = (systemData, user, allData = false) => ([
     if (user.expectedType === 'student') {
       if (systemData.person.elev && systemData.person.elev.elevforhold && systemData.person.elev.elevforhold.length > 0) {
         const data = getElevforhold(systemData)
-        if (kontaktlærerCount > 0) return success({ message: `Har ${kontaktlærerCount} ${kontaktlærerCount === 0 || kontaktlærerCount > 1 ? 'kontaktlærere' : 'kontaktlærer'}. Se mer på "Se data"`, raw: (data.length === 0 || data.length > 1 ? data : data[0]) })
+        const kontaktlærerCount = data.reduce((dataAcc, dataCurr) => {
+          return dataAcc + dataCurr.kontaktlærere.filter(kontaktlærer => kontaktlærer.lærere.length > 0)
+            .reduce((kontaktAcc, kontaktCurr) => {
+              return kontaktAcc + kontaktCurr.lærere.length
+            }, 0)
+        }, 0)
+        if (kontaktlærerCount > 0) return success({ message: `Har ${kontaktlærerCount} ${kontaktlærerCount === 0 || kontaktlærerCount > 1 ? 'kontaktlærere' : 'kontaktlærer'}`, raw: (data.length === 0 || data.length > 1 ? data : data[0]) })
         else return error({ message: 'Har ikke kontaktlærer(e) 😬', raw: data, solution: 'Rettes i Visma InSchool' })
       } else return error({ message: 'Har ikke kontaktlærer(e) 😬', solution: 'Rettes i Visma InSchool' })
     } else if (user.expectedType === 'employee' && isTeacher(user.company, user.title)) {
       if (systemData.contactClasses.length === 0) return success('Er ikke kontaktlærer for noen klasser')
-      else return success({ message: `Er kontaktlærer for ${systemData.contactClasses.length} ${systemData.contactClasses.length === 0 || systemData.contactClasses.length > 1 ? 'klasser' : 'klasse'}. Se mer på "Se data"`, raw: (systemData.contactClasses.length === 0 || systemData.contactClasses.length > 1 ? systemData.contactClasses : systemData.contactClasses[0]) })
+      else return success({ message: `Er kontaktlærer for ${systemData.contactClasses.length} ${systemData.contactClasses.length === 0 || systemData.contactClasses.length > 1 ? 'klasser' : 'klasse'}`, raw: (systemData.contactClasses.length === 0 || systemData.contactClasses.length > 1 ? systemData.contactClasses : systemData.contactClasses[0]) })
     }
   }),
   test('vis-03', 'Tom kontaktlærergruppe', 'Sjekker om bruker har tomme kontaktlærergrupper', () => {
