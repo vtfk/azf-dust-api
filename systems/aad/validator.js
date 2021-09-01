@@ -193,7 +193,7 @@ module.exports = (systemData, user, allData = false) => ([
     const sdsGroups = getSdsGroups(allData.sds)
     const aadSdsGroups = getAadGroups(systemData.transitiveMemberOf).filter(group => group.mailNickname.startsWith('Section_') && !sdsGroups.includes(group.mailNickname.replace('Section_', ''))).map(group => group.mailNickname.replace('Section_', ''))
 
-    return hasData(aadSdsGroups) ? error({ message: `Bruker har ${aadSdsGroups.length} medlemskap som burde vært avsluttet`, raw: aadSdsGroups, solution: 'Meld sak til arbeidsgruppe identitet' }) : noData()
+    return hasData(aadSdsGroups) ? error({ message: `Bruker har ${aadSdsGroups.length} medlemskap som burde vært avsluttet`, raw: aadSdsGroups, solution: 'Rettes i Visma InSchool' }) : noData()
   }),
   test('aad-12', 'AD- og AzureAD-attributtene er like', 'Sjekker at attributtene i AD og AzureAD er like', () => {
     if (!dataPresent) return noData()
