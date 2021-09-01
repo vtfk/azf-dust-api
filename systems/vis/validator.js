@@ -83,6 +83,17 @@ module.exports = (systemData, user, allData = false) => ([
       if (systemData.contactClasses.length === 0) return success('Er ikke kontaktlærer for noen klasser')
       else return success({ message: `Er kontaktlærer for ${systemData.contactClasses.length} ${systemData.contactClasses.length === 0 || systemData.contactClasses.length > 1 ? 'klasser' : 'klasse'}. Se mer på "Se data"`, raw: (systemData.contactClasses.length === 0 || systemData.contactClasses.length > 1 ? systemData.contactClasses : systemData.contactClasses[0]) })
     }
+  }),
+  test('vis-03', 'Har flere skoleforhold', 'Sjekker om bruker har flere skoleforhold', () => {
+    if (!dataPresent || user.expectedType === 'employee') return noData()
+
+    if (systemData.person.elev && systemData.person.elev.elevforhold && systemData.person.elev.elevforhold.length > 0) {
+      const data = systemData.person.elev.elevforhold.map(elevforhold => ({ skole: elevforhold.skole.navn, hovedskole: elevforhold.hovedskole }))
+      if (data.length > 1) {
+        const primarySchool = data.find(elevforhold => elevforhold.hovedskole === true)
+        return primarySchool ? warn({ message: `Har ${data.length} skoleforhold. ${primarySchool.skole} er hovedskole`, raw: data, solution: 'Dette er i mange tilfeller korrekt. Dersom det allikevel skulle være feil, må det rettes i Visma InSchool' }) : error({ message: `Har ${data.length} skoleforhold men ingen hovedskole`, raw: data, solution: 'Rettes i Visma InSchool' })
+      } else return success({ message: 'Har ett skoleforhold', raw: data })
+    } else return error({ message: 'Har ingen skoleforhold 😬', raw: systemData })
   })
   /* test('vis-02', 'Har aktivt forhold', 'Sjekker at bruker har aktivt forhold', () => {
     if (!dataPresent) return noData()
