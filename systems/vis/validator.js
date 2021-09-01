@@ -52,6 +52,7 @@ const getActiveData = data => {
   }
   return activeData
 }
+const getElevforhold = data => data.person.elev.elevforhold.map(elevforhold => ({ skole: elevforhold.skole.navn, kontaktlærere: elevforhold.kontaktlarergruppe.map(kontaktlærer => ({ klasse: kontaktlærer.navn, lærere: kontaktlærer.undervisningsforhold.map(undervisningsforhold => ({ fornavn: undervisningsforhold.skoleressurs.person.navn.fornavn, etternavn: undervisningsforhold.skoleressurs.person.navn.etternavn, epostadresse: undervisningsforhold.skoleressurs.person.kontaktinformasjon.epostadresse })) })) }))
 
 let dataPresent = true
 
@@ -72,10 +73,7 @@ module.exports = (systemData, user, allData = false) => ([
 
     if (user.expectedType === 'student') {
       if (systemData.person.elev && systemData.person.elev.elevforhold && systemData.person.elev.elevforhold.length > 0) {
-        const data = systemData.person.elev.elevforhold.map(elevforhold => ({ skole: elevforhold.skole.navn, kontaktlærere: elevforhold.kontaktlarergruppe.map(kontaktlærer => ({ klasse: kontaktlærer.navn, lærere: kontaktlærer.undervisningsforhold.map(undervisningsforhold => ({ fornavn: undervisningsforhold.skoleressurs.person.navn.fornavn, etternavn: undervisningsforhold.skoleressurs.person.navn.etternavn, epostadresse: undervisningsforhold.skoleressurs.person.kontaktinformasjon.epostadresse })) })) }))
-        const kontaktlærerCount = data.reduce((accumulator, current) => {
-          return accumulator + current.kontaktlærere.length
-        }, 0)
+        const data = getElevforhold(systemData)
         if (kontaktlærerCount > 0) return success({ message: `Har ${kontaktlærerCount} ${kontaktlærerCount === 0 || kontaktlærerCount > 1 ? 'kontaktlærere' : 'kontaktlærer'}. Se mer på "Se data"`, raw: (data.length === 0 || data.length > 1 ? data : data[0]) })
         else return error({ message: 'Har ikke kontaktlærer(e) 😬', raw: data, solution: 'Rettes i Visma InSchool' })
       } else return error({ message: 'Har ikke kontaktlærer(e) 😬', solution: 'Rettes i Visma InSchool' })
@@ -84,7 +82,17 @@ module.exports = (systemData, user, allData = false) => ([
       else return success({ message: `Er kontaktlærer for ${systemData.contactClasses.length} ${systemData.contactClasses.length === 0 || systemData.contactClasses.length > 1 ? 'klasser' : 'klasse'}. Se mer på "Se data"`, raw: (systemData.contactClasses.length === 0 || systemData.contactClasses.length > 1 ? systemData.contactClasses : systemData.contactClasses[0]) })
     }
   }),
-  test('vis-03', 'Har flere skoleforhold', 'Sjekker om bruker har flere skoleforhold', () => {
+  test('vis-03', 'Tom kontaktlærergruppe', 'Sjekker om bruker har tomme kontaktlærergrupper', () => {
+    if (!dataPresent || user.expectedType === 'employee') return noData()
+
+    if (systemData.person.elev && systemData.person.elev.elevforhold && systemData.person.elev.elevforhold.length > 0) {
+      const data = getElevforhold(systemData)
+      const emptyGroups = data.filter(school => school.kontaktlærere.filter(kontaktlærer => kontaktlærer.lærere.length === 0).length > 0)
+      if (emptyGroups.length > 0) return error({ message: `Har ${emptyGroups.length} ${emptyGroups.length > 1 ? 'kontaktlærergrupper' : 'kontaktlæregruppe'} uten kontaktlærer`, raw: (emptyGroups.length === 0 || emptyGroups.length > 1 ? emptyGroups : emptyGroups[0]), solution: 'Rettes i Visma InSchool' })
+      else return noData()
+    } else return noData()
+  }),
+  test('vis-04', 'Har skoleforhold', 'Sjekker om bruker har skoleforhold', () => {
     if (!dataPresent || user.expectedType === 'employee') return noData()
 
     if (systemData.person.elev && systemData.person.elev.elevforhold && systemData.person.elev.elevforhold.length > 0) {
