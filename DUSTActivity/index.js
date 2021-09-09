@@ -27,7 +27,7 @@ module.exports = async function (context) {
     logger('info', ['dust-activity', system, 'data', 'finish'])
     if (body && body.statusCode && (body.statusCode / 100 | 0) > 2) {
       result.status = body.statusCode
-      result.error = body.message
+      result.error = typeof body.message === 'object' ? body.message : { error: body.message }
       logger('error', ['dust-activity', system, 'error', result.status, result.error.error || result.error])
     } else {
       result.data = body
