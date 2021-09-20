@@ -197,8 +197,6 @@ Get Azure Active Directory user account + authentication methods
       "Values": {
         "FUNCTIONS_WORKER_RUNTIME": "node",
         "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-        "AD_SCHOOL_EMPLOYEE_PROPERTY_NAME": "extensionAttribute7",
-        "AD_SCHOOL_EMPLOYEE_PROPERTY_VALUE": "OF-ALLE",
         "AD_AUTO_USERS": "OU=AUTO USERS",
         "AD_AUTO_DISABLED_USERS": "OU=AUTO DISABLED USERS",
         "CLIENT_ID": "0000000-0000-0000-0000-000000000000",
