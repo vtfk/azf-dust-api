@@ -20,29 +20,24 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('aad-02', 'Kontoen er aktivert', 'Sjekker at kontoen er aktivert i Azure AD', () => {
     if (!dataPresent) return noData()
-    if (!allData || !allData.visma || !allData.vis) {
-      if (user.expectedType === 'student') return error({ message: 'Mangler data i Visma InSchool', raw: { user, vis: allData.vis } })
-      else return error({ message: 'Mangler data i Visma HRM', raw: { user, visma: allData.visma } })
-    }
+    if (!allData) return noData()
+    if (user.expectedType === 'employee' && !allData.visma) return error({ message: 'Mangler data i Visma HRM', raw: { user, visma: allData.visma } })
+    if (user.expectedType === 'student' && !allData.vis) return error({ message: 'Mangler data i Visma InSchool', raw: { user, vis: allData.vis } })
 
     const data = {
       accountEnabled: systemData.accountEnabled
     }
 
     if (user.expectedType === 'employee') {
-      if (allData.visma) {
-        data.visma = getActiveSourceData(allData.visma, user)
-        if (systemData.accountEnabled && data.visma.active) return success({ message: 'Kontoen er aktivert', raw: data })
-        else if (!systemData.accountEnabled && data.visma.active) return warn({ message: 'Kontoen er deaktivert. Ansatt må aktivere sin konto', raw: data, solution: `Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
-        else if (!systemData.accountEnabled && !data.visma.active) return warn({ message: 'Kontoen er deaktivert', raw: data })
-      }
+      data.visma = getActiveSourceData(allData.visma, user)
+      if (systemData.accountEnabled && data.visma.active) return success({ message: 'Kontoen er aktivert', raw: data })
+      else if (!systemData.accountEnabled && data.visma.active) return warn({ message: 'Kontoen er deaktivert. Ansatt må aktivere sin konto', raw: data, solution: `Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
+      else if (!systemData.accountEnabled && !data.visma.active) return warn({ message: 'Kontoen er deaktivert', raw: data })
     } else {
-      if (allData.vis) {
-        data.vis = getActiveSourceData(allData.vis, user)
-        if (systemData.accountEnabled && data.vis.student.active) return success({ message: 'Kontoen er aktivert', raw: data })
-        else if (!systemData.accountEnabled && data.vis.student.active) return warn({ message: 'Kontoen er deaktivert. Eleven må aktivere sin konto', raw: data, solution: `Eleven må aktivere sin konto via minelevkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
-        else if (!systemData.accountEnabled && !data.vis.student.active) return warn({ message: 'Kontoen er deaktivert', raw: data })
-      }
+      data.vis = getActiveSourceData(allData.vis, user)
+      if (systemData.accountEnabled && data.vis.student.active) return success({ message: 'Kontoen er aktivert', raw: data })
+      else if (!systemData.accountEnabled && data.vis.student.active) return warn({ message: 'Kontoen er deaktivert. Eleven må aktivere sin konto', raw: data, solution: `Eleven må aktivere sin konto via minelevkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
+      else if (!systemData.accountEnabled && !data.vis.student.active) return warn({ message: 'Kontoen er deaktivert', raw: data })
     }
   }),
   test('aad-03', 'UPN er lik e-postadressen', 'Sjekker at UPN-et er lik e-postadressen i AD', () => {

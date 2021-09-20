@@ -15,31 +15,26 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('ad-02', 'Kontoen er aktivert', 'Sjekker at kontoen er aktivert i AD', () => {
     if (!dataPresent) return noData()
-    if (!allData || !allData.visma || !allData.vis) {
-      if (user.expectedType === 'student') return error({ message: 'Mangler data i Visma InSchool', raw: { user, vis: allData.vis } })
-      else return error({ message: 'Mangler data i Visma HRM', raw: { user, visma: allData.visma } })
-    }
+    if (!allData) return noData()
+    if (user.expectedType === 'employee' && !allData.visma) return error({ message: 'Mangler data i Visma HRM', raw: { user, visma: allData.visma } })
+    if (user.expectedType === 'student' && !allData.vis) return error({ message: 'Mangler data i Visma InSchool', raw: { user, vis: allData.vis } })
 
     const data = {
       enabled: systemData.enabled
     }
 
     if (user.expectedType === 'employee') {
-      if (hasData(allData.visma)) {
-        data.visma = getActiveSourceData(allData.visma, user)
-        if (systemData.enabled && data.visma.active) return success({ message: 'Kontoen er aktivert', raw: data })
-        else if (systemData.enabled && !data.visma.active) return error({ message: 'Kontoen er aktivert selvom ansatt har sluttet', raw: data, solution: 'Rettes i Visma HRM' })
-        else if (!systemData.enabled && data.visma.active) return warn({ message: 'Kontoen er deaktivert. Ansatt må aktivere sin konto', raw: data, solution: 'Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD' })
-        else if (!systemData.enabled && !data.visma.active) return warn({ message: 'Kontoen er deaktivert', raw: data, solution: 'Rettes i Visma HRM' })
-      }
+      data.visma = getActiveSourceData(allData.visma, user)
+      if (systemData.enabled && data.visma.active) return success({ message: 'Kontoen er aktivert', raw: data })
+      else if (systemData.enabled && !data.visma.active) return error({ message: 'Kontoen er aktivert selvom ansatt har sluttet', raw: data, solution: 'Rettes i Visma HRM' })
+      else if (!systemData.enabled && data.visma.active) return warn({ message: 'Kontoen er deaktivert. Ansatt må aktivere sin konto', raw: data, solution: 'Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD' })
+      else if (!systemData.enabled && !data.visma.active) return warn({ message: 'Kontoen er deaktivert', raw: data, solution: 'Rettes i Visma HRM' })
     } else {
-      if (hasData(allData.vis)) {
-        data.vis = getActiveSourceData(allData.vis, user)
-        if (systemData.enabled && data.vis.student.active) return success({ message: 'Kontoen er aktivert', raw: data })
-        else if (systemData.enabled && !data.vis.student.active) return error({ message: 'Kontoen er aktivert selvom elev har sluttet', raw: data, solution: 'Rettes i Visma InSchool' })
-        else if (!systemData.enabled && data.vis.student.active) return warn({ message: 'Kontoen er deaktivert. Eleven må aktivere sin konto', raw: data, solution: 'Eleven må aktivere sin konto via minelevkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD' })
-        else if (!systemData.enabled && !data.vis.student.active) return warn({ message: 'Kontoen er deaktivert', raw: data, solution: 'Rettes i Visma InSchool' })
-      }
+      data.vis = getActiveSourceData(allData.vis, user)
+      if (systemData.enabled && data.vis.student.active) return success({ message: 'Kontoen er aktivert', raw: data })
+      else if (systemData.enabled && !data.vis.student.active) return error({ message: 'Kontoen er aktivert selvom elev har sluttet', raw: data, solution: 'Rettes i Visma InSchool' })
+      else if (!systemData.enabled && data.vis.student.active) return warn({ message: 'Kontoen er deaktivert. Eleven må aktivere sin konto', raw: data, solution: 'Eleven må aktivere sin konto via minelevkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD' })
+      else if (!systemData.enabled && !data.vis.student.active) return warn({ message: 'Kontoen er deaktivert', raw: data, solution: 'Rettes i Visma InSchool' })
     }
   }),
   test('ad-03', 'Hvilken OU', 'Sjekker hvilken OU bruker ligger i', () => {
