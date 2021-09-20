@@ -38,6 +38,11 @@ module.exports = async function (context) {
     logger('info', ['worker-activity', 'final tests', 'systems', Object.getOwnPropertyNames(systems).length])
 
     return await Promise.all(tasks.map(async task => {
+      if (task.result.error) {
+        logger('error', ['worker-activity', 'final tests', 'system', task.result.name, 'Tests will not be executed due to error present'])
+        task.result.tests = []
+        return task
+      }
       task.result.tests = test(task.result.name, task.result.data, user, systems)
       await updateRequest({ instanceId, ...task.result })
 
