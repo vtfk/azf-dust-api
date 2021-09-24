@@ -4,7 +4,6 @@ const getGraphToken = require('../../lib/graph/get-graph-token')
 const getGraphOptions = require('../../lib/graph/get-graph-options')
 const getGraphData = require('../../lib/graph/get-graph-data')
 const getResponse = require('../../lib/get-response-object')
-const { SYSTEMS: { SYNC: { SDS_PROFILE_ID } } } = require('../../config')
 
 const getData = async caller => {
   const method = 'get'
@@ -33,19 +32,10 @@ module.exports = async caller => {
     rootQuery: 'organization?$select=onPremisesLastSyncDateTime',
     properties: undefined
   })
-  const graphSdsSyncOptions = getGraphOptions({
-    userPrincipalName: caller,
-    rootQuery: `education/synchronizationProfiles/${SDS_PROFILE_ID}/profileStatus?$select=lastSynchronizationDateTime`,
-    properties: undefined
-  }, true)
 
   logger('info', ['sync', 'aad', 'graph-aadsync', caller, 'start'])
   const graphAadSync = await getGraphData(graphAadSyncOptions, token)
   logger('info', ['sync', 'aad', 'graph-aadsync', caller, 'finish', 'received', (graphAadSync && graphAadSync.value && graphAadSync.value.length) || 0])
-
-  logger('info', ['sync', 'sds', 'graph-sdssync', caller, 'start'])
-  const graphSdsSync = await getGraphData(graphSdsSyncOptions, token)
-  logger('info', ['sync', 'sds', 'graph-sdssync', caller, 'finish', 'received', (graphSdsSync && graphSdsSync.lastSynchronizationDateTime ? 'ok' : 'empty')])
 
   return getResponse({
     vigobas,
@@ -53,7 +43,7 @@ module.exports = async caller => {
       lastAzureADSyncTime: (graphAadSync && graphAadSync.value && graphAadSync.value.length > 0 && graphAadSync.value[0].onPremisesLastSyncDateTime) || null
     },
     sdsSync: {
-      lastSdsSyncTime: (graphSdsSync && graphSdsSync.lastSynchronizationDateTime) || null
+      lastSdsSyncTime: (vigobas.lastRunTime) || null
     }
   })
 }
