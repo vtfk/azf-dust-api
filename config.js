@@ -38,7 +38,8 @@ module.exports = {
       PRINCIPAL_NAME: process.env.FEIDE_PRINCIPAL_NAME || '@vtfk.no',
       ORGANIZATION_DN: process.env.FEIDE_ORGANIZATION_DN || 'O=Vestfold og Telemark fylkeskommune,DC=vtfk,DC=no',
       MFA_SMS: process.env.FEIDE_MFA_SMS || 'urn:mace:feide.no:auth:method:sms',
-      MFA_GA: process.env.FEIDE_MFA_GA || 'urn:mace:feide.no:auth:method:ga'
+      MFA_GA: process.env.FEIDE_MFA_GA || 'urn:mace:feide.no:auth:method:ga',
+      MFA_AAD: process.env.FEIDE_MFA_AAD || 'urn:mace:feide.no:auth:method:azuread'
     },
     VIS: {
       FINT_API_URL: process.env.FINT_API_URL || '',

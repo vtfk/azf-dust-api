@@ -68,10 +68,11 @@ module.exports = (systemData, user, allData = false) => ([
     }
     const smsAuth = systemData.norEduPersonAuthnMethod.filter(auth => auth.includes(SYSTEMS.FEIDE.MFA_SMS))
     const gaAuth = systemData.norEduPersonAuthnMethod.filter(auth => auth.includes(SYSTEMS.FEIDE.MFA_GA))
-    if (hasData(smsAuth) && hasData(gaAuth)) return success({ message: 'Feide2Faktor for SMS og Godkjenner/Authenticator app er satt opp', raw: data })
-    else if (hasData(smsAuth) && !hasData(gaAuth)) return success({ message: 'Feide2Faktor for SMS er satt opp', raw: data })
-    else if (!hasData(smsAuth) && hasData(gaAuth)) return success({ message: 'Feide2Faktor for Godkjenner/Authenticator app er satt opp', raw: data })
-    else return warn({ message: 'Feide2Faktor for noe annet enn SMS og Godkjenner/Authenticator app er satt opp', raw: data, solution: 'Spør en voksen' })
+    const aadAuth = systemData.norEduPersonAuthnMethod.filter(auth => auth.includes(SYSTEMS.FEIDE.MFA_AAD))
+    if (hasData(smsAuth)) return success({ message: 'Feide2Faktor for SMS er satt opp', raw: data })
+    else if (hasData(gaAuth)) return success({ message: 'Feide2Faktor for Godkjenner/Authenticator app er satt opp', raw: data })
+    else if (hasData(aadAuth)) return success({ message: 'Azure MFA brukes som 2faktor', raw: data })
+    else return warn({ message: 'Feide2Faktor for noe annet enn SMS, Godkjenner/Authenticator app eller Azure MFA er satt opp', raw: data, solution: 'Spør en voksen' })
   }),
   test('feide-06', 'Har grupperettigheter', 'Sjekker at det er satt grupperettigheter', () => {
     if (!dataPresent) return noData()
