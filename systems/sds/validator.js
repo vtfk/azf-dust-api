@@ -35,6 +35,6 @@ module.exports = (systemData, user, allData = false) => ([
     const sdsGroups = getSdsGroups(systemData)
     const wrongEnrollments = sdsGroups.filter(group => !aadGroups.includes(`Section_${group}`))
     if (hasData(wrongEnrollments)) return error({ message: `Mangler medlemskap i ${wrongEnrollments.length} SDS-gruppe${wrongEnrollments.length > 1 ? 'r' : ''} i Azure AD 🤭`, raw: wrongEnrollments, solution: 'Rettes i Visma InSchool' })
-    else return success({ message: 'Har medlemskap i alle sine SDS-grupper i Azure AD', solution: systemData })
+    else return success({ message: 'Har medlemskap i alle sine SDS-grupper i Azure AD', raw: systemData })
   })
 ])
