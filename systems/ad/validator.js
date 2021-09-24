@@ -109,5 +109,15 @@ module.exports = (systemData, user, allData = false) => ([
       if (user.company) return hasCorrectCompany(user.company) ? success({ message: 'Bruker har riktig company', raw: data }) : error({ message: 'Bruker har ikke skolenavn i company-feltet', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
       else return error({ message: 'Bruker mangler info i company-feltet', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
     } else return noData()
+  }),
+  test('ad-11', 'Har extensionAttribute4', 'Sjekker om bruker har extensionAttribute4', () => {
+    if (!dataPresent) return noData()
+    if (!systemData.extensionAttribute4) return noData()
+
+    const data = {
+      extensionAttribute4: systemData.extensionAttribute4.split(',').map(ext => ext.trim())
+    }
+
+    return warn({ message: `Er medlem av ${data.extensionAttribute4.length} personalrom og ${data.extensionAttribute4.length === 0 || data.extensionAttribute4.length > 1 ? 'mailinglister' : 'mailingliste'}`, solution: 'extensionAttribute4 fører til medlemskap i personalrom og mailinglister. Dersom dette ikke er ønskelig fjernes dette fra brukeren i AD', raw: data })
   })
 ])
