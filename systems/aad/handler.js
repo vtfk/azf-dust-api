@@ -35,7 +35,9 @@ module.exports = async (params) => {
 
   logger('info', ['aad', 'graph-user-groups', params.userPrincipalName, 'start'])
   const graphUserGroups = await getGraphData(graphUserGroupsOptions, token)
-  logger('info', ['aad', 'graph-user-groups', params.userPrincipalName, 'finish', 'received', (graphUserGroups && graphUserGroups.value && graphUserGroups.value.length) || 0])
+  logger('info', ['aad', 'graph-user-groups', params.userPrincipalName, 'received', (graphUserGroups && graphUserGroups.value && graphUserGroups.value.length) || 0])
+  const graphSDSGroups = (graphUserGroups && graphUserGroups.value && Array.isArray(graphUserGroups.value) && graphUserGroups.value.filter(group => group.mailNickname && group.mailNickname.startsWith('Section_'))) || []
+  logger('info', ['aad', 'graph-user-groups', params.userPrincipalName, 'finish', 'filtered', graphSDSGroups.length])
 
   logger('info', ['aad', 'graph-user-mfa-methods', params.userPrincipalName, 'start'])
   const graphUserAuth = await getGraphData(graphUserAuthOptions, token)
@@ -47,7 +49,7 @@ module.exports = async (params) => {
 
   return getResponse({
     ...graphUser,
-    transitiveMemberOf: graphUserGroups.value,
+    transitiveMemberOf: graphSDSGroups,
     authenticationMethods: graphUserAuth.value,
     userSignInErrors: graphUserSignIns.value
   })

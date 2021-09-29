@@ -1,7 +1,6 @@
 const { test, success, error, warn, waitForData, noData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
 const isTeacher = require('../../lib/helpers/is-teacher')
-const getAadGroups = require('../../lib/get-aad-groups')
 const getSdsGroups = require('../../lib/get-sds-groups')
 
 let dataPresent = true
@@ -31,7 +30,7 @@ module.exports = (systemData, user, allData = false) => ([
 
     // TODO: Lærer skal være eier av gruppa i AAD. Eleven skal være med lem
 
-    const aadGroups = getAadGroups(allData.aad.transitiveMemberOf).map(group => group.mailNickname)
+    const aadGroups = allData.aad.transitiveMemberOf.map(group => group.mailNickname)
     const sdsGroups = getSdsGroups(systemData)
     const wrongEnrollments = sdsGroups.filter(group => !aadGroups.includes(`Section_${group}`))
     if (hasData(wrongEnrollments)) return error({ message: `Mangler medlemskap i ${wrongEnrollments.length} SDS-gruppe${wrongEnrollments.length > 1 ? 'r' : ''} i Azure AD 🤭`, raw: wrongEnrollments, solution: 'Rettes i Visma InSchool' })

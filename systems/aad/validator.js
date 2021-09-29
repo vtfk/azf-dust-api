@@ -2,7 +2,6 @@ const { test, success, error, warn, waitForData, noData } = require('../../lib/t
 const { hasData } = require('../../lib/helpers/system-data')
 const isWithinTimeRange = require('../../lib/helpers/is-within-timerange')
 const getActiveSourceData = require('../../lib/helpers/get-active-source-data')
-const getAadGroups = require('../../lib/get-aad-groups')
 const getSdsGroups = require('../../lib/get-sds-groups')
 // const licenses = require('../data/licenses.json')
 
@@ -186,7 +185,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (user.expectedType !== 'student') return noData()
 
     const sdsGroups = getSdsGroups(allData.sds)
-    const aadSdsGroups = getAadGroups(systemData.transitiveMemberOf).filter(group => group.mailNickname.startsWith('Section_') && !sdsGroups.includes(group.mailNickname.replace('Section_', ''))).map(group => group.mailNickname.replace('Section_', ''))
+    const aadSdsGroups = systemData.transitiveMemberOf.filter(group => !sdsGroups.includes(group.mailNickname.replace('Section_', ''))).map(group => group.mailNickname.replace('Section_', ''))
 
     return hasData(aadSdsGroups) ? error({ message: `Bruker har ${aadSdsGroups.length} medlemskap som burde vært avsluttet`, raw: aadSdsGroups, solution: 'Rettes i Visma InSchool' }) : noData()
   }),
