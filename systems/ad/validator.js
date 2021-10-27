@@ -118,6 +118,6 @@ module.exports = (systemData, user, allData = false) => ([
       extensionAttribute4: systemData.extensionAttribute4.split(',').map(ext => ext.trim())
     }
 
-    return warn({ message: `Er medlem av ${data.extensionAttribute4.length} personalrom og ${data.extensionAttribute4.length === 0 || data.extensionAttribute4.length > 1 ? 'mailinglister' : 'mailingliste'}`, solution: 'extensionAttribute4 fører til medlemskap i personalrom og mailinglister. Dersom dette ikke er ønskelig fjernes dette fra brukeren i AD', raw: data })
+    return warn({ message: `Er medlem av ${data.extensionAttribute4.length} personalrom- og ${data.extensionAttribute4.length === 0 || data.extensionAttribute4.length > 1 ? 'mailinglister' : 'mailingliste'}`, solution: 'extensionAttribute4 fører til medlemskap i personalrom- og mailinglister. Dersom dette ikke er ønskelig fjernes dette fra brukeren i AD', raw: data })
   })
 ])
