@@ -61,7 +61,11 @@ const getActivePosition = (data, user) => {
 
   // Sjekk at det finnes et aktivt ansettelsesforhold og minst én aktiv stilling
   if (employment.active && activePrimaryPosition) {
-    return success({ message: 'Fant aktivt ansettelsesforhold og stilling i HRM', raw: { employment, positions } })
+    // Sjekk at primærstilling ikke er Sluttet
+    const primaryPosition = primaryPositions[0]
+    if (primaryPosition.positionInfo && primaryPosition.positionInfo.positionType && primaryPosition.positionInfo.positionType['@name'] && primaryPosition.positionInfo.positionType['@name'].toLowerCase() === 'sluttet') {
+      return error({ message: 'Primærstilling er avsluttet 😱', raw: primaryPosition.positionInfo.positionType, solution: 'Rettes i Visma HRM' })
+    } else return success({ message: 'Fant aktivt ansettelsesforhold og stilling i HRM', raw: { employment, positions } })
   }
 
   // Fant kun et ansettelsesforhold
