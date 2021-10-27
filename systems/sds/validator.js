@@ -21,7 +21,7 @@ module.exports = (systemData, user, allData = false) => ([
     const missingEnrollments = systemData.filter(obj => !obj.enrollments)
     if (hasData(missingPerson)) return error({ message: 'Person-objekt mangler 🤭', raw: systemData, solution: 'Rettes i Visma InSchool' })
     else if (hasData(missingEnrollments)) return error({ message: 'Gruppemedlemskap mangler 🤭', raw: systemData, solution: 'Rettes i Visma InSchool' })
-    return success({ message: 'Har person og gruppemedlemskap', raw: systemData })
+    return success({ message: 'Har person- og gruppemedlemskap', raw: systemData })
   }),
   test('sds-03', 'Er medlem av SDS-gruppen(e) i Azure AD', 'Sjekker at bruker er medlem av SDS-gruppen(e) i Azure AD', () => {
     if (!dataPresent) return noData()
