@@ -28,8 +28,6 @@ module.exports = (systemData, user, allData = false) => ([
     if (!allData) return waitForData()
     if (!hasData(allData.aad)) return error({ message: 'Mangler Azure AD data', raw: allData.ad })
 
-    // TODO: Lærer skal være eier av gruppa i AAD. Eleven skal være med lem
-
     const aadGroups = allData.aad.transitiveMemberOf.map(group => group.mailNickname)
     const sdsGroups = getSdsGroups(systemData)
     const wrongEnrollments = sdsGroups.filter(group => !aadGroups.includes(`Section_${group}`))
