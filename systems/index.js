@@ -27,8 +27,8 @@ module.exports = {
     handle: require('./sync/handler'),
     validate: require('./sync/validator')
   },
-  equitrack: {
-    handle: require('./equitrack/handler'),
-    validate: require('./equitrack/validator')
+  equitrac: {
+    handle: require('./equitrac/handler'),
+    validate: require('./equitrac/validator')
   }
 }

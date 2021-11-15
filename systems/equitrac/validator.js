@@ -4,11 +4,11 @@ const { hasData } = require('../../lib/helpers/system-data')
 let dataPresent = true
 
 module.exports = (systemData, user, allData = false) => ([
-  test('equitrack-01', 'Har data', 'Sjekker at det finnes data her', () => {
+  test('equitrac-01', 'Har data', 'Sjekker at det finnes data her', () => {
     dataPresent = hasData(systemData)
-    return dataPresent ? success('Har data') : error({ message: 'Bruker ikke funnet i dette systemet 😬', solution: 'Rettes i EquiTrack' })
+    return dataPresent ? success('Har data') : error({ message: 'Bruker ikke funnet i dette systemet 😬', solution: 'Rettes i Equitrac' })
   }),
-  test('equitrack-02', 'Kontoen er ulåst', 'Sjekker at kontoen er ulåst', () => {
+  test('equitrac-02', 'Kontoen er ulåst', 'Sjekker at kontoen er ulåst', () => {
     if (!dataPresent) return noData()
 
     const data = {
@@ -16,14 +16,14 @@ module.exports = (systemData, user, allData = false) => ([
       previousAccountStatus: systemData.PreviousAccountStatus || undefined
     }
 
-    return data.previousAccountStatus ? warn({ message: 'Bruker var låst i EquiTrack men er nå låst opp! 👌', raw: data }) : success({ message: 'Bruker er ulåst i EquiTrack', raw: data })
+    return data.previousAccountStatus ? warn({ message: 'Bruker var låst i Equitrac men er nå låst opp! 👌', raw: data }) : success({ message: 'Bruker er ulåst i Equitrac', raw: data })
   }),
-  test('equitrack-03', 'UserEmail er lik UPN', 'Sjekker at UserEmail er lik UserPrincipalName', () => {
+  test('equitrac-03', 'UserEmail er lik UPN', 'Sjekker at UserEmail er lik UserPrincipalName', () => {
     if (!dataPresent) return noData()
     if (!allData || !allData.ad) return waitForData()
 
     const data = {
-      equiTrack: {
+      equitrac: {
         userEmail: systemData.UserEmail
       },
       ad: {
