@@ -17,7 +17,8 @@ When all calls are finished, tests across all retrieved data will be executed.
     "sds",
     "sync",
     "vis",
-    "visma"
+    "visma",
+    "equitrac"
   ],
   "user": {
     "userPrincipalName": "bjarne.betjent@vtfk.no", // can also be "displayName", "samAccountName" or "employeeNumber"
@@ -189,6 +190,19 @@ Get Azure Active Directory user account + authentication methods
 ```json
 {
   "userPrincipalName": "bjarne.betjent@vtfk.no"
+}
+```
+
+### `/system/equitrac`
+
+Get info for user from Equitrac.
+
+If account were locked, it will be unlocked and info returned will reflect this
+
+#### samAccountName
+```json
+{
+  "samAccountName": "bja0101"
 }
 ```
 
