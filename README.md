@@ -177,6 +177,10 @@ Get user info from school source system
 }
 ```
 
+### `/system/sync`
+
+Get info about last synchronization timestamps
+
 ### `/system/aad`
 
 Get Azure Active Directory user account + authentication methods
