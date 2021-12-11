@@ -3,7 +3,7 @@ const { SYSTEMS } = require('../../config')
 const { hasData } = require('../../lib/helpers/system-data')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const { getActiveMemberships } = require('../vis/validator')
-const isSchoolEmployee = require('../../lib/helpers/is-school-employee')
+const isTeacher = require('../../lib/helpers/is-teacher')
 
 const repackEntitlements = data => data.filter(entitlement => entitlement.startsWith('urn:mace:feide.no:go:group:u:')).map(entitlement => entitlement.replace('urn:mace:feide.no:go:group:u:', '').split(':')[2].replace('%2F', '/').toLowerCase())
 const repackMemberships = data => data.filter(membership => membership.navn.includes('/')).map(membership => membership.navn.toLowerCase())
@@ -16,7 +16,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (!dataPresent) {
       if (user.expectedType === 'student') return error({ message: 'Mangler data 😬', raw: systemData, solution: 'Rettes i Visma InSchool' })
       else if (!user.company || !user.title) return warn('Mangler data. Dessverre er det ikke nok informasjon tilstede på brukerobjektet for å kontrollere om dette er korrekt')
-      else if (isSchoolEmployee(user.company)) return error({ message: 'Mangler data 😬', raw: systemData, solution: 'Rettes i Visma InSchool' })
+      else if (isTeacher(user.company, user.title)) return error({ message: 'Mangler data 😬', raw: systemData, solution: 'Rettes i Visma InSchool' })
       else return success({ message: 'Det er ikke forventet FEIDE-konto på denne brukertypen', solution: 'Dersom det er behov for FEIDE-konto må bruker registreres i Visma InSchool eller meld sak til arbeidsgruppe identitet' })
     } else return success('Har data')
   }),
