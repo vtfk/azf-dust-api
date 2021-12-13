@@ -241,8 +241,6 @@ If account were locked, it will be unlocked and info returned will reflect this
         "PAPERTRAIL_PORT": 100,
         "PAPERTRAIL_HOSTNAME": "hostname",
         "PAPERTRAIL_DISABLE_LOGGING": true,
-        "PIFU_API_URL": "https://pifu.dev",
-        "PIFU_JWT_SECRET": "Very very secret secret",
         "RETRY_WAIT": 3000,
         "SCRIPT_SERVICE_URL": "https://localhost/dust/invoke",
         "SOURCE_DATA_SYSTEMS": "ad,vis,visma",

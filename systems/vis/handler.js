@@ -3,27 +3,30 @@ const axios = require('axios').default
 const generateJwt = require('../../lib/auth/generate-jwt')
 const getResponse = require('../../lib/get-response-object')
 const isTeacher = require('../../lib/helpers/is-teacher')
-const { getTeacherContactClasses } = require('../../lib/get-pifu-data')
 const HTTPError = require('../../lib/http-error')
-const { SYSTEMS: { VIS: { FINT_BETA, FINT_API_URL, FINT_JWT_SECRET, FINT_TIMEOUT } } } = require('../../config')
+const { SYSTEMS: { VIS: { FINT_BETA, FINT_API_URL, FINT_JWT_SECRET, FINT_TIMEOUT }, FEIDE: { PRINCIPAL_NAME } } } = require('../../config')
 
 module.exports = async params => {
   const { employeeNumber, samAccountName, company, title } = params
 
-  if (employeeNumber === undefined) {
-    logger('error', ['vis', 'missing required parameter', 'employeeNumber'])
+  if (employeeNumber === undefined && samAccountName === undefined) {
+    logger('error', ['vis', 'missing required parameters'])
     throw new HTTPError(400, 'Missing required parameter', {
-      message: 'Missing required parameter',
+      message: 'Missing required parameters. One of the following parameters are required',
       params: [
-        'employeeNumber'
+        'employeeNumber',
+        'samAccountName'
       ]
     })
   }
 
+  const isATeacher = isTeacher(company, title)
+  const template = isATeacher ? 'schoolEmployee' : samAccountName ? 'employee' : 'student'
+  const identity = isATeacher ? `${samAccountName}${PRINCIPAL_NAME}` : employeeNumber
   const query = {
-    template: 'person',
+    template,
     variables: {
-      fodselsnummer: employeeNumber
+      identity
     },
     options: {
       beta: FINT_BETA
@@ -34,18 +37,12 @@ module.exports = async params => {
   axios.defaults.headers.common.Authorization = `Bearer ${token}`
 
   try {
-    logger('info', ['vis', 'employeeNumber', employeeNumber, 'start', 'timeout', FINT_TIMEOUT])
+    logger('info', ['vis', template, isATeacher ? 'samAccountName' : 'employeeNumber', identity, 'start', 'timeout', FINT_TIMEOUT])
     const { data } = await axios.post(FINT_API_URL, query)
-    logger('info', ['vis', 'employeeNumber', employeeNumber, 'finish', 'data received', Array.isArray(data) ? data.length : 1])
-    if (isTeacher(company, title) && samAccountName) {
-      logger('info', ['vis', 'samAccountName', samAccountName, 'start'])
-      const contactClasses = await getTeacherContactClasses(samAccountName)
-      logger('info', ['vis', 'samAccountName', samAccountName, 'finish', 'data received', Array.isArray(contactClasses) ? contactClasses.length : 1])
-      data.contactClasses = contactClasses
-    }
+    logger('info', ['vis', template, isATeacher ? 'samAccountName' : 'employeeNumber', identity, 'finish', 'data received', Array.isArray(data) ? data.length : 1])
     return getResponse(data)
   } catch (error) {
-    logger('error', ['vis', 'employeeNumber', employeeNumber, error.response.data.message])
+    logger('error', ['vis', template, isATeacher ? 'samAccountName' : 'employeeNumber', identity, error.response.data.message])
     if (/Cannot return null for non-nullable type: 'Personnavn' within parent 'Person'/.exec(error.response.data.message)) return getResponse({})
     else throw error
   }
