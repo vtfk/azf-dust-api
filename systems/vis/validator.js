@@ -174,20 +174,31 @@ module.exports = (systemData, user, allData = false) => ([
       if (data.skoler.length === 0) return error({ message: 'Har ingen skoleforhold 😬', solution: 'Rettes i Visma InSchool' })
       else return success({ message: `Har ${data.skoler.length} skoleforhold`, raw: data })
     }
-  })
-  /* test('vis-02', 'Har aktivt forhold', 'Sjekker at bruker har aktivt forhold', () => {
-    if (!dataPresent) return noData()
-    const activeData = getActiveData(systemData)
+  }),
+  test('vis-04', 'Har basisgruppe', 'Sjekker at bruker har basisgruppe(r)', () => {
+    if (!dataPresent || (user.expectedType === 'employee' && !isTeacher(user.company, user.title))) return noData()
+
     if (user.expectedType === 'student') {
-      if (activeData.employee.active && activeData.student.active) return error({ message: 'Bruker har aktive elev- og ansattforhold 😬', raw: activeData })
-      else if (activeData.employee.active && !activeData.student.active) return error({ message: 'Elev har aktivt ansattforhold 😬', raw: activeData })
-      else if (!activeData.employee.active && !activeData.student.active) return error({ message: 'Mangler aktivt elevforhold 😬😬', raw: activeData })
-      return success({ message: 'Bruker har aktivt elevforhold', raw: activeData })
-    } else {
-      if (activeData.employee.active && activeData.student.active) return error({ message: 'Bruker har aktive elev- og ansattforhold 😬', raw: activeData })
-      else if (!activeData.employee.active && activeData.student.active) return error({ message: 'Ansatt har aktivt elevforhold 😬', raw: activeData })
-      else if (!activeData.employee.active && !activeData.student.active) return error({ message: 'Mangler aktivt ansattforhold 😬😬', raw: activeData })
-      return success({ message: 'Bruker har aktivt ansattforhold', raw: activeData })
+      const data = getElevforhold(systemData)
+      if (data.basisgrupper.length > 0) return success({ message: `Har ${data.basisgrupper.length} ${data.basisgrupper.length > 1 ? 'basisgrupper' : 'basisgruppe'}`, raw: data.basisgrupper })
+      else return error({ message: 'Mangler medlemskap i basisgruppe(r) 😬', raw: data, solution: 'Rettes i Visma InSchool' })
+    } else if (user.expectedType === 'employee' && isTeacher(user.company, user.title)) {
+      const data = getUndervisningsforhold(systemData)
+      if (data.basisgrupper.length === 0) return noData()
+      else return success({ message: `Underviser i ${data.basisgrupper.length} ${data.basisgrupper.length > 1 ? 'basisgrupper' : 'basisgruppe'}`, raw: data.basisgrupper })
+    }
+  }),
+  test('vis-05', 'Har undervisningsgruppe', 'Sjekker at bruker har undervisningsgruppe(r)', () => {
+    if (!dataPresent || (user.expectedType === 'employee' && !isTeacher(user.company, user.title))) return noData()
+
+    if (user.expectedType === 'student') {
+      const data = getElevforhold(systemData)
+      if (data.undervisningsgrupper.length > 0) return success({ message: `Har ${data.undervisningsgrupper.length} ${data.undervisningsgrupper.length > 1 ? 'undervisningsgrupper' : 'undervisningsgruppe'}`, raw: data.undervisningsgrupper })
+      else return error({ message: 'Mangler medlemskap i undervisningsgruppe(r) 😬', raw: data, solution: 'Rettes i Visma InSchool' })
+    } else if (user.expectedType === 'employee' && isTeacher(user.company, user.title)) {
+      const data = getUndervisningsforhold(systemData)
+      if (data.undervisningsgrupper.length === 0) return warn({ message: 'Mangler medlemskap i undervisningsgruppe(r)', raw: data, solution: 'Rettes i Visma InSchool' })
+      else return success({ message: `Underviser i ${data.undervisningsgrupper.length} ${data.undervisningsgrupper.length > 1 ? 'undervisningsgrupper' : 'undervisningsgruppe'}`, raw: data })
     }
   }),
   test('vis-03', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
