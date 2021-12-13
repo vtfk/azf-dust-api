@@ -48,6 +48,9 @@ const getActiveData = data => {
         activeData.student.active = data.person.elev.elevforhold[0].gyldighetsperiode.slutt === null || new Date(data.person.elev.elevforhold[0].gyldighetsperiode.slutt) > new Date()
       }
     }
+  } else if (data && data.skoleressurs) {
+    activeData.employee = Object.assign(activeData.employee, data.skoleressurs.personalressurs)
+    activeData.employee.active = data.skoleressurs.personalressurs.ansettelsesperiode.slutt === null || new Date(data.skoleressurs.personalressurs.ansettelsesperiode.slutt) > new Date()
   }
   return activeData
 }
