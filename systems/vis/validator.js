@@ -1,6 +1,6 @@
-const { test, success, warn, error, /* waitForData */ noData } = require('../../lib/test')
+const { test, success, warn, error, waitForData, noData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
-// const isValidFnr = require('../../lib/helpers/is-valid-fnr')
+const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const isTeacher = require('../../lib/helpers/is-teacher')
 
 const getMemberships = (data, expectedType) => {
@@ -201,29 +201,45 @@ module.exports = (systemData, user, allData = false) => ([
       else return success({ message: `Underviser i ${data.undervisningsgrupper.length} ${data.undervisningsgrupper.length > 1 ? 'undervisningsgrupper' : 'undervisningsgruppe'}`, raw: data })
     }
   }),
-  test('vis-03', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
-    if (!dataPresent) return noData()
-    else if (!hasData(systemData.person.fodselsnummer.identifikatorverdi)) return noData()
+  test('vis-06', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
+    if (!dataPresent || (!systemData.person && !systemData.skoleressurs) || (user.expectedType === 'employee' && !isTeacher(user.company, user.title))) return noData()
+    const fnr = systemData.person ? systemData.person.fodselsnummer.identifikatorverdi : systemData.skoleressurs.person.fodselsnummer.identifikatorverdi
     const data = {
-      id: systemData.person.fodselsnummer.identifikatorverdi,
-      fnr: isValidFnr(systemData.person.fodselsnummer.identifikatorverdi)
+      id: fnr,
+      fnr: isValidFnr(fnr)
     }
     return data.fnr.valid ? success({ message: `Har gyldig ${data.fnr.type}`, raw: data }) : error({ message: data.fnr.error, raw: data })
   }),
-  test('vis-04', 'Fødselsnummer er likt i AD', 'Sjekker at fødselsnummeret er likt i AD og ViS', () => {
-    if (!dataPresent) return noData()
+  test('vis-07', 'Fødselsnummer er likt i AD', 'Sjekker at fødselsnummeret er likt i AD og ViS', () => {
+    if (!dataPresent || (!systemData.person && !systemData.skoleressurs) || (user.expectedType === 'employee' && !isTeacher(user.company, user.title))) return noData()
     if (!allData) return waitForData()
     if (!hasData(allData.ad)) return error({ message: 'Mangler AD-data', raw: allData.ad })
 
+    const fnr = systemData.person ? systemData.person.fodselsnummer.identifikatorverdi : systemData.skoleressurs.person.fodselsnummer.identifikatorverdi
     const data = {
       vis: {
-        id: systemData.person.fodselsnummer.identifikatorverdi
+        id: fnr
       },
       ad: {
         employeeNumber: allData.ad.employeeNumber
       }
     }
     return data.vis.id === data.ad.employeeNumber ? success({ message: 'Fødselsnummer er likt i AD og ViS', raw: data }) : error({ message: 'Fødselsnummer er forskjellig i AD og ViS', raw: data })
+  })
+  /* test('vis-02', 'Har aktivt forhold', 'Sjekker at bruker har aktivt forhold', () => {
+    if (!dataPresent) return noData()
+    const activeData = getActiveData(systemData)
+    if (user.expectedType === 'student') {
+      if (activeData.employee.active && activeData.student.active) return error({ message: 'Bruker har aktive elev- og ansattforhold 😬', raw: activeData })
+      else if (activeData.employee.active && !activeData.student.active) return error({ message: 'Elev har aktivt ansattforhold 😬', raw: activeData })
+      else if (!activeData.employee.active && !activeData.student.active) return error({ message: 'Mangler aktivt elevforhold 😬😬', raw: activeData })
+      return success({ message: 'Bruker har aktivt elevforhold', raw: activeData })
+    } else {
+      if (activeData.employee.active && activeData.student.active) return error({ message: 'Bruker har aktive elev- og ansattforhold 😬', raw: activeData })
+      else if (!activeData.employee.active && activeData.student.active) return error({ message: 'Ansatt har aktivt elevforhold 😬', raw: activeData })
+      else if (!activeData.employee.active && !activeData.student.active) return error({ message: 'Mangler aktivt ansattforhold 😬😬', raw: activeData })
+      return success({ message: 'Bruker har aktivt ansattforhold', raw: activeData })
+    }
   }),
   test('vis-05', 'Har gruppemedlemskap', 'Sjekker at det finnes gruppemedlemskap', () => {
     if (!dataPresent) return noData()
