@@ -54,24 +54,41 @@ const getActiveData = data => {
   }
   return activeData
 }
+
 const getElevforhold = data => {
-  return data.person.elev.elevforhold.map(elevforhold => {
-    return {
-      skole: elevforhold.skole.navn,
-      kontaktlærere: elevforhold.kontaktlarergruppe.map(kontaktlærer => {
-        return {
-          klasse: kontaktlærer.navn,
-          lærere: kontaktlærer.undervisningsforhold.map(undervisningsforhold => {
-            return {
-              fornavn: undervisningsforhold.skoleressurs.person.navn.fornavn,
-              etternavn: undervisningsforhold.skoleressurs.person.navn.etternavn,
-              epostadresse: undervisningsforhold.skoleressurs.person.kontaktinformasjon.epostadresse
-            }
-          })
-        }
+  if (!data.person || !data.person.elev || !Array.isArray(data.person.elev.elevforhold)) {
+    return { basisgrupper: [], undervisningsgrupper: [], kontaktlarere: [], skoler: [] }
+  }
+
+  return data.person.elev.elevforhold.reduce((accumulator, current) => {
+    accumulator.skoler.push(current.skole.navn)
+
+    current.basisgruppe.forEach(basisgruppe => {
+      accumulator.basisgrupper.push({
+        skole: current.skole.navn,
+        navn: basisgruppe.navn
       })
-    }
-  })
+    })
+
+    current.undervisningsgruppe.forEach(undervisningsgruppe => {
+      accumulator.undervisningsgrupper.push({
+        skole: current.skole.navn,
+        navn: undervisningsgruppe.navn
+      })
+    })
+
+    current.kontaktlarergruppe.forEach(kontaktlarergruppe => {
+      kontaktlarergruppe.undervisningsforhold.forEach(undervisningsforhold => {
+        accumulator.kontaktlarere.push({
+          skole: current.skole.navn,
+          fornavn: undervisningsforhold.skoleressurs.person.navn.fornavn,
+          etternavn: undervisningsforhold.skoleressurs.person.navn.etternavn,
+          epostadresse: undervisningsforhold.skoleressurs.person.kontaktinformasjon.epostadresse
+        })
+      })
+    })
+    return accumulator
+  }, { basisgrupper: [], undervisningsgrupper: [], kontaktlarere: [], skoler: [] })
 }
 
 const isSchoolAdded = (schools, school) => !!schools.find(s => s === school)
@@ -91,7 +108,7 @@ const getUndervisningsforhold = data => {
         accumulator.skoler.push(basisgruppe.skole.navn)
       }
     })
-    
+
     current.undervisningsgruppe.forEach(undervisningsgruppe => {
       accumulator.undervisningsgrupper.push({
         skole: undervisningsgruppe.skole.navn,
@@ -132,34 +149,16 @@ module.exports = (systemData, user, allData = false) => ([
     else if (user.expectedType === 'employee' && !isTeacher(user.company, user.title)) return success('Bruker har ikke relevante data i dette systemet') // TODO: Trenger vi egentlig å sjekke ViS for en vanlig ansatt?
 
     if (user.expectedType === 'student') {
-      if (systemData.person.elev && systemData.person.elev.elevforhold && systemData.person.elev.elevforhold.length > 0) {
-        const data = getElevforhold(systemData)
-        const kontaktlærerCount = data.reduce((dataAcc, dataCurr) => {
-          return dataAcc + dataCurr.kontaktlærere.filter(kontaktlærer => kontaktlærer.lærere.length > 0)
-            .reduce((kontaktAcc, kontaktCurr) => {
-              return kontaktAcc + kontaktCurr.lærere.length
-            }, 0)
-        }, 0)
-        if (kontaktlærerCount > 0) return success({ message: `Har ${kontaktlærerCount} ${kontaktlærerCount === 0 || kontaktlærerCount > 1 ? 'kontaktlærere' : 'kontaktlærer'}`, raw: (data.length === 0 || data.length > 1 ? data : data[0]) })
-        else return error({ message: 'Har ikke kontaktlærer(e) 😬', raw: data, solution: 'Rettes i Visma InSchool' })
-      } else return error({ message: 'Har ikke kontaktlærer(e) 😬', solution: 'Rettes i Visma InSchool' })
+      const data = getElevforhold(systemData)
+      if (data.kontaktlarere.length > 0) return success({ message: `Har ${data.kontaktlarere.length} ${data.kontaktlarere.length > 1 ? 'kontaktlærere' : 'kontaktlærer'}`, raw: data.kontaktlarere })
+      else return error({ message: 'Har ikke kontaktlærer(e) 😬', raw: data, solution: 'Rettes i Visma InSchool' })
     } else if (user.expectedType === 'employee' && isTeacher(user.company, user.title)) {
-      const data  = getUndervisningsforhold(systemData)
+      const data = getUndervisningsforhold(systemData)
       if (data.kontaktlarergrupper.length === 0) return success('Er ikke kontaktlærer for noen klasser')
-      else return success({ message: `Er kontaktlærer for ${data.kontaktlarergrupper.length} ${data.kontaktlarergrupper.length > 1 ? 'klasser' : 'klasse'}`, raw: data })
+      else return success({ message: `Er kontaktlærer for ${data.kontaktlarergrupper.length} ${data.kontaktlarergrupper.length > 1 ? 'klasser' : 'klasse'}`, raw: data.kontaktlarere })
     }
   }),
-  test('vis-03', 'Tom kontaktlærergruppe', 'Sjekker om bruker har tomme kontaktlærergrupper', () => {
-    if (!dataPresent || user.expectedType === 'employee') return noData()
-
-    if (systemData.person.elev && systemData.person.elev.elevforhold && systemData.person.elev.elevforhold.length > 0) {
-      const data = getElevforhold(systemData)
-      const emptyGroups = data.filter(school => school.kontaktlærere.filter(kontaktlærer => kontaktlærer.lærere.length === 0).length > 0)
-      if (emptyGroups.length > 0) return error({ message: `Har ${emptyGroups.length} ${emptyGroups.length > 1 ? 'kontaktlærergrupper' : 'kontaktlæregruppe'} uten kontaktlærer`, raw: (emptyGroups.length === 0 || emptyGroups.length > 1 ? emptyGroups : emptyGroups[0]), solution: 'Rettes i Visma InSchool' })
-      else return noData()
-    } else return noData()
-  }),
-  test('vis-04', 'Har skoleforhold', 'Sjekker om bruker har skoleforhold', () => {
+  test('vis-03', 'Har skoleforhold', 'Sjekker om bruker har skoleforhold', () => {
     if (!dataPresent || (user.expectedType === 'employee' && !isTeacher(user.company, user.title))) return noData()
 
     if (user.expectedType === 'student') {
