@@ -66,14 +66,16 @@ const getElevforhold = data => {
     current.basisgruppe.forEach(basisgruppe => {
       accumulator.basisgrupper.push({
         skole: current.skole.navn,
-        navn: basisgruppe.navn
+        navn: basisgruppe.navn,
+        systemId: basisgruppe.systemId.identifikatorverdi
       })
     })
 
     current.undervisningsgruppe.forEach(undervisningsgruppe => {
       accumulator.undervisningsgrupper.push({
         skole: current.skole.navn,
-        navn: undervisningsgruppe.navn
+        navn: undervisningsgruppe.navn,
+        systemId: undervisningsgruppe.systemId.identifikatorverdi
       })
     })
 
@@ -102,7 +104,8 @@ const getUndervisningsforhold = data => {
     current.basisgruppe.forEach(basisgruppe => {
       accumulator.basisgrupper.push({
         skole: basisgruppe.skole.navn,
-        navn: basisgruppe.navn
+        navn: basisgruppe.navn,
+        systemId: basisgruppe.systemId.identifikatorverdi
       })
       if (!isSchoolAdded(accumulator.skoler, basisgruppe.skole.navn)) {
         accumulator.skoler.push(basisgruppe.skole.navn)
@@ -112,7 +115,8 @@ const getUndervisningsforhold = data => {
     current.undervisningsgruppe.forEach(undervisningsgruppe => {
       accumulator.undervisningsgrupper.push({
         skole: undervisningsgruppe.skole.navn,
-        navn: undervisningsgruppe.navn
+        navn: undervisningsgruppe.navn,
+        systemId: undervisningsgruppe.systemId.identifikatorverdi
       })
       if (!isSchoolAdded(accumulator.skoler, undervisningsgruppe.skole.navn)) {
         accumulator.skoler.push(undervisningsgruppe.skole.navn)
