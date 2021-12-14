@@ -15,8 +15,7 @@ module.exports = (systemData, user, allData = false) => ([
     dataPresent = hasData(systemData)
     if (!dataPresent) {
       if (user.expectedType === 'student') return error({ message: 'Mangler data 😬', raw: systemData, solution: 'Rettes i Visma InSchool' })
-      else if (!user.company || !user.title) return warn('Mangler data. Dessverre er det ikke nok informasjon tilstede på brukerobjektet for å kontrollere om dette er korrekt')
-      else if (isTeacher(user.company, user.title)) return error({ message: 'Mangler data 😬', raw: systemData, solution: 'Rettes i Visma InSchool' })
+      else if (isTeacher(user)) return error({ message: 'Mangler data 😬', raw: systemData, solution: 'Rettes i Visma InSchool' })
       else return success({ message: 'Det er ikke forventet FEIDE-konto på denne brukertypen', solution: 'Dersom det er behov for FEIDE-konto må bruker registreres i Visma InSchool eller meld sak til arbeidsgruppe identitet' })
     } else return success('Har data')
   }),

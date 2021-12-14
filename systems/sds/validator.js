@@ -1,4 +1,4 @@
-const { test, success, error, warn, waitForData, noData } = require('../../lib/test')
+const { test, success, error, waitForData, noData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
 const isTeacher = require('../../lib/helpers/is-teacher')
 const getSdsGroups = require('../../lib/get-sds-groups')
@@ -10,8 +10,7 @@ module.exports = (systemData, user, allData = false) => ([
     dataPresent = hasData(systemData)
     if (!dataPresent) {
       if (user.expectedType === 'student') return error({ message: 'Mangler data 😬', raw: systemData, solution: 'Rettes i Visma InSchool' })
-      else if (!user.company || !user.title) return warn('Mangler data. Dessverre er det ikke nok informasjon tilstede på brukerobjektet for å kontrollere om dette er korrekt')
-      else if (isTeacher(user.company, user.title)) return error({ message: 'Mangler data 😬', raw: systemData, solution: 'Rettes i Visma InSchool' })
+      else if (isTeacher(user)) return error({ message: 'Mangler data 😬', raw: systemData, solution: 'Rettes i Visma InSchool' })
       else return success('Bruker har ikke data i dette systemet. Det er kun elever og lærere som skal ha data her')
     } else return success('Har data')
   }),

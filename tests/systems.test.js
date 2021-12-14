@@ -1,5 +1,4 @@
 const { readdirSync } = require('fs')
-const schools = require('../systems/data/schools.json')
 
 // get all system directories (except excluded ones)
 const excludedDirectories = ['data']
@@ -1175,7 +1174,6 @@ const mockData = {
 const mockUser = {
   employeeNumber: '12128015478',
   departmentShort: 'BDK-TEK',
-  company: schools[0],
   expectedType: 'employee'
 }
 

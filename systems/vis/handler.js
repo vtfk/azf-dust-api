@@ -7,7 +7,8 @@ const HTTPError = require('../../lib/http-error')
 const { SYSTEMS: { VIS: { FINT_BETA, FINT_API_URL, FINT_JWT_SECRET, FINT_TIMEOUT }, FEIDE: { PRINCIPAL_NAME } } } = require('../../config')
 
 module.exports = async params => {
-  const { employeeNumber, samAccountName, company, title } = params
+  const { employeeNumber, samAccountName, feide = false } = params
+  const isATeacher = isTeacher({ feide })
 
   if (employeeNumber === undefined && samAccountName === undefined) {
     logger('error', ['vis', 'missing required parameters'])
@@ -18,9 +19,11 @@ module.exports = async params => {
         'samAccountName'
       ]
     })
+  } else if (samAccountName && !isATeacher) {
+    logger('info', ['vis', 'no need to query FINT for regular employees'])
+    return {}
   }
 
-  const isATeacher = isTeacher(company, title)
   const template = isATeacher ? 'schoolEmployee' : samAccountName ? 'employee' : 'student'
   const identity = isATeacher ? `${samAccountName}${PRINCIPAL_NAME}` : employeeNumber
   const query = {
