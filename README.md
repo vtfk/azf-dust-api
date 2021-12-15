@@ -254,6 +254,8 @@ If account were locked, it will be unlocked and info returned will reflect this
       }
     }
     ```
+1. Run `npm i`
+1. Run `npm husky:prepare` to install Husky 🐶
 1. Create a new Azure Function in [Azure portal](https://portal.azure.com)
 1. Copy `AzureWebJobsStorage` setting from *Configuration* and update `local.settings.json`
     - **When debugging function locally, Azure Function should not be running. This to avoid collision between who will process the requests put in StorageAccount**
@@ -261,5 +263,4 @@ If account were locked, it will be unlocked and info returned will reflect this
     1. Copy `CLIENT_ID` and update `local.settings.json`
     1. Copy `CLIENT_SECRET` and update `local.settings.json`
 1. Create a database in Mongo and update `local.settings.json`
-1. npm i
 1. func start

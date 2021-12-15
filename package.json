@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "husky:prepare": "husky install",
     "start": "func start",
     "test": "jest && standard",
     "test:lint": "standard",
