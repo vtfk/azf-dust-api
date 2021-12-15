@@ -1,39 +1,22 @@
 [
   {
-    "personType": "student",
-    "departments": [
-      {
-        "department": ["OF"],
-        "licenses": [
-          {
-            "name": "Microsoft 365 Education A3 for Students use benefits",
-            "sku": "18250162-5d87-4436-a834-d795c15c80f3"
-          }
-        ]
-      }
-    ]
+    "skuId": "4b590615-0888-425a-a965-b3bf7789848d",
+    "skuPartNumber": "M365EDU_A3_FACULTY",
+    "name": "Microsoft 365 Education A3 for Faculty"
   },
   {
-    "personType": "employee",
-    "departments": [
-      {
-        "department": ["OF", "BDK-TEK", "BDK-IT"],
-        "licenses": [
-          {
-            "name": "MICROSOFT 365 A3 FOR FACULTY",
-            "sku": "4b590615-0888-425a-a965-b3bf7789848d"
-          }
-        ]
-      },
-      {
-        "department": ["FOLKEVALGTE"],
-        "licenses": [
-          {
-            "name": "MICROSOFT 365 E3",
-            "sku": "05e9a617-0261-4cee-bb44-138d3ef5d965"
-          }
-        ]
-      }
-    ]
+    "skuId": "18250162-5d87-4436-a834-d795c15c80f3",
+    "skuPartNumber": "M365EDU_A3_STUUSEBNFT",
+    "name": "Microsoft 365 Education A3 for Students use benefits"
+  },
+  {
+    "skuId": "26124093-3d78-432b-b5dc-48bf992543d5",
+    "skuPartNumber": "IDENTITY_THREAT_PROTECTION",
+    "name": "Microsoft 365 E5 Security"
+  },
+  {
+    "skuId": "05e9a617-0261-4cee-bb44-138d3ef5d965",
+    "skuPartNumber": "SPE_E3",
+    "name": "MICROSOFT 365 E3"
   }
 ]

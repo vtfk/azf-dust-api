@@ -2,8 +2,8 @@ const { test, success, error, warn, waitForData, noData } = require('../../lib/t
 const { hasData } = require('../../lib/helpers/system-data')
 const isWithinTimeRange = require('../../lib/helpers/is-within-timerange')
 const getActiveSourceData = require('../../lib/helpers/get-active-source-data')
-const getSdsGroups = require('../../lib/get-sds-groups')
-// const licenses = require('../data/licenses.json')
+// const getSdsGroups = require('../../lib/get-sds-groups')
+const licenses = require('../data/licenses.json')
 
 const aadSyncInMinutes = 30
 const aadSyncInSeconds = aadSyncInMinutes * 60
@@ -80,89 +80,22 @@ module.exports = (systemData, user, allData = false) => ([
     else if (pwdCheck.result) return success({ message: 'Passord synkronisert til Azure AD', raw: data })
     else return error({ message: 'Passord ikke synkronisert', raw: data })
   }),
-  test('aad-06', 'Synkroniseres fra lokalt AD', 'Sjekker at synkronisering fra lokalt AD er aktivert', () => {
-    if (!dataPresent) return noData()
-    const data = {
-      onPremisesSyncEnabled: systemData.onPremisesSyncEnabled || null
-    }
-    if (!hasData(systemData.onPremisesSyncEnabled)) return error({ message: 'onPremisesSyncEnabled mangler 🤭', raw: data })
-    return systemData.onPremisesSyncEnabled ? success({ message: 'Synkronisering fra lokalt AD er aktivert', raw: data }) : warn({ message: 'Synkronisering fra lokalt AD er ikke aktivert. Dersom brukeren kun eksisterer i Azure AD er dette allikevel riktig', raw: data })
-  }),
-  test('aad-07', 'Ingen feil i synkroniseringen', 'Sjekker at det ikke er noen feil i synkroniseringen fra lokalt AD', () => {
-    if (!dataPresent) return noData()
-    if (!allData) return waitForData()
-    const data = {
-      aad: {
-        onPremisesProvisioningErrors: systemData.onPremisesProvisioningErrors || null,
-        displayName: systemData.displayName,
-        userPrincipalName: systemData.userPrincipalName,
-        onPremisesSamAccountName: systemData.onPremisesSamAccountName,
-        mail: systemData.mail,
-        onPremisesLastSyncDateTime: systemData.onPremisesLastSyncDateTime
-      }
-    }
-    if (hasData(allData.ad)) {
-      data.ad = {
-        displayName: allData.ad.displayName,
-        userPrincipalName: allData.ad.userPrincipalName,
-        samAccountName: allData.ad.samAccountName,
-        mail: allData.ad.mail,
-        whenChanged: allData.ad.whenChanged
-      }
-    }
-    if (hasData(systemData.onPremisesProvisioningErrors)) return error({ message: 'Synkroniseringsproblemer funnet 🤭', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
-    if (data.ad) {
-      const isLastChanged = isWithinTimeRange(new Date(data.ad.whenChanged), new Date(data.aad.onPremisesLastSyncDateTime), aadSyncInSeconds)
-      if (data.aad.displayName !== data.ad.displayName) return (isLastChanged.seconds > 0 && isLastChanged.seconds < aadSyncInSeconds) || (isLastChanged.seconds < 0 && isLastChanged.seconds > -aadSyncInSeconds) ? warn({ message: 'Forskjellig visningsnavn i Azure og AD. Synkronisering utføres snart', raw: data, solution: 'Synkronisering utføres snart' }) : error({ message: 'Forskjellig visningsnavn i Azure og AD 🤭', raw: data, solution: 'Synkronisering utføres snart' })
-      if (data.aad.userPrincipalName !== data.ad.userPrincipalName) return (isLastChanged.seconds > 0 && isLastChanged.seconds < aadSyncInSeconds) || (isLastChanged.seconds < 0 && isLastChanged.seconds > -aadSyncInSeconds) ? warn({ message: 'Forskjellig UPN i Azure og AD. Synkronisering utføres snart', raw: data, solution: 'Synkronisering utføres snart' }) : error({ message: 'Forskjellig UPN i Azure og AD 🤭', raw: data, solution: 'Synkronisering utføres snart' })
-      if (data.aad.onPremisesSamAccountName !== data.ad.samAccountName) return (isLastChanged.seconds > 0 && isLastChanged.seconds < aadSyncInSeconds) || (isLastChanged.seconds < 0 && isLastChanged.seconds > -aadSyncInSeconds) ? warn({ message: 'Forskjellig brukernavn i Azure og AD. Synkronisering utføres snart', raw: data, solution: 'Synkronisering utføres snart' }) : error({ message: 'Forskjellig brukernavn i Azure og AD 🤭', raw: data, solution: 'Synkronisering utføres snart' })
-      if (data.aad.mail !== data.ad.mail && hasData(data.ad.mail)) return (isLastChanged.seconds > 0 && isLastChanged.seconds < aadSyncInSeconds) || (isLastChanged.seconds < 0 && isLastChanged.seconds > -aadSyncInSeconds) ? warn({ message: 'Forskjellig primær e-postadresse i Azure og AD. Synkronisering utføres snart', raw: data, solution: 'Synkronisering utføres snart' }) : error({ message: 'Forskjellig primær e-postadresse i Azure og AD 🤭', raw: data, solution: 'Synkronisering utføres snart' })
-      if (data.aad.mail !== data.ad.mail && !hasData(data.ad.mail)) return noData()
-    }
-
-    return success({ message: 'Ingen synkroniseringsproblemer funnet', raw: data })
-  }),
-  test('aad-08', 'Har riktig lisens(er)', 'Sjekker at riktig lisens(er) er aktivert', () => {
+  test('aad-06', 'Har riktig lisens(er)', 'Sjekker at riktig lisens(er) er aktivert', () => {
     if (!dataPresent) return noData()
     if (!hasData(systemData.assignedLicenses)) {
-      const data = {
-        accountEnabled: systemData.accountEnabled,
-        assignedLicenses: systemData.assignedLicenses
-      }
-      if (systemData.accountEnabled) return error({ message: 'Har ingen Azure AD-lisenser 🤭', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
-      else return user.expectedType === 'employee' ? warn({ message: 'Azure AD-lisenser blir satt når konto er blitt aktivert', raw: data, solution: `Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` }) : warn({ message: 'Azure AD-lisenser blir satt når konto er blitt aktivert', raw: data, solution: `Eleven må aktivere sin konto via minelevkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
-    } else return success({ message: 'Har Azure AD-lisenser', raw: systemData.assignedLicenses })
-
-    /* if (!hasData(user.departmentShort)) return warn({ message: 'Ikke nok informasjon tilstede for å utføre testen', raw: user })
-
-    const expectedLicenseTable = licenses.filter(item => item.personType === user.expectedType)[0]
-    if (!hasData(expectedLicenseTable)) return error({ message: `Feilet ved innhenting av lisenstabell for '${user.expectedType}' 🤭`, raw: expectedLicenseTable })
-
-    let department
-    if (user.expectedType === 'employee') {
-      department = expectedLicenseTable.departments.filter(item => item.department.filter(dep => user.departmentShort.includes(dep)).length > 0)
-      if (!hasData(department)) return error({ message: `Feilet ved innhenting av lisenstabell for '${user.departmentShort}' 🤭`, raw: expectedLicenseTable })
-      department = department[0]
+      if (systemData.accountEnabled) return error({ message: 'Har ingen Microsoft 365-lisenser 🤭', solution: 'Meld sak til arbeidsgruppe identitet' })
+      else return user.expectedType === 'employee' ? warn({ message: 'Microsoft 365-lisenser blir satt når konto er blitt aktivert', solution: `Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` }) : warn({ message: 'AMicrosoft 365-lisenser blir satt når konto er blitt aktivert', solution: `Eleven må aktivere sin konto via minelevkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
     } else {
-      department = expectedLicenseTable.departments[0]
+      const data = systemData.assignedLicenses.map(license => {
+        const lic = licenses.find(lic => lic.skuId === license.skuId)
+        if (lic) return lic 
+        else return { skuId: license.skuId 
+        }
+      })
+      return success({ message: 'Har Microsoft 365-lisenser', raw: data })
     }
-    const departmentLicenses = department.licenses
-
-    const data = {
-      licenseDepartment: department.department,
-      assignedLicenses: systemData.assignedLicenses,
-      expectedLicenses: departmentLicenses,
-      missingLicenses: []
-    }
-
-    departmentLicenses.forEach(license => {
-      const assigned = systemData.assignedLicenses.filter(assignedLicense => assignedLicense.skuId === license.sku)
-      if (!hasData(assigned)) data.missingLicenses.push(license)
-    })
-
-    return hasData(data.missingLicenses) ? error({ message: `Mangler ${data.missingLicenses.length} lisens(er)`, raw: data }) : success({ message: 'Lisenser er riktig', raw: data }) */
   }),
-  test('aad-09', 'Har satt opp MFA', 'Sjekker at MFA er satt opp', () => {
+  test('aad-07', 'Har satt opp MFA', 'Sjekker at MFA er satt opp', () => {
     if (!dataPresent) return noData()
     const data = {
       authenticationMethods: systemData.authenticationMethods
@@ -171,14 +104,14 @@ module.exports = (systemData, user, allData = false) => ([
       return user.expectedType === 'employee' ? error({ message: 'MFA (tofaktor) er ikke satt opp 🤭', raw: data, solution: 'Bruker må selv sette opp MFA (tofaktor) via aka.ms/mfasetup' }) : warn('MFA (tofaktor) er ikke satt opp, blir snart påkrevd for elever')
     } else return success({ message: `${systemData.authenticationMethods.length} MFA-metode${systemData.authenticationMethods.length > 1 ? 'r' : ''} (tofaktor) er satt opp`, raw: data })
   }),
-  test('aad-10', 'Har skrevet feil passord', 'Sjekker om bruker har skrevet feil passord idag', () => {
+  test('aad-08', 'Har skrevet feil passord', 'Sjekker om bruker har skrevet feil passord idag', () => {
     if (!dataPresent) return noData()
     const data = {
       userSignInErrors: systemData.userSignInErrors
     }
     return hasData(systemData.userSignInErrors) ? error({ message: `Har skrevet feil passord ${systemData.userSignInErrors.length} gang${systemData.userSignInErrors.length > 1 ? 'er' : ''} idag 🤦‍♂️`, raw: data, solution: 'Bruker må ta av boksehanskene 🥊' }) : success({ message: 'Ingen klumsing med passord idag', raw: data })
   }),
-  test('aad-11', 'Ikke for mange SDS-grupper', 'Sjekker at bruker ikke har medlemskap i avsluttede SDS-grupper', () => {
+  /* test('aad-09', 'Ikke for mange SDS-grupper', 'Sjekker at bruker ikke har medlemskap i avsluttede SDS-grupper', () => {
     if (!dataPresent) return noData()
     if (!allData) return waitForData()
     if (!allData.sds) return noData('Mangler SDS data')
@@ -187,9 +120,9 @@ module.exports = (systemData, user, allData = false) => ([
     const sdsGroups = getSdsGroups(allData.sds)
     const aadSdsGroups = systemData.transitiveMemberOf.filter(group => !sdsGroups.includes(group.mailNickname.replace('Section_', ''))).map(group => group.mailNickname.replace('Section_', ''))
 
-    return hasData(aadSdsGroups) ? error({ message: `Bruker har ${aadSdsGroups.length} medlemskap som burde vært avsluttet`, raw: aadSdsGroups, solution: 'Rettes i Visma InSchool' }) : noData()
-  }),
-  test('aad-12', 'AD- og AzureAD-attributtene er like', 'Sjekker at attributtene i AD og AzureAD er like', () => {
+    return hasData(aadSdsGroups) ? warn({ message: 'Bruker har flere medlemskap enn det som er registrert i Visma InSchool', raw: aadSdsGroups, solution: 'Bruker kan selv melde seg ut av Team. Utmelding kan også gjøres av IT via Azure AD / Teams Admin Center' }) : noData()
+  }), */
+  test('aad-09', 'AD- og AzureAD-attributtene er like', 'Sjekker at attributtene i AD og AzureAD er like', () => {
     if (!dataPresent) return noData()
     if (!allData) return waitForData()
     if (!allData.ad) return noData('Mangler AD-data')
