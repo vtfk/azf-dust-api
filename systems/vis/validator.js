@@ -197,7 +197,7 @@ module.exports = (systemData, user, allData = false) => ([
       else return error({ message: 'Mangler medlemskap i undervisningsgruppe(r) 😬', raw: data, solution: 'Rettes i Visma InSchool' })
     } else if (user.expectedType === 'employee' && isTeacher(user)) {
       const data = getUndervisningsforhold(systemData)
-      if (data.undervisningsgrupper.length === 0) return warn({ message: 'Mangler medlemskap i undervisningsgruppe(r)', raw: data, solution: 'Rettes i Visma InSchool' })
+      if (data.undervisningsgrupper.length === 0) return warn({ message: 'Mangler medlemskap i undervisningsgruppe(r)', raw: data, solution: 'Rettes i Visma InSchool, dersom det savnes noe medlemskap. Hvis det allerede er korrekt i Visma InSchool meld sak til arbeidsgruppe identitet' })
       else return success({ message: `Underviser i ${data.undervisningsgrupper.length} ${data.undervisningsgrupper.length > 1 ? 'undervisningsgrupper' : 'undervisningsgruppe'}`, raw: data })
     }
   }),
