@@ -12,13 +12,10 @@ const getMemberships = (data, expectedType) => {
       if (relation.basisgruppe) membership.push(...relation.basisgruppe)
       if (relation.undervisningsgruppe) membership.push(...relation.undervisningsgruppe)
     })
-  } else if (expectedType === 'employee' && data.person.personalressurs !== null) {
-    const relationships = (data.person.personalressurs.arbeidsforhold && data.person.personalressurs.arbeidsforhold.filter(forhold => forhold.ansettelsesprosent > 0 && (forhold.gyldighetsperiode.slutt === null || (forhold.gyldighetsperiode.slutt !== null && new Date(forhold.gyldighetsperiode.slutt) > new Date()))).map(forhold => forhold.undervisningsforhold)) || []
-    relationships.forEach(relation => {
-      !!relation && relation.forEach(teachingRelation => {
-        if (teachingRelation.basisgruppe) membership.push(...teachingRelation.basisgruppe)
-        if (teachingRelation.undervisningsgruppe) membership.push(...teachingRelation.undervisningsgruppe)
-      })
+  } else if (expectedType === 'employee' && data.skoleressurs.undervisningsforhold !== null) {
+    data.skoleressurs.undervisningsforhold.forEach(undervisningsforhold => {
+      if (undervisningsforhold.basisgruppe) membership.push(...undervisningsforhold.basisgruppe)
+      if (undervisningsforhold.undervisningsgruppe) membership.push(...undervisningsforhold.undervisningsgruppe)
     })
   }
 
