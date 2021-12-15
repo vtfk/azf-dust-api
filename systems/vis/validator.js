@@ -118,18 +118,8 @@ const getUndervisningsforhold = data => {
         accumulator.skoler.push(undervisningsgruppe.skole.navn)
       }
     })
-
-    current.kontaktlarergruppe.forEach(kontaktlarergruppe => {
-      accumulator.kontaktlarergrupper.push({
-        skole: kontaktlarergruppe.skole.navn,
-        navn: kontaktlarergruppe.navn
-      })
-      if (!isSchoolAdded(accumulator.skoler, kontaktlarergruppe.skole.navn)) {
-        accumulator.skoler.push(kontaktlarergruppe.skole.navn)
-      }
-    })
     return accumulator
-  }, { basisgrupper: [], undervisningsgrupper: [], kontaktlarergrupper: [], skoler: [] })
+  }, { basisgrupper: [], undervisningsgrupper: [], skoler: [] })
 }
 
 let dataPresent = true
@@ -153,8 +143,8 @@ module.exports = (systemData, user, allData = false) => ([
       else return error({ message: 'Har ikke kontaktlærer(e) 😬', raw: data, solution: 'Rettes i Visma InSchool' })
     } else if (user.expectedType === 'employee' && isTeacher(user)) {
       const data = getUndervisningsforhold(systemData)
-      if (data.kontaktlarergrupper.length === 0) return success('Er ikke kontaktlærer for noen klasser')
-      else return success({ message: `Er kontaktlærer for ${data.kontaktlarergrupper.length} ${data.kontaktlarergrupper.length > 1 ? 'klasser' : 'klasse'}`, raw: data.kontaktlarere })
+      if (data.basisgrupper.length === 0) return success('Er ikke kontaktlærer for noen klasser')
+      else return success({ message: `Er kontaktlærer for ${data.basisgrupper.length} ${data.basisgrupper.length > 1 ? 'klasser' : 'klasse'}`, raw: data.basisgrupper })
     }
   }),
   test('vis-03', 'Har skoleforhold', 'Sjekker om bruker har skoleforhold', () => {
