@@ -38,7 +38,7 @@ const getActivePosition = (data, user) => {
   const hrm = getArrayData(data)
   const employment = hasData(hrm) && getEmployment(hrm)
   if (!employment) {
-    return error({ message: 'Ingen ansettelsesforhold ble funnet i HRM', raw: { hrm } })
+    return error({ message: 'Ingen ansettelsesforhold ble funnet i HRM', raw: { hrm }, solution: 'Rettes i Visma HRM' })
   }
 
   const positions = getPositions(employment)
