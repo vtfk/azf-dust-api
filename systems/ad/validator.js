@@ -16,8 +16,8 @@ module.exports = (systemData, user, allData = false) => ([
   test('ad-02', 'Kontoen er aktivert', 'Sjekker at kontoen er aktivert i AD', () => {
     if (!dataPresent) return noData()
     if (!allData) return noData()
-    if (user.expectedType === 'employee' && !allData.visma) return error({ message: 'Mangler data i Visma HRM', raw: { user, visma: allData.visma } })
-    if (user.expectedType === 'student' && !allData.vis) return error({ message: 'Mangler data i Visma InSchool', raw: { user, vis: allData.vis } })
+    if (user.expectedType === 'employee' && !allData.visma) return error({ message: 'Mangler data i Visma HRM', raw: { user, visma: allData.visma }, solution: 'Rettes i Visma HRM' })
+    if (user.expectedType === 'student' && !allData.vis) return error({ message: 'Mangler data i Visma InSchool', raw: { user, vis: allData.vis }, solution: 'Rettes i Visma InSchool' })
 
     const data = {
       enabled: systemData.enabled
@@ -61,8 +61,8 @@ module.exports = (systemData, user, allData = false) => ([
     const data = {
       userPrincipalName: systemData.userPrincipalName
     }
-    if (user.expectedType === 'employee') return systemData.userPrincipalName.includes('@vtfk.no') ? success({ message: 'UPN er korrekt', raw: data }) : error({ message: 'UPN er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
-    else return systemData.userPrincipalName.includes('@skole.vtfk.no') ? success({ message: 'UPN er korrekt', raw: data }) : error({ message: 'UPN er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
+    if (user.expectedType === 'employee') return systemData.userPrincipalName.includes('@vtfk.no') ? success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt', raw: data }) : error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
+    else return systemData.userPrincipalName.includes('@skole.vtfk.no') ? success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt', raw: data }) : error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
   }),
   test('ad-06', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
     if (!dataPresent) return noData()
@@ -73,14 +73,7 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return data.fnr.valid ? success({ message: `Har gyldig ${data.fnr.type}`, raw: data }) : error({ message: data.fnr.error, raw: data })
   }),
-  test('ad-07', 'extensionAttribute6 er satt', 'Sjekker at extensionAttribute6 er satt', () => {
-    if (!dataPresent) return noData()
-    const data = {
-      extensionAttribute6: systemData.extensionAttribute6
-    }
-    if (user.expectedType === 'employee') return hasData(systemData.extensionAttribute6) ? success({ message: 'extensionAttribute6 er satt', raw: data }) : error({ message: 'extensionAttribute6 mangler 🤭', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
-  }),
-  test('ad-08', 'Har state satt for ansatt', 'Sjekker at state er satt på ansatt', () => {
+  test('ad-07', 'Har state satt for ansatt', 'Sjekker at state er satt på ansatt', () => {
     if (!dataPresent) return noData()
     if (user.expectedType === 'student') return noData()
     if (user.expectedType === 'employee') {
@@ -88,29 +81,7 @@ module.exports = (systemData, user, allData = false) => ([
       else return error({ message: 'Felt for lisens mangler 🤭', raw: systemData, solution: 'Meld sak til arbeidsgruppe identitet' })
     }
   }),
-  test('ad-09', 'Fornavn har punktum', 'Sjekker om fornavn har punktum', () => {
-    if (!dataPresent) return noData()
-
-    const data = {
-      displayName: systemData.displayName,
-      givenName: systemData.givenName,
-      surName: systemData.sn
-    }
-    return systemData.givenName.includes('.') ? warn({ message: 'Navn har punktum', raw: data, solution: 'Rettes i Visma HRM. Dersom epostadresse/UPN må endres, meld sak til arbeidsgruppe identitet' }) : noData()
-  }),
-  test('ad-10', 'Riktig company', 'Sjekker at elev har rett company-info', () => {
-    if (!dataPresent) return noData()
-
-    const data = {
-      company: user.company
-    }
-
-    if (user.expectedType === 'student') {
-      if (user.company) return hasCorrectCompany(user.company) ? success({ message: 'Bruker har riktig company', raw: data }) : error({ message: 'Bruker har ikke skolenavn i company-feltet', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
-      else return error({ message: 'Bruker mangler info i company-feltet', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
-    } else return noData()
-  }),
-  test('ad-11', 'Har extensionAttribute4', 'Sjekker om bruker har extensionAttribute4', () => {
+  test('ad-08', 'Har extensionAttribute4', 'Sjekker om bruker har extensionAttribute4', () => {
     if (!dataPresent) return noData()
     if (!systemData.extensionAttribute4) return noData()
 
@@ -118,6 +89,6 @@ module.exports = (systemData, user, allData = false) => ([
       extensionAttribute4: systemData.extensionAttribute4.split(',').map(ext => ext.trim())
     }
 
-    return warn({ message: `Er medlem av ${data.extensionAttribute4.length} personalrom- og ${data.extensionAttribute4.length === 0 || data.extensionAttribute4.length > 1 ? 'mailinglister' : 'mailingliste'}`, solution: 'extensionAttribute4 fører til medlemskap i personalrom- og mailinglister. Dersom dette ikke er ønskelig fjernes dette fra brukeren i AD', raw: data })
+    return warn({ message: `Er medlem av ${data.extensionAttribute4.length} personalrom- og ${data.extensionAttribute4.length === 0 || data.extensionAttribute4.length > 1 ? 'mailinglister' : 'mailingliste'} ekstra`, solution: 'extensionAttribute4 fører til medlemskap i personalrom- og mailinglister. Dersom dette ikke er ønskelig fjernes dette fra brukeren i AD', raw: data })
   })
 ])

@@ -38,7 +38,7 @@ const getActivePosition = (data, user) => {
   const hrm = getArrayData(data)
   const employment = hasData(hrm) && getEmployment(hrm)
   if (!employment) {
-    return error({ message: 'Ingen ansettelsesforhold ble funnet i HRM', raw: { hrm } })
+    return error({ message: 'Ingen ansettelsesforhold ble funnet i HRM', raw: { hrm }, solution: 'Rettes i Visma HRM' })
   }
 
   const positions = getPositions(employment)
@@ -182,7 +182,7 @@ module.exports = (systemData, user, allData = false) => ([
       givenName: systemData.givenName,
       familyName: systemData.familyName
     }
-    return (systemData.givenName === systemData.givenName.toUpperCase() || systemData.familyName === systemData.familyName.toUpperCase()) ? warn({ message: 'Navn er skrevet med ropebokstaver', raw: data, solution: 'Rettes i Visma HRM' }) : noData()
+    return (systemData.givenName === systemData.givenName.toUpperCase() || systemData.familyName === systemData.familyName.toUpperCase()) ? warn({ message: 'NAVN ER SKREVET MED ROPEBOKSTAVER 📣', raw: data, solution: 'RETTES I VISMA HRM' }) : noData()
   })
 ])
 

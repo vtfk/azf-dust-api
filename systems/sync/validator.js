@@ -10,16 +10,16 @@ module.exports = (systemData, user, allData = false) => ([
     dataPresent = hasData(systemData)
     return dataPresent ? success('Har data') : error('Mangler data...')
   }),
-  test('sync-02', 'Har vigobas lastRunTime', 'Sjekker siste kjøringstidspunkt for Vigobas', () => {
+  test('sync-02', 'Har vigobas lastRunTime', 'Sjekker siste kjøringstidspunkt for Brukersynkronisering', () => {
     if (!dataPresent) return noData()
-    if (!systemData.vigobas || !systemData.vigobas.lastRunTime) return warn('Mangler kjøretidspunkt for Vigobas 😬')
+    if (!systemData.vigobas || !systemData.vigobas.lastRunTime) return warn('Mangler kjøretidspunkt for brukersynkronisering 😬')
 
     const lastRunTimeCheck = isWithinTimeRange(new Date(systemData.vigobas.lastRunTime), new Date(), (24 * 60 * 60)) // is last run performed less than 24 hours ago?
     const data = {
       lastRunTime: systemData.vigobas.lastRunTime,
       check: lastRunTimeCheck
     }
-    return lastRunTimeCheck.result ? success({ message: `Vigobas sist kjørt ${prettifyDateToLocaleString(new Date(systemData.vigobas.lastRunTime))}`, raw: data }) : warn({ message: 'Det er mer enn 24 timer siden siste kjøring av Vigobas', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    return lastRunTimeCheck.result ? success({ message: `Brukersynkronisering : ${prettifyDateToLocaleString(new Date(systemData.vigobas.lastRunTime))}`, raw: data }) : warn({ message: 'Det er mer enn 24 timer siden siste brukersynkronisering', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
   }),
   test('sync-03', 'Har aad lastAzureADSyncTime', 'Sjekker siste synkroniseringstidspunkt for Azure AD', () => {
     if (!dataPresent) return noData()
@@ -30,7 +30,7 @@ module.exports = (systemData, user, allData = false) => ([
       lastAzureADSyncTime: systemData.aadSync.lastAzureADSyncTime,
       check: lastRunTimeCheck
     }
-    return lastRunTimeCheck.result ? success({ message: `AAD sist synkronisert: ${prettifyDateToLocaleString(new Date(systemData.aadSync.lastAzureADSyncTime))}`, raw: data }) : warn({ message: 'Det er mer enn 40 minutter siden siste synkronisering av Azure AD', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    return lastRunTimeCheck.result ? success({ message: `Azure AD : ${prettifyDateToLocaleString(new Date(systemData.aadSync.lastAzureADSyncTime))}`, raw: data }) : warn({ message: 'Det er mer enn 40 minutter siden siste synkronisering av Azure AD', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
   }),
   test('sync-04', 'Har sds lastSdsSyncTime', 'Sjekker siste synkroniseringstidspunkt for School Data Sync', () => {
     if (!dataPresent) return noData()
@@ -42,6 +42,6 @@ module.exports = (systemData, user, allData = false) => ([
       lastSdsSyncTime: systemData.sdsSync.lastSdsSyncTime,
       check: lastRunTimeCheck
     }
-    return lastRunTimeCheck.result ? success({ message: `SDS sist synkronisert: ${prettifyDateToLocaleString(new Date(systemData.sdsSync.lastSdsSyncTime))}`, raw: data }) : warn({ message: 'Det er mer enn 12 timer siden siste synkronisering av School Data Sync', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    return lastRunTimeCheck.result ? success({ message: `School Data Sync : ${prettifyDateToLocaleString(new Date(systemData.sdsSync.lastSdsSyncTime))}`, raw: data }) : warn({ message: 'Det er mer enn 12 timer siden siste synkronisering av School Data Sync', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
   })
 ])

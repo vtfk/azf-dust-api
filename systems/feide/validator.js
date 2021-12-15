@@ -16,7 +16,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (!dataPresent) {
       if (user.expectedType === 'student') return error({ message: 'Mangler data 😬', raw: systemData, solution: 'Rettes i Visma InSchool' })
       else if (isTeacher(user)) return error({ message: 'Mangler data 😬', raw: systemData, solution: 'Rettes i Visma InSchool' })
-      else return success({ message: 'Det er ikke forventet FEIDE-konto på denne brukertypen', solution: 'Dersom det er behov for FEIDE-konto må bruker registreres i Visma InSchool eller meld sak til arbeidsgruppe identitet' })
+      else return success({ message: 'Det er ikke forventet FEIDE-konto på denne brukertypen', solution: 'Dersom det er behov for FEIDE-konto, meld sak til arbeidsgruppe identitet' })
     } else return success('Har data')
   }),
   test('feide-02', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
@@ -63,7 +63,7 @@ module.exports = (systemData, user, allData = false) => ([
       norEduPersonAuthnMethod: systemData.norEduPersonAuthnMethod.map(auth => auth.split(' ')[0])
     }
     if (!hasData(systemData.norEduPersonAuthnMethod)) {
-      return user.expectedType === 'employee' ? error({ message: 'Feide2Faktor er ikke satt opp 🤭', raw: data, solution: 'Sett opp Feide2Faktor i vigobas-portal.vtfk.no' }) : success('Feide2Faktor er ikke satt opp, og heller ikke påkrevd for elever')
+      return user.expectedType === 'employee' ? error({ message: 'Feide2Faktor er ikke satt opp 🤭', raw: data, solution: 'Sett opp Feide2Faktor i vigobas-portal.vtfk.no' }) : success('Feide2Faktor er ikke satt opp, og er heller ikke påkrevd for elever')
     }
     const smsAuth = systemData.norEduPersonAuthnMethod.filter(auth => auth.includes(SYSTEMS.FEIDE.MFA_SMS))
     const gaAuth = systemData.norEduPersonAuthnMethod.filter(auth => auth.includes(SYSTEMS.FEIDE.MFA_GA))
@@ -102,7 +102,7 @@ module.exports = (systemData, user, allData = false) => ([
   test('feide-07', 'Har dobbel konto', 'Har elev- og ansattkonto', () => {
     if (!dataPresent) return noData()
 
-    if (systemData.eduPersonAffiliation.includes('student') && systemData.eduPersonAffiliation.includes('employee')) return warn({ message: 'Har både elev- og ansattkonto. FEIDE-konto er registrert på elevkonto med doble roller', raw: { eduPersonAffiliation: systemData.eduPersonAffiliation } })
+    if (systemData.eduPersonAffiliation.includes('student') && systemData.eduPersonAffiliation.includes('employee')) return warn({ message: 'Har både elev- og ansattkonto. FEIDE-konto er registrert på elevkonto med rolle som både elev og ansatt', raw: { eduPersonAffiliation: systemData.eduPersonAffiliation } })
     return noData()
   })
 ])

@@ -30,7 +30,7 @@ module.exports = (systemData, user, allData = false) => ([
     const aadGroups = allData.aad.transitiveMemberOf.map(group => group.mailNickname)
     const sdsGroups = getSdsGroups(systemData)
     const wrongEnrollments = sdsGroups.filter(group => !aadGroups.includes(`Section_${group}`))
-    if (hasData(wrongEnrollments)) return error({ message: `Mangler medlemskap i ${wrongEnrollments.length} SDS-gruppe${wrongEnrollments.length > 1 ? 'r' : ''} i Azure AD 🤭`, raw: wrongEnrollments, solution: 'Rettes i Visma InSchool' })
+    if (hasData(wrongEnrollments)) return error({ message: `Mangler medlemskap i ${wrongEnrollments.length} SDS-gruppe${wrongEnrollments.length > 1 ? 'r' : ''} i Azure AD 🤭`, raw: wrongEnrollments, solution: 'Bruker meldes inn i Team(s) fra Azure AD / Teams Admin Center' })
     else return success({ message: 'Har medlemskap i alle sine SDS-grupper i Azure AD', raw: systemData })
   }),
   test('sds-04', 'For mange SDS-grupper i Azure AD', 'Sjekker om bruker er medlem av for mange SDS-grupper i Azure AD', () => {
@@ -41,7 +41,7 @@ module.exports = (systemData, user, allData = false) => ([
     const aadGroups = allData.aad.transitiveMemberOf.map(group => group.mailNickname)
     const sdsGroups = getSdsGroups(systemData)
     const wrongEnrollments = aadGroups.filter(group => !sdsGroups.includes(group.replace('Section_', '')))
-    if (hasData(wrongEnrollments)) return error({ message: `Har medlemskap i ${wrongEnrollments.length} SDS-gruppe${wrongEnrollments.length > 1 ? 'r' : ''} for meget 🤭`, raw: wrongEnrollments, solution: 'Fjernes manuelt fra Azure AD' })
+    if (hasData(wrongEnrollments)) return warn({ message: 'Bruker har flere medlemskap enn det som er registrert i Visma InSchool', raw: wrongEnrollments, solution: 'Bruker kan selv melde seg ut av Team. Utmelding kan også gjøres av IT via Azure AD / Teams Admin Center' })
     else return noData()
   })
 ])

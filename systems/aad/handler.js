@@ -41,7 +41,8 @@ module.exports = async (params) => {
 
   logger('info', ['aad', 'graph-user-mfa-methods', params.userPrincipalName, 'start'])
   const graphUserAuth = await getGraphData(graphUserAuthOptions, token)
-  logger('info', ['aad', 'graph-user-mfa-methods', params.userPrincipalName, 'finish', 'received', (graphUserAuth && graphUserAuth.value && graphUserAuth.value.length) || 0])
+  const graphUserAuthMethods = graphUserAuth && graphUserAuth.value && graphUserAuth.value.length && graphUserAuth.value.filter(method => !method['@odata.type'].includes('passwordAuthenticationMethod'))
+  logger('info', ['aad', 'graph-user-mfa-methods', params.userPrincipalName, 'finish', 'received', (graphUserAuth && graphUserAuth.value && graphUserAuth.value.length && graphUserAuthMethods.length) || 0])
 
   logger('info', ['aad', 'graph-user-signin-errors', params.userPrincipalName, 'start'])
   const graphUserSignIns = await getGraphData(graphSignInsOptions, token)
@@ -50,7 +51,7 @@ module.exports = async (params) => {
   return getResponse({
     ...graphUser,
     transitiveMemberOf: graphSDSGroups,
-    authenticationMethods: graphUserAuth.value,
+    authenticationMethods: graphUserAuthMethods,
     userSignInErrors: graphUserSignIns.value
   })
 }
