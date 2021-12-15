@@ -210,7 +210,7 @@ module.exports = (systemData, user, allData = false) => ([
     return data.fnr.valid ? success({ message: `Har gyldig ${data.fnr.type}`, raw: data }) : error({ message: data.fnr.error, raw: data })
   }),
   test('vis-07', 'Fødselsnummer er likt i AD', 'Sjekker at fødselsnummeret er likt i AD og ViS', () => {
-    if (!dataPresent || (!systemData.person && !systemData.skoleressurs) || (user.expectedType === 'employee' && !isTeacher(user))) return noData()
+    if (!dataPresent || (!systemData.person && !systemData.skoleressurs)) return noData()
     if (!allData) return waitForData()
     if (!hasData(allData.ad)) return error({ message: 'Mangler AD-data', raw: allData.ad })
 
