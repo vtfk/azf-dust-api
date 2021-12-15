@@ -22,7 +22,6 @@ const getMemberships = (data, expectedType) => {
   return membership
 }
 const getActiveMemberships = (data, expectedType) => getMemberships(data, expectedType).filter(item => !!item.periode && !!item.periode.slutt && new Date(item.periode.slutt) > new Date()) // isTeachingGroup(item.sourcedid.id)
-// const getExpiredMemberships = memberships => hasData(memberships) ? memberships.filter(item => !!item.periode && !!item.periode.slutt && new Date(item.periode.slutt) < new Date()) : []
 const getActiveData = data => {
   const activeData = {
     employee: {
@@ -226,48 +225,6 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return data.vis.id === data.ad.employeeNumber ? success({ message: 'Fødselsnummer er likt i AD og ViS', raw: data }) : error({ message: 'Fødselsnummer er forskjellig i AD og ViS', raw: data })
   })
-  /* test('vis-02', 'Har aktivt forhold', 'Sjekker at bruker har aktivt forhold', () => {
-    if (!dataPresent) return noData()
-    const activeData = getActiveData(systemData)
-    if (user.expectedType === 'student') {
-      if (activeData.employee.active && activeData.student.active) return error({ message: 'Bruker har aktive elev- og ansattforhold 😬', raw: activeData })
-      else if (activeData.employee.active && !activeData.student.active) return error({ message: 'Elev har aktivt ansattforhold 😬', raw: activeData })
-      else if (!activeData.employee.active && !activeData.student.active) return error({ message: 'Mangler aktivt elevforhold 😬😬', raw: activeData })
-      return success({ message: 'Bruker har aktivt elevforhold', raw: activeData })
-    } else {
-      if (activeData.employee.active && activeData.student.active) return error({ message: 'Bruker har aktive elev- og ansattforhold 😬', raw: activeData })
-      else if (!activeData.employee.active && activeData.student.active) return error({ message: 'Ansatt har aktivt elevforhold 😬', raw: activeData })
-      else if (!activeData.employee.active && !activeData.student.active) return error({ message: 'Mangler aktivt ansattforhold 😬😬', raw: activeData })
-      return success({ message: 'Bruker har aktivt ansattforhold', raw: activeData })
-    }
-  }),
-  test('vis-05', 'Har gruppemedlemskap', 'Sjekker at det finnes gruppemedlemskap', () => {
-    if (!dataPresent) return noData()
-    const memberships = getMemberships(systemData, user.expectedType)
-    if (!hasData(memberships)) {
-      if (isTeacher(user)) return error({ message: 'Har ingen gruppemedlemskap 🤭', raw: systemData })
-      else if (user.expectedType === 'student') return warn({ message: 'Har ingen gruppemedlemskap 🤭', raw: systemData })
-      else return noData('Har ingen gruppemedlemskap')
-    }
-    return success({ message: 'Har gruppemedlemskap', raw: memberships })
-  }),
-  test('vis-06', 'Gruppemedlemskap er inaktive', 'Sjekker om noen gruppemedlemskap er inaktive', () => {
-    if (!dataPresent) return noData()
-    const memberships = getMemberships(systemData, user.expectedType)
-    const expiredMemberships = getExpiredMemberships(memberships)
-    if (hasData(expiredMemberships)) {
-      if (isTeacher(user)) return error({ message: `Har ${expiredMemberships.length} avsluttede gruppemedlemskap`, raw: expiredMemberships })
-      else return warn({ message: `Har ${expiredMemberships.length} avsluttede gruppemedlemskap`, raw: expiredMemberships })
-    } else return noData('Har ingen avsluttede gruppemedlemskap')
-  }),
-  test('vis-07', 'Gruppemedlemskap er aktive', 'Sjekker at gruppemedlemskap er aktive', () => {
-    if (!dataPresent) return noData()
-    const activeMemberships = getActiveMemberships(systemData, user.expectedType)
-    if (hasData(activeMemberships)) return success({ message: `Har ${activeMemberships.length} aktive gruppemedlemskap`, raw: activeMemberships })
-    if (isTeacher(user)) return error({ message: 'Mangler aktive gruppemedlemskap 🤭', raw: activeMemberships })
-    else if (user.expectedType === 'student') return warn({ message: 'Mangler aktive gruppemedlemskap 🤭', raw: activeMemberships })
-    else return noData('Har ingen aktive gruppemedlemskap')
-  }) */
 ])
 
 module.exports.getActiveData = getActiveData
