@@ -61,8 +61,8 @@ module.exports = (systemData, user, allData = false) => ([
     const data = {
       userPrincipalName: systemData.userPrincipalName
     }
-    if (user.expectedType === 'employee') return systemData.userPrincipalName.includes('@vtfk.no') ? success({ message: 'UPN er korrekt', raw: data }) : error({ message: 'UPN er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
-    else return systemData.userPrincipalName.includes('@skole.vtfk.no') ? success({ message: 'UPN er korrekt', raw: data }) : error({ message: 'UPN er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
+    if (user.expectedType === 'employee') return systemData.userPrincipalName.includes('@vtfk.no') ? success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt', raw: data }) : error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
+    else return systemData.userPrincipalName.includes('@skole.vtfk.no') ? success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt', raw: data }) : error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
   }),
   test('ad-06', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
     if (!dataPresent) return noData()
@@ -118,6 +118,6 @@ module.exports = (systemData, user, allData = false) => ([
       extensionAttribute4: systemData.extensionAttribute4.split(',').map(ext => ext.trim())
     }
 
-    return warn({ message: `Er medlem av ${data.extensionAttribute4.length} personalrom- og ${data.extensionAttribute4.length === 0 || data.extensionAttribute4.length > 1 ? 'mailinglister' : 'mailingliste'}`, solution: 'extensionAttribute4 fører til medlemskap i personalrom- og mailinglister. Dersom dette ikke er ønskelig fjernes dette fra brukeren i AD', raw: data })
+    return warn({ message: `Er medlem av ${data.extensionAttribute4.length} personalrom- og ${data.extensionAttribute4.length === 0 || data.extensionAttribute4.length > 1 ? 'mailinglister' : 'mailingliste'} ekstra`, solution: 'extensionAttribute4 fører til medlemskap i personalrom- og mailinglister. Dersom dette ikke er ønskelig fjernes dette fra brukeren i AD', raw: data })
   })
 ])

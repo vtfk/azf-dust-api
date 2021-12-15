@@ -16,7 +16,7 @@ module.exports = (systemData, user, allData = false) => ([
       previousAccountStatus: systemData.PreviousAccountStatus || undefined
     }
 
-    return data.previousAccountStatus ? warn({ message: 'Bruker var låst i Equitrac men er nå låst opp! 👌', raw: data }) : success({ message: 'Bruker er ulåst i Equitrac', raw: data })
+    return data.previousAccountStatus ? warn({ message: 'Bruker var låst i Equitrac men er nå låst opp! 👌', raw: data }) : success({ message: 'Bruker er ikke låst i Equitrac', raw: data })
   }),
   test('equitrac-03', 'UserEmail er lik UPN', 'Sjekker at UserEmail er lik UserPrincipalName', () => {
     if (!dataPresent) return noData()
@@ -31,6 +31,6 @@ module.exports = (systemData, user, allData = false) => ([
       }
     }
 
-    return systemData.UserEmail === allData.ad.userPrincipalName ? success({ message: 'UserEmail er korrekt', raw: data }) : error({ message: 'UserEmail er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe print' })
+    return systemData.UserEmail === allData.ad.userPrincipalName ? success({ message: 'UserEmail er korrekt', raw: data }) : error({ message: 'UserEmail er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe blekkulf' })
   })
 ])

@@ -46,21 +46,21 @@ module.exports = (systemData, user, allData = false) => ([
       mail: systemData.mail || null,
       userPrincipalName: systemData.userPrincipalName || null
     }
-    if (!systemData.userPrincipalName) return error({ message: 'UPN mangler 🤭', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    if (!systemData.userPrincipalName) return error({ message: 'UPN (brukernavn til Microsoft 365) mangler 🤭', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
     if (!systemData.mail) {
       if (systemData.accountEnabled) return error({ message: 'E-postadresse mangler 🤭', raw: data })
       else return user.expectedType === 'employee' ? warn({ message: 'E-postadresse blir satt når konto er blitt aktivert', raw: data, solution: `Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` }) : warn({ message: 'E-postadresse blir satt når konto er blitt aktivert', raw: data, solution: `Eleven må aktivere sin konto via minelevkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
     }
-    return systemData.userPrincipalName.toLowerCase() === systemData.mail.toLowerCase() ? success({ message: 'UPN er lik e-postadressen', raw: data }) : error({ message: 'UPN er ikke lik e-postadressen', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    return systemData.userPrincipalName.toLowerCase() === systemData.mail.toLowerCase() ? success({ message: 'UPN (brukernavn til Microsoft 365) er lik e-postadressen', raw: data }) : error({ message: 'UPN (brukernavn til Microsoft 365) er ikke lik e-postadressen', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
   }),
   test('aad-04', 'UPN er korrekt', 'Sjekker at UPN er @vtfk.no for ansatte, og @skole.vtfk.no for elever', () => {
     if (!dataPresent) return noData()
     const data = {
       userPrincipalName: systemData.userPrincipalName || null
     }
-    if (systemData.userPrincipalName.includes('.onmicrosoft.com')) return error({ message: 'UPN er ikke korrekt 🤭', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
-    if (user.expectedType === 'employee') return systemData.userPrincipalName.includes('@vtfk.no') ? success({ message: 'UPN er korrekt', raw: data }) : error({ message: 'UPN er ikke korrekt', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
-    else return systemData.userPrincipalName.includes('@skole.vtfk.no') ? success({ message: 'UPN er korrekt', raw: data }) : error({ message: 'UPN er ikke korrekt', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    if (systemData.userPrincipalName.includes('.onmicrosoft.com')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt 🤭', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    if (user.expectedType === 'employee') return systemData.userPrincipalName.includes('@vtfk.no') ? success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt', raw: data }) : error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    else return systemData.userPrincipalName.includes('@skole.vtfk.no') ? success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt', raw: data }) : error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
   }),
   test('aad-05', 'Passord synkronisert til Azure AD', 'Sjekker at passordet er synkronisert til Azure AD innenfor 40 minutter', () => {
     if (!dataPresent) return noData()
@@ -168,8 +168,8 @@ module.exports = (systemData, user, allData = false) => ([
       authenticationMethods: systemData.authenticationMethods
     }
     if (!hasData(systemData.authenticationMethods)) {
-      return user.expectedType === 'employee' ? error({ message: 'MFA er ikke satt opp 🤭', raw: data, solution: 'Bruker må selv sette opp MFA via aka.ms/mfasetup' }) : warn('MFA er ikke satt opp, blir snart påkrevd for elever')
-    } else return success({ message: `${systemData.authenticationMethods.length} MFA-metode${systemData.authenticationMethods.length > 1 ? 'r' : ''} er satt opp`, raw: data })
+      return user.expectedType === 'employee' ? error({ message: 'MFA (tofaktor) er ikke satt opp 🤭', raw: data, solution: 'Bruker må selv sette opp MFA (tofaktor) via aka.ms/mfasetup' }) : warn('MFA (tofaktor) er ikke satt opp, blir snart påkrevd for elever')
+    } else return success({ message: `${systemData.authenticationMethods.length} MFA-metode${systemData.authenticationMethods.length > 1 ? 'r' : ''} (tofaktor) er satt opp`, raw: data })
   }),
   test('aad-10', 'Har skrevet feil passord', 'Sjekker om bruker har skrevet feil passord idag', () => {
     if (!dataPresent) return noData()
