@@ -90,6 +90,21 @@ const getElevforhold = data => {
 }
 
 const isSchoolAdded = (schools, school) => !!schools.find(s => s === school)
+const sortStudents = students => {
+  return students.sort((a, b) => {
+    const a1 = a.displayName[0].toLowerCase()
+    const a2 = a.displayName[1].toLowerCase()
+    const b1 = b.displayName[0].toLowerCase()
+    const b2 = b.displayName[1].toLowerCase()
+    if (a1 < b1) return -1
+    if (a1 > b1) return 1
+    if (a1 === b1) {
+      if (a2 < b2) return -1
+      if (a2 > b2) return 1
+    }
+    return 0
+  })
+}
 
 const getUndervisningsforhold = data => {
   if (!data.skoleressurs) {
@@ -101,7 +116,9 @@ const getUndervisningsforhold = data => {
       accumulator.basisgrupper.push({
         skole: basisgruppe.skole.navn,
         navn: basisgruppe.navn,
-        systemId: basisgruppe.systemId.identifikatorverdi
+        systemId: basisgruppe.systemId.identifikatorverdi,
+        antallElever: basisgruppe.elevforhold.length,
+        elever: sortStudents(basisgruppe.elevforhold.map(elevforhold => ({ displayName: `${elevforhold.elev.person.navn.fornavn} ${elevforhold.elev.person.navn.etternavn}` })))
       })
       if (!isSchoolAdded(accumulator.skoler, basisgruppe.skole.navn)) {
         accumulator.skoler.push(basisgruppe.skole.navn)
