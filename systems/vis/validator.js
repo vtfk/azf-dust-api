@@ -182,17 +182,11 @@ module.exports = (systemData, user, allData = false) => ([
     }
   }),
   test('vis-04', 'Har basisgruppe', 'Sjekker at bruker har basisgruppe(r)', () => {
-    if (!dataPresent || (user.expectedType === 'employee' && !isTeacher(user))) return noData()
+    if (!dataPresent || user.expectedType === 'employee') return noData()
 
-    if (user.expectedType === 'student') {
-      const data = getElevforhold(systemData)
-      if (data.basisgrupper.length > 0) return success({ message: `Har ${data.basisgrupper.length} ${data.basisgrupper.length > 1 ? 'basisgrupper' : 'basisgruppe'}`, raw: data.basisgrupper })
-      else return error({ message: 'Mangler medlemskap i basisgruppe(r) 😬', raw: data, solution: 'Rettes i Visma InSchool' })
-    } else if (user.expectedType === 'employee' && isTeacher(user)) {
-      const data = getUndervisningsforhold(systemData)
-      if (data.basisgrupper.length === 0) return noData()
-      else return success({ message: `Underviser i ${data.basisgrupper.length} ${data.basisgrupper.length > 1 ? 'basisgrupper' : 'basisgruppe'}`, raw: data.basisgrupper })
-    }
+    const data = getElevforhold(systemData)
+    if (data.basisgrupper.length > 0) return success({ message: `Har ${data.basisgrupper.length} ${data.basisgrupper.length > 1 ? 'basisgrupper' : 'basisgruppe'}`, raw: data.basisgrupper })
+    else return error({ message: 'Mangler medlemskap i basisgruppe(r) 😬', raw: data, solution: 'Rettes i Visma InSchool' })
   }),
   test('vis-05', 'Har undervisningsgruppe', 'Sjekker at bruker har undervisningsgruppe(r)', () => {
     if (!dataPresent || (user.expectedType === 'employee' && !isTeacher(user))) return noData()
