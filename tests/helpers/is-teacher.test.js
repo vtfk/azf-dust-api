@@ -1,5 +1,9 @@
 const isTeacher = require('../../lib/helpers/is-teacher')
 
+test('user object not set', () => {
+  expect(isTeacher()).toBe(false)
+})
+
 test('feide not set', () => {
   expect(isTeacher({})).toBe(false)
 })
