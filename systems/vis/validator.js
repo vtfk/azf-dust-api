@@ -152,7 +152,6 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('vis-02', 'Har/er kontaktlærer', 'Sjekker at bruker har/er kontaktlærer', () => {
     if (!dataPresent) return noData()
-    else if (user.expectedType === 'employee' && !isTeacher(user)) return success('Bruker har ikke relevante data i dette systemet')
 
     if (user.expectedType === 'student') {
       const data = getElevforhold(systemData)
@@ -165,7 +164,7 @@ module.exports = (systemData, user, allData = false) => ([
     }
   }),
   test('vis-03', 'Har skoleforhold', 'Sjekker om bruker har skoleforhold', () => {
-    if (!dataPresent || (user.expectedType === 'employee' && !isTeacher(user))) return noData()
+    if (!dataPresent) return noData()
 
     if (user.expectedType === 'student') {
       if (systemData.person.elev && systemData.person.elev.elevforhold && systemData.person.elev.elevforhold.length > 0) {
@@ -189,7 +188,7 @@ module.exports = (systemData, user, allData = false) => ([
     else return error({ message: 'Mangler medlemskap i basisgruppe(r) 😬', raw: data, solution: 'Rettes i Visma InSchool' })
   }),
   test('vis-05', 'Har undervisningsgruppe', 'Sjekker at bruker har undervisningsgruppe(r)', () => {
-    if (!dataPresent || (user.expectedType === 'employee' && !isTeacher(user))) return noData()
+    if (!dataPresent) return noData()
 
     if (user.expectedType === 'student') {
       const data = getElevforhold(systemData)
@@ -202,7 +201,7 @@ module.exports = (systemData, user, allData = false) => ([
     }
   }),
   test('vis-06', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
-    if (!dataPresent || (!systemData.person && !systemData.skoleressurs) || (user.expectedType === 'employee' && !isTeacher(user))) return noData()
+    if (!dataPresent || (!systemData.person && !systemData.skoleressurs)) return noData()
     const fnr = systemData.person ? systemData.person.fodselsnummer.identifikatorverdi : systemData.skoleressurs.person.fodselsnummer.identifikatorverdi
     const data = {
       id: fnr,
