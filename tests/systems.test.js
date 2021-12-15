@@ -1174,7 +1174,8 @@ const mockData = {
 const mockUser = {
   employeeNumber: '12128015478',
   departmentShort: 'BDK-TEK',
-  expectedType: 'employee'
+  expectedType: 'employee',
+  feide: true
 }
 
 systems.forEach(system => {
