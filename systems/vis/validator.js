@@ -152,7 +152,7 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('vis-02', 'Har/er kontaktlærer', 'Sjekker at bruker har/er kontaktlærer', () => {
     if (!dataPresent) return noData()
-    else if (user.expectedType === 'employee' && !isTeacher(user)) return success('Bruker har ikke relevante data i dette systemet') // TODO: Trenger vi egentlig å sjekke ViS for en vanlig ansatt?
+    else if (user.expectedType === 'employee' && !isTeacher(user)) return success('Bruker har ikke relevante data i dette systemet')
 
     if (user.expectedType === 'student') {
       const data = getElevforhold(systemData)
