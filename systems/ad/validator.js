@@ -4,8 +4,6 @@ const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const getActiveSourceData = require('../../lib/helpers/get-active-source-data')
 const { SYSTEMS: { AD: { OU_AUTO_USERS, OU_AUTO_DISABLED_USERS } } } = require('../../config')
 
-const hasCorrectCompany = company => /(\w.+ [vV]id.+ [sS]k.+)|([Ff]agskolen [Vv]estfold og [Tt]elemark)|([Ff]agskolen i [Vv]estfold og [Tt]elemark)|([Kk]ompetansebyggeren)/.test(company)
-
 let dataPresent = true
 
 module.exports = (systemData, user, allData = false) => ([

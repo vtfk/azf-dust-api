@@ -88,9 +88,8 @@ module.exports = (systemData, user, allData = false) => ([
     } else {
       const data = systemData.assignedLicenses.map(license => {
         const lic = licenses.find(lic => lic.skuId === license.skuId)
-        if (lic) return lic 
-        else return { skuId: license.skuId 
-        }
+        if (lic) return lic
+        else return { skuId: license.skuId }
       })
       return success({ message: 'Har Microsoft 365-lisenser', raw: data })
     }
