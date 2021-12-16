@@ -183,6 +183,32 @@ module.exports = (systemData, user, allData = false) => ([
       familyName: systemData.familyName
     }
     return (systemData.givenName === systemData.givenName.toUpperCase() || systemData.familyName === systemData.familyName.toUpperCase()) ? warn({ message: 'NAVN ER SKREVET MED ROPEBOKSTAVER 📣', raw: data, solution: 'RETTES I VISMA HRM' }) : noData()
+  }),
+  test('visma-09', 'Brukers stillinger', 'Brukers stillinger', () => {
+    if (!dataPresent) return noData()
+
+    const { status, raw } = getActivePosition(systemData, user)
+    if (!['ok', 'warning'].includes(status)) return noData()
+    const { positions } = raw
+    if (!hasData(positions)) return noData()
+
+    const primaryPositions = positions.filter(position => position['@isPrimaryPosition'] && position['@isPrimaryPosition'].toLowerCase() === 'true')
+    const secondaryPositions = positions.filter(position => !position['@isPrimaryPosition'] || position['@isPrimaryPosition'].toLowerCase() === 'false')
+    const repackedPositions = [...primaryPositions, ...secondaryPositions].map(position => {
+      return {
+        primaryPosition: position['@isPrimaryPosition'] && position['@isPrimaryPosition'].toLowerCase() === 'true',
+        leave: position.leave,
+        name: position.chart.unit['@name'],
+        title: position.positionInfo.positionCode['@name'],
+        positionPercentage: position.positionPercentage,
+        startDate: position.positionStartDate,
+        endDate: position.positionEndDate
+      }
+    })
+    if (primaryPositions.length === 0) return warn({ message: `Aiaiai. Bruker har ingen hovedstillinger men ${secondaryPositions.length} ${secondaryPositions.length > 1 ? 'sekundærstillinger' : 'sekundærstilling'}`, raw: repackedPositions, solution: 'Rettes i Visma HRM' })
+    else if (primaryPositions.length > 0 && secondaryPositions.length > 0) return success({ message: `Har ${primaryPositions.length} ${primaryPositions.length > 1 ? 'hovedstillinger' : 'hovedstilling'} og ${secondaryPositions.length} ${secondaryPositions.length > 1 ? 'sekundærstillinger' : 'sekundærstilling'}`, raw: repackedPositions })
+    else if (primaryPositions.length > 0 && secondaryPositions.length === 0) return success({ message: `Har ${primaryPositions.length} ${primaryPositions.length > 1 ? 'hovedstillinger' : 'hovedstilling'}`, raw: repackedPositions })
+    else return error({ message: 'Dette burde ikke ha skjedd men det skjedde allikevel', raw: repackedPositions, solution: 'Vi legger oss flate og lover å se på rutiner 😝' })
   })
 ])
 
