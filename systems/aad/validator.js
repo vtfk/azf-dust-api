@@ -99,9 +99,8 @@ module.exports = (systemData, user, allData = false) => ([
     const data = {
       authenticationMethods: systemData.authenticationMethods
     }
-    if (!hasData(systemData.authenticationMethods)) {
-      return user.expectedType === 'employee' ? error({ message: 'MFA (tofaktor) er ikke satt opp 🤭', raw: data, solution: 'Bruker må selv sette opp MFA (tofaktor) via aka.ms/mfasetup' }) : warn('MFA (tofaktor) er ikke satt opp, blir snart påkrevd for elever')
-    } else return success({ message: `${systemData.authenticationMethods.length} MFA-metode${systemData.authenticationMethods.length > 1 ? 'r' : ''} (tofaktor) er satt opp`, raw: data })
+    if (!hasData(systemData.authenticationMethods)) return error({ message: 'MFA (tofaktor) er ikke satt opp 🤭', raw: data, solution: 'Bruker må selv sette opp MFA (tofaktor) via aka.ms/mfasetup' })
+    else return success({ message: `${systemData.authenticationMethods.length} MFA-metode${systemData.authenticationMethods.length > 1 ? 'r' : ''} (tofaktor) er satt opp`, raw: data })
   }),
   test('aad-08', 'Har skrevet feil passord', 'Sjekker om bruker har skrevet feil passord idag', () => {
     if (!dataPresent) return noData()
