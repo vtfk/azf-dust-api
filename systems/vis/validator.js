@@ -78,6 +78,7 @@ const getElevforhold = data => {
     current.kontaktlarergruppe.forEach(kontaktlarergruppe => {
       kontaktlarergruppe.undervisningsforhold.forEach(undervisningsforhold => {
         accumulator.kontaktlarere.push({
+          navn: kontaktlarergruppe.navn,
           skole: current.skole.navn,
           fornavn: undervisningsforhold.skoleressurs.person.navn.fornavn,
           etternavn: undervisningsforhold.skoleressurs.person.navn.etternavn,
