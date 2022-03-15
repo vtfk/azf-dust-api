@@ -20,12 +20,12 @@ module.exports = df.orchestrator(function * (context) {
   let parallelTasks = []
   let { body: { systems, user } } = input
 
-  // lowercase all system names
-  systems = systems.map(system => system.toLowerCase())
-
-  // add source data systems to systems if not already present
-  SOURCE_DATA_SYSTEMS.forEach(system => {
-    if (!systems.includes(system.toLowerCase())) systems.push(system.toLowerCase())
+  // get correct systems based on user's userPrincipalName
+  systems = yield context.df.callActivity('WorkerActivity', {
+    type: 'systems',
+    query: {
+      systems, user
+    }
   })
 
   // set current user object and systems to customStatus

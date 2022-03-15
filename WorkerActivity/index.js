@@ -1,7 +1,9 @@
 const { logger } = require('@vtfk/logger')
+const { SOURCE_DATA_SYSTEMS } = require('../config')
 const { newRequest, updateRequest } = require('../lib/mongo/handle-mongo')
 const { validate } = require('../lib/user-query')
 const updateUser = require('../lib/update-user')
+const { isApprentice, isOT } = require('../lib/helpers/is-type')
 const test = require('../lib/call-test')
 
 const getSystemsData = results => {
@@ -41,5 +43,32 @@ module.exports = async function (context) {
 
       return task
     }))
+  } else if (type === 'systems') {
+    const { user } = query
+    let { systems } = query
+
+    // systems to remove from query based on user's userPrincipalName (override)
+    const removeSystems = {
+      vigoUsers: [
+        'sds',
+        'vis',
+        'visma'
+      ]
+    }
+
+    // lowercase all system names
+    systems = systems.map(system => system.toLowerCase())
+
+    // add source data systems to systems if not already present
+    SOURCE_DATA_SYSTEMS.forEach(system => {
+      if (!systems.includes(system.toLowerCase())) systems.push(system.toLowerCase())
+    })
+
+    // should user be overridden
+    if (isApprentice(user) || isOT(user)) {
+      logger('info', ['worker-activity', 'systems', 'overriding systems for Vigo people'])
+      return systems.filter(system => !removeSystems.vigoUsers.includes(system))
+    }
+    return systems
   }
 }
