@@ -2,7 +2,7 @@ const { logger } = require('@vtfk/logger')
 const axios = require('axios').default
 const generateJwt = require('../../lib/auth/generate-jwt')
 const getResponse = require('../../lib/get-response-object')
-const isTeacher = require('../../lib/helpers/is-teacher')
+const { isTeacher } = require('../../lib/helpers/is-type')
 const HTTPError = require('../../lib/http-error')
 const { SYSTEMS: { VIS: { FINT_BETA, FINT_API_URL, FINT_JWT_SECRET, FINT_TIMEOUT }, FEIDE: { PRINCIPAL_NAME } } } = require('../../config')
 
