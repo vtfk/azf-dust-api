@@ -1,6 +1,7 @@
 const { test, success, error, warn, noData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
+const { isApprentice, isOT, isEmployee, isStudent } = require('../../lib/helpers/is-type')
 const getActiveSourceData = require('../../lib/helpers/get-active-source-data')
 const { SYSTEMS: { AD: { OU_AUTO_USERS, OU_AUTO_DISABLED_USERS } } } = require('../../config')
 
@@ -15,7 +16,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (!dataPresent) return noData()
     if (!allData) return noData()
     if (user.expectedType === 'employee' && !allData.visma) return error({ message: 'Mangler data i Visma HRM', raw: { user, visma: allData.visma }, solution: 'Rettes i Visma HRM' })
-    if (user.expectedType === 'student' && !allData.vis) return error({ message: 'Mangler data i Visma InSchool', raw: { user, vis: allData.vis }, solution: 'Rettes i Visma InSchool' })
+    if (user.expectedType === 'student' && !isApprentice(systemData) && !isOT(systemData) && !allData.vis) return error({ message: 'Mangler data i Visma InSchool', raw: { user, vis: allData.vis }, solution: 'Rettes i Visma InSchool' })
 
     const data = {
       enabled: systemData.enabled
@@ -28,6 +29,9 @@ module.exports = (systemData, user, allData = false) => ([
       else if (!systemData.enabled && data.visma.active) return warn({ message: 'Kontoen er deaktivert. Ansatt må aktivere sin konto', raw: data, solution: 'Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD' })
       else if (!systemData.enabled && !data.visma.active) return warn({ message: 'Kontoen er deaktivert', raw: data, solution: 'Rettes i Visma HRM' })
     } else {
+      if (isApprentice(systemData)) return systemData.enabled ? success({ message: 'Kontoen er aktivert', raw: data }) : warn({ message: 'Kontoen er deaktivert', raw: data, solution: 'Bruker må aktivere sin konto via minlarlingkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD' })
+      if (isOT(systemData)) return systemData.enabled ? success({ message: 'Kontoen er aktivert', raw: data }) : warn({ message: 'Kontoen er deaktivert', raw: data, solution: 'Bruker må aktivere sin konto via min-ot-konto.vtfk.no eller servicedesk kan gjøre det direkte i AD' })
+
       data.vis = getActiveSourceData(allData.vis, user)
       if (systemData.enabled && data.vis.student.active) return success({ message: 'Kontoen er aktivert', raw: data })
       else if (systemData.enabled && !data.vis.student.active) return error({ message: 'Kontoen er aktivert selvom elev har sluttet', raw: data, solution: 'Rettes i Visma InSchool' })
@@ -53,14 +57,18 @@ module.exports = (systemData, user, allData = false) => ([
     if (!systemData.lockedOut) return success({ message: 'Kontoen er ikke sperret for pålogging', raw: data })
     return error({ message: 'Kontoen er sperret for pålogging', raw: data, solution: 'Servicedesk må åpne brukerkontoen for pålogging i AD. Dette gjøres i Properties på brukerobjektet under fanen Account' })
   }),
-  test('ad-05', 'UPN er korrekt', 'Sjekker at UPN er @vtfk.no for ansatte, og @skole.vtfk.no for elever', () => {
+  test('ad-05', 'UPN er korrekt', 'Sjekker at UPN er korrekt for ansatte, elever, lærlinger og OT-ungdom', () => {
     if (!dataPresent) return noData()
     if (!systemData.userPrincipalName) return error({ message: 'UPN mangler 🤭', raw: systemData })
     const data = {
       userPrincipalName: systemData.userPrincipalName
     }
-    if (user.expectedType === 'employee') return systemData.userPrincipalName.includes('@vtfk.no') ? success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt', raw: data }) : error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
-    else return systemData.userPrincipalName.includes('@skole.vtfk.no') ? success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt', raw: data }) : error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
+    if (user.expectedType === 'employee') return isEmployee(systemData) ? success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt for ansatt', raw: data }) : error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
+    else {
+      if (isApprentice(systemData)) return success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt for lærlinger', raw: data })
+      if (isOT(systemData)) return success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt for OT-ungdom', raw: data })
+      return isStudent(systemData) ? success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt for elev', raw: data }) : error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Sak meldes til arbeidsgruppe identitet' })
+    }
   }),
   test('ad-06', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
     if (!dataPresent) return noData()
