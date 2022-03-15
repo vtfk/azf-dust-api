@@ -4,7 +4,7 @@ const { validate } = require('../lib/user-query')
 const updateUser = require('../lib/update-user')
 const test = require('../lib/call-test')
 
-const getSystems = results => {
+const getSystemsData = results => {
   const data = {}
   results.forEach(result => {
     if (result.data) data[result.name] = result.data
@@ -27,8 +27,8 @@ module.exports = async function (context) {
     logger(variant, query)
   } else if (type === 'test') {
     const { instanceId, tasks, user } = query
-    const systems = getSystems(tasks.map(task => task.result))
-    logger('info', ['worker-activity', 'final tests', 'systems', Object.getOwnPropertyNames(systems).length])
+    const systemsData = getSystemsData(tasks.map(task => task.result))
+    logger('info', ['worker-activity', 'final tests', 'systems with data', Object.getOwnPropertyNames(systemsData).length])
 
     return await Promise.all(tasks.map(async task => {
       if (task.result.error) {
@@ -36,7 +36,7 @@ module.exports = async function (context) {
         task.result.tests = []
         return task
       }
-      task.result.tests = test(task.result.name, task.result.data, user, systems)
+      task.result.tests = test(task.result.name, task.result.data, user, systemsData)
       await updateRequest({ instanceId, ...task.result })
 
       return task
