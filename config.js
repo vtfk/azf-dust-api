@@ -27,7 +27,9 @@ module.exports = {
     CONNECTION: process.env.MONGODB_CONNECTION,
     COLLECTION: process.env.MONGODB_COLLECTION,
     COLLECTION_USERS: process.env.MONGODB_COLLECTION_USERS,
-    NAME: process.env.MONGODB_NAME
+    COLLECTION_SDS: process.env.MONGODB_COLLECTION_SDS,
+    NAME: process.env.MONGODB_NAME,
+    NAME_SDS: process.env.MONGODB_NAME_SDS
   },
   SYSTEMS: {
     AD: {
