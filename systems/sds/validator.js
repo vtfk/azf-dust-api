@@ -1,6 +1,6 @@
 const { test, success, error, waitForData, warn, noData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
-const isTeacher = require('../../lib/helpers/is-teacher')
+const { isTeacher } = require('../../lib/helpers/is-type')
 const getSdsGroups = require('../../lib/get-sds-groups')
 
 let dataPresent = true

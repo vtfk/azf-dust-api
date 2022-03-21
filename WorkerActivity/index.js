@@ -1,10 +1,12 @@
 const { logger } = require('@vtfk/logger')
+const { SOURCE_DATA_SYSTEMS } = require('../config')
 const { newRequest, updateRequest } = require('../lib/mongo/handle-mongo')
 const { validate } = require('../lib/user-query')
 const updateUser = require('../lib/update-user')
+const { isApprentice, isOT } = require('../lib/helpers/is-type')
 const test = require('../lib/call-test')
 
-const getSystems = results => {
+const getSystemsData = results => {
   const data = {}
   results.forEach(result => {
     if (result.data) data[result.name] = result.data
@@ -27,8 +29,8 @@ module.exports = async function (context) {
     logger(variant, query)
   } else if (type === 'test') {
     const { instanceId, tasks, user } = query
-    const systems = getSystems(tasks.map(task => task.result))
-    logger('info', ['worker-activity', 'final tests', 'systems', Object.getOwnPropertyNames(systems).length])
+    const systemsData = getSystemsData(tasks.map(task => task.result))
+    logger('info', ['worker-activity', 'final tests', 'systems with data', Object.getOwnPropertyNames(systemsData).length])
 
     return await Promise.all(tasks.map(async task => {
       if (task.result.error) {
@@ -36,10 +38,37 @@ module.exports = async function (context) {
         task.result.tests = []
         return task
       }
-      task.result.tests = test(task.result.name, task.result.data, user, systems)
+      task.result.tests = test(task.result.name, task.result.data, user, systemsData)
       await updateRequest({ instanceId, ...task.result })
 
       return task
     }))
+  } else if (type === 'systems') {
+    const { user } = query
+    let { systems } = query
+
+    // systems to remove from query based on user's userPrincipalName (override)
+    const removeSystems = {
+      vigoUsers: [
+        'sds',
+        'vis',
+        'visma'
+      ]
+    }
+
+    // lowercase all system names
+    systems = systems.map(system => system.toLowerCase())
+
+    // add source data systems to systems if not already present
+    SOURCE_DATA_SYSTEMS.forEach(system => {
+      if (!systems.includes(system.toLowerCase())) systems.push(system.toLowerCase())
+    })
+
+    // should user be overridden
+    if (isApprentice(user) || isOT(user)) {
+      logger('info', ['worker-activity', 'systems', 'overriding systems for Vigo people'])
+      return systems.filter(system => !removeSystems.vigoUsers.includes(system))
+    }
+    return systems
   }
 }

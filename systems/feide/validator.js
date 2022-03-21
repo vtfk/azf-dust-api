@@ -3,7 +3,7 @@ const { SYSTEMS } = require('../../config')
 const { hasData } = require('../../lib/helpers/system-data')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
 const { getActiveMemberships } = require('../vis/validator')
-const isTeacher = require('../../lib/helpers/is-teacher')
+const { isApprentice, isOT, isTeacher } = require('../../lib/helpers/is-type')
 
 const repackEntitlements = data => data.filter(entitlement => entitlement.startsWith('urn:mace:feide.no:go:group:u:')).map(entitlement => entitlement.replace('urn:mace:feide.no:go:group:u:', '').split(':')[2].replace('%2F', '/').toLowerCase())
 const repackMemberships = data => data.filter(membership => membership.navn.includes('/')).map(membership => membership.navn.toLowerCase())
@@ -48,6 +48,7 @@ module.exports = (systemData, user, allData = false) => ([
   test('feide-04', 'Har knytning til en skole', 'Sjekker at det finnes knytning til minst èn skole', () => {
     if (!dataPresent) return noData()
     if (!allData) return waitForData()
+    if (isApprentice(user) || isOT(user)) return noData()
 
     const data = {
       eduPersonOrgUnitDN: systemData.eduPersonOrgUnitDN || null
@@ -59,6 +60,8 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('feide-05', 'Har satt opp Feide2Faktor', 'Sjekker at Feide2Faktor er satt opp', () => {
     if (!dataPresent) return noData()
+    if (isApprentice(user) || isOT(user)) return noData()
+
     const data = {
       norEduPersonAuthnMethod: systemData.norEduPersonAuthnMethod.map(auth => auth.split(' ')[0])
     }
@@ -76,6 +79,7 @@ module.exports = (systemData, user, allData = false) => ([
   test('feide-06', 'Har grupperettigheter', 'Sjekker at det er satt grupperettigheter', () => {
     if (!dataPresent) return noData()
     if (!allData) return waitForData()
+    if (isApprentice(user) || isOT(user)) return noData()
     if (!hasData(allData.vis)) return success({ message: 'Ingen grupperettigheter funnet. Dette er riktig da bruker ikke finnes i ViS', raw: allData.vis })
 
     const repackedEntitlements = repackEntitlements(systemData.eduPersonEntitlement)

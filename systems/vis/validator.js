@@ -1,7 +1,7 @@
 const { test, success, warn, error, waitForData, noData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
-const isTeacher = require('../../lib/helpers/is-teacher')
+const { isTeacher } = require('../../lib/helpers/is-type')
 
 const getMemberships = (data, expectedType) => {
   const membership = []

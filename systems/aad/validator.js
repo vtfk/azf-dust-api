@@ -2,6 +2,7 @@ const { test, success, error, warn, waitForData, noData } = require('../../lib/t
 const { hasData } = require('../../lib/helpers/system-data')
 const isWithinTimeRange = require('../../lib/helpers/is-within-timerange')
 const getActiveSourceData = require('../../lib/helpers/get-active-source-data')
+const { isApprentice, isOT, isEmployee, isStudent } = require('../../lib/helpers/is-type')
 // const getSdsGroups = require('../../lib/get-sds-groups')
 const licenses = require('../data/licenses.json')
 
@@ -21,7 +22,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (!dataPresent) return noData()
     if (!allData) return noData()
     if (user.expectedType === 'employee' && !allData.visma) return error({ message: 'Mangler data i Visma HRM', raw: { user, visma: allData.visma } })
-    if (user.expectedType === 'student' && !allData.vis) return error({ message: 'Mangler data i Visma InSchool', raw: { user, vis: allData.vis } })
+    if (user.expectedType === 'student' && !isApprentice(systemData) && !isOT(systemData) && !allData.vis) return error({ message: 'Mangler data i Visma InSchool', raw: { user, vis: allData.vis } })
 
     const data = {
       accountEnabled: systemData.accountEnabled
@@ -33,6 +34,9 @@ module.exports = (systemData, user, allData = false) => ([
       else if (!systemData.accountEnabled && data.visma.active) return warn({ message: 'Kontoen er deaktivert. Ansatt må aktivere sin konto', raw: data, solution: `Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
       else if (!systemData.accountEnabled && !data.visma.active) return warn({ message: 'Kontoen er deaktivert', raw: data })
     } else {
+      if (isApprentice(systemData)) return systemData.enabled ? success({ message: 'Kontoen er aktivert', raw: data }) : warn({ message: 'Kontoen er deaktivert', raw: data, solution: `Bruker må aktivere sin konto via minlarlingkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
+      if (isOT(systemData)) return systemData.enabled ? success({ message: 'Kontoen er aktivert', raw: data }) : warn({ message: 'Kontoen er deaktivert', raw: data, solution: `Bruker må aktivere sin konto via min-ot-konto.vtfk.no eller servicedesk kan gjøre det direkte i AD. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
+
       data.vis = getActiveSourceData(allData.vis, user)
       if (systemData.accountEnabled && data.vis.student.active) return success({ message: 'Kontoen er aktivert', raw: data })
       else if (!systemData.accountEnabled && data.vis.student.active) return warn({ message: 'Kontoen er deaktivert. Eleven må aktivere sin konto', raw: data, solution: `Eleven må aktivere sin konto via minelevkonto.vtfk.no eller servicedesk kan gjøre det direkte i AD. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
@@ -53,14 +57,18 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return systemData.userPrincipalName.toLowerCase() === systemData.mail.toLowerCase() ? success({ message: 'UPN (brukernavn til Microsoft 365) er lik e-postadressen', raw: data }) : error({ message: 'UPN (brukernavn til Microsoft 365) er ikke lik e-postadressen', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
   }),
-  test('aad-04', 'UPN er korrekt', 'Sjekker at UPN er @vtfk.no for ansatte, og @skole.vtfk.no for elever', () => {
+  test('aad-04', 'UPN er korrekt', 'Sjekker at UPN er korrekt for ansatte, elever, lærlinger og OT-ungdom', () => {
     if (!dataPresent) return noData()
     const data = {
       userPrincipalName: systemData.userPrincipalName || null
     }
     if (systemData.userPrincipalName.includes('.onmicrosoft.com')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt 🤭', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
-    if (user.expectedType === 'employee') return systemData.userPrincipalName.includes('@vtfk.no') ? success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt', raw: data }) : error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
-    else return systemData.userPrincipalName.includes('@skole.vtfk.no') ? success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt', raw: data }) : error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    if (user.expectedType === 'employee') return isEmployee(systemData) ? success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt for ansatt', raw: data }) : error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    else {
+      if (isApprentice(systemData)) return success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt for lærlinger', raw: data })
+      if (isOT(systemData)) return success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt for OT-ungdom', raw: data })
+      return isStudent(systemData) ? success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt for elev', raw: data }) : error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    }
   }),
   test('aad-05', 'Passord synkronisert til Azure AD', 'Sjekker at passordet er synkronisert til Azure AD innenfor 40 minutter', () => {
     if (!dataPresent) return noData()
