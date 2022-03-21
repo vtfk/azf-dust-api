@@ -224,6 +224,7 @@ If account were locked, it will be unlocked and info returned will reflect this
         "DEMO_SKIP_DB": false,
         "DEMO_USER": "noen.andre@vtfk.no",
         "DUST_JWT_SECRET": "Very very secret secret",
+        "FEIDE_MFA_AAD": "urn:mace:feide.no:auth:method:azuread",
         "FEIDE_MFA_GA": "urn:mace:feide.no:auth:method:ga",
         "FEIDE_MFA_SMS": "urn:mace:feide.no:auth:method:sms",
         "FEIDE_PRINCIPAL_NAME": "@vtfk.no",
