@@ -3,7 +3,7 @@ const { getSDSUser } = require('../../lib/mongo/handle-mongo')
 const getResponse = require('../../lib/get-response-object')
 const HTTPError = require('../../lib/http-error')
 
-module.exports = async (caller, params) => {
+module.exports = async params => {
   const { samAccountName, userPrincipalName, type } = params
 
   if (type === null || type === undefined) {
