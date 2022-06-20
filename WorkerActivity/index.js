@@ -66,11 +66,11 @@ module.exports = async function (context) {
 
     // should user be overridden
     if (isApprentice(user)) {
-      logger('info', ['worker-activity', 'systems', `overriding systems for VIGO Opplæring (${user.type})`])
+      logger('info', ['worker-activity', 'systems', `overriding systems for VIGO Opplæring (${user.title})`])
       removeSystems.vigoUsers.push('vigoot')
       return systems.filter(system => !removeSystems.vigoUsers.includes(system))
     } else if (isOT(user)) {
-      logger('info', ['worker-activity', 'systems', `overriding systems for VIGO OT (${user.type})`])
+      logger('info', ['worker-activity', 'systems', `overriding systems for VIGO OT (${user.title})`])
       removeSystems.vigoUsers.push('vigolaerling')
       return systems.filter(system => !removeSystems.vigoUsers.includes(system))
     }

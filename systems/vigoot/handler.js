@@ -5,13 +5,13 @@ const getResponse = require('../../lib/get-response-object')
 const HTTPError = require('../../lib/http-error')
 
 module.exports = async params => {
-  const { employeeNumber, type } = params
+  const { employeeNumber, title } = params
 
-  if (type === null || type === undefined) {
+  if (title === null || title === undefined) {
     throw new HTTPError(400, 'Missing required parameter', {
       message: 'Missing required parameter',
       params: [
-        'Type'
+        'Title'
       ]
     })
   }
@@ -25,8 +25,8 @@ module.exports = async params => {
     })
   }
 
-  logger('info', [type, 'employeeNumber', employeeNumber])
-  const user = await getVigoUser({ fnr: employeeNumber }, type)
-  logger('warn', [type, 'employeeNumber', employeeNumber, hasData(user) ? 'data received' : 'data not found'])
+  logger('info', [title, 'employeeNumber', employeeNumber])
+  const user = await getVigoUser({ fnr: employeeNumber }, title)
+  logger('warn', [title, 'employeeNumber', employeeNumber, hasData(user) ? 'data received' : 'data not found'])
   return getResponse(hasData(user) ? user : {})
 }
