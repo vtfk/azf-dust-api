@@ -20,7 +20,7 @@ module.exports = df.orchestrator(function * (context) {
   let parallelTasks = []
   let { body: { systems, user } } = input
 
-  // get correct systems based on user's userPrincipalName
+  // get correct systems based on user's userPrincipalName and/or type
   systems = yield context.df.callActivity('WorkerActivity', {
     type: 'systems',
     query: {
