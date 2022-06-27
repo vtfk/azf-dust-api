@@ -2,6 +2,7 @@ const { test, success, error, noData, warn } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
 const isWithinTimeRange = require('../../lib/helpers/is-within-timerange')
 const { prettifyDateToLocaleString } = require('../../lib/helpers/date-time-output')
+const systemNames = require('../../lib/data/systems.json')
 
 let dataPresent = true
 
@@ -23,7 +24,7 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('sync-03', 'Har aad lastAzureADSyncTime', 'Sjekker siste synkroniseringstidspunkt for Azure AD', () => {
     if (!dataPresent) return noData()
-    if (!systemData.aadSync || !systemData.aadSync.lastAzureADSyncTime) return warn('Mangler synkroniseringstidspunkt for Azure AD 😬')
+    if (!systemData.aadSync || !systemData.aadSync.lastAzureADSyncTime) return warn(`Mangler synkroniseringstidspunkt for ${systemNames.aad} 😬`)
 
     const lastRunTimeCheck = isWithinTimeRange(new Date(systemData.aadSync.lastAzureADSyncTime), new Date(), (40 * 60)) // is last run performed less than 40 minutes ago?
     const data = {

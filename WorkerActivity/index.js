@@ -53,6 +53,10 @@ module.exports = async function (context) {
         'sds',
         'vis',
         'visma'
+      ],
+      otherUsers: [
+        'vigolaerling',
+        'vigoot'
       ]
     }
 
@@ -65,10 +69,15 @@ module.exports = async function (context) {
     })
 
     // should user be overridden
-    if (isApprentice(user) || isOT(user)) {
-      logger('info', ['worker-activity', 'systems', 'overriding systems for Vigo people'])
+    if (isApprentice(user)) {
+      logger('info', ['worker-activity', 'systems', `overriding systems for VIGO Opplæring (${user.title})`])
+      removeSystems.vigoUsers.push('vigoot')
+      return systems.filter(system => !removeSystems.vigoUsers.includes(system))
+    } else if (isOT(user)) {
+      logger('info', ['worker-activity', 'systems', `overriding systems for VIGO OT (${user.title})`])
+      removeSystems.vigoUsers.push('vigolaerling')
       return systems.filter(system => !removeSystems.vigoUsers.includes(system))
     }
-    return systems
+    return systems.filter(system => !removeSystems.otherUsers.includes(system))
   }
 }

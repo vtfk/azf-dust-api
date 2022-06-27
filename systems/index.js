@@ -30,5 +30,13 @@ module.exports = {
   equitrac: {
     handle: require('./equitrac/handler'),
     validate: require('./equitrac/validator')
+  },
+  vigoot: {
+    handle: require('./vigoot/handler'),
+    validate: require('./vigoot/validator')
+  },
+  vigolaerling: {
+    handle: require('./vigolaerling/handler'),
+    validate: require('./vigolaerling/validator')
   }
 }
