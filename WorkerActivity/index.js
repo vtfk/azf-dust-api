@@ -53,6 +53,10 @@ module.exports = async function (context) {
         'sds',
         'vis',
         'visma'
+      ],
+      otherUsers: [
+        'vigolaerling',
+        'vigoot'
       ]
     }
 
@@ -74,6 +78,6 @@ module.exports = async function (context) {
       removeSystems.vigoUsers.push('vigolaerling')
       return systems.filter(system => !removeSystems.vigoUsers.includes(system))
     }
-    return systems
+    return systems.filter(system => !removeSystems.otherUsers.includes(system))
   }
 }
