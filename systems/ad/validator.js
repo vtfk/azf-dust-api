@@ -77,7 +77,7 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('ad-05', 'UPN er korrekt', 'Sjekker at UPN er korrekt for ansatte, elever, lærlinger og OT-ungdom', () => {
     if (!dataPresent) return noData()
-    if (!systemData.userPrincipalName) return error({ message: 'UPN mangler 🤭', raw: systemData })
+    if (!systemData.userPrincipalName) return error({ message: 'UPN mangler 😬', raw: systemData })
     const data = {
       userPrincipalName: systemData.userPrincipalName
     }
@@ -90,7 +90,7 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('ad-06', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
     if (!dataPresent) return noData()
-    if (!systemData.employeeNumber) return error({ message: 'Fødselsnummer mangler 🤭', raw: systemData })
+    if (!systemData.employeeNumber) return error({ message: 'Fødselsnummer mangler 😬', raw: systemData })
     const data = {
       employeeNumber: systemData.employeeNumber,
       fnr: isValidFnr(systemData.employeeNumber)
@@ -102,7 +102,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (user.expectedType === 'student') return noData()
     if (user.expectedType === 'employee') {
       if (hasData(systemData.state)) return success({ message: 'Felt for lisens er fylt ut', raw: { state: systemData.state } })
-      else return error({ message: 'Felt for lisens mangler 🤭', raw: systemData, solution: 'Meld sak til arbeidsgruppe identitet' })
+      else return error({ message: 'Felt for lisens mangler 😬', raw: systemData, solution: 'Meld sak til arbeidsgruppe identitet' })
     }
   }),
   test('ad-08', 'Har extensionAttribute4', 'Sjekker om bruker har extensionAttribute4', () => {

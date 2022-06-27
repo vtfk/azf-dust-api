@@ -55,9 +55,9 @@ module.exports = (systemData, user, allData = false) => ([
       mail: systemData.mail || null,
       userPrincipalName: systemData.userPrincipalName || null
     }
-    if (!systemData.userPrincipalName) return error({ message: 'UPN (brukernavn til Microsoft 365) mangler 🤭', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    if (!systemData.userPrincipalName) return error({ message: 'UPN (brukernavn til Microsoft 365) mangler 😬', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
     if (!systemData.mail) {
-      if (systemData.accountEnabled) return error({ message: 'E-postadresse mangler 🤭', raw: data })
+      if (systemData.accountEnabled) return error({ message: 'E-postadresse mangler 😬', raw: data })
       else {
         if (user.expectedType === 'employee') return warn({ message: 'E-postadresse blir satt når konto er blitt aktivert', raw: data, solution: `Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
         else if (isStudent(user)) return warn({ message: 'E-postadresse blir satt når konto er blitt aktivert', raw: data, solution: `Eleven må aktivere sin konto via minelevkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
@@ -72,7 +72,7 @@ module.exports = (systemData, user, allData = false) => ([
     const data = {
       userPrincipalName: systemData.userPrincipalName || null
     }
-    if (systemData.userPrincipalName.includes('.onmicrosoft.com')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt 🤭', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
+    if (systemData.userPrincipalName.includes('.onmicrosoft.com')) return error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt 😬', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
     if (user.expectedType === 'employee') return isEmployee(systemData) ? success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt for ansatt', raw: data }) : error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt for ansatt', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
     else {
       if (isStudent(user)) return systemData.userPrincipalName.includes('skole.vtfk.no') ? success({ message: 'UPN (brukernavn til Microsoft 365) er korrekt for elev', raw: data }) : error({ message: 'UPN (brukernavn til Microsoft 365) er ikke korrekt for elev', raw: data, solution: 'Meld sak til arbeidsgruppe identitet' })
@@ -101,7 +101,7 @@ module.exports = (systemData, user, allData = false) => ([
   test('aad-06', 'Har riktig lisens(er)', 'Sjekker at riktig lisens(er) er aktivert', () => {
     if (!dataPresent) return noData()
     if (!hasData(systemData.assignedLicenses)) {
-      if (systemData.accountEnabled) return error({ message: 'Har ingen Microsoft 365-lisenser 🤭', solution: 'Meld sak til arbeidsgruppe identitet' })
+      if (systemData.accountEnabled) return error({ message: 'Har ingen Microsoft 365-lisenser 😬', solution: 'Meld sak til arbeidsgruppe identitet' })
       else {
         if (user.expectedType === 'employee') return warn({ message: 'Microsoft 365-lisenser blir satt når konto er blitt aktivert', solution: `Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
         else if (isStudent(user)) return warn({ message: 'Microsoft 365-lisenser blir satt når konto er blitt aktivert', solution: `Eleven må aktivere sin konto via minelevkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
@@ -122,7 +122,7 @@ module.exports = (systemData, user, allData = false) => ([
     const data = {
       authenticationMethods: systemData.authenticationMethods
     }
-    if (!hasData(systemData.authenticationMethods)) return error({ message: 'MFA (tofaktor) er ikke satt opp 🤭', raw: data, solution: 'Bruker må selv sette opp MFA (tofaktor) via aka.ms/mfasetup' })
+    if (!hasData(systemData.authenticationMethods)) return error({ message: 'MFA (tofaktor) er ikke satt opp 😬', raw: data, solution: 'Bruker må selv sette opp MFA (tofaktor) via aka.ms/mfasetup' })
     else return success({ message: `${systemData.authenticationMethods.length} MFA-metode${systemData.authenticationMethods.length > 1 ? 'r' : ''} (tofaktor) er satt opp`, raw: data })
   }),
   test('aad-08', 'Har skrevet feil passord', 'Sjekker om bruker har skrevet feil passord idag', () => {

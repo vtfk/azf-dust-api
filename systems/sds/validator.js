@@ -19,8 +19,8 @@ module.exports = (systemData, user, allData = false) => ([
     if (!dataPresent) return noData()
     const missingPerson = systemData.filter(obj => !obj.person)
     const missingEnrollments = systemData.filter(obj => !obj.enrollments)
-    if (hasData(missingPerson)) return error({ message: 'Person-objekt mangler 🤭', raw: systemData, solution: `Rettes i ${systemNames.vis}` })
-    else if (hasData(missingEnrollments)) return error({ message: 'Gruppemedlemskap mangler 🤭', raw: systemData, solution: `Rettes i ${systemNames.vis}` })
+    if (hasData(missingPerson)) return error({ message: 'Person-objekt mangler 😬', raw: systemData, solution: `Rettes i ${systemNames.vis}` })
+    else if (hasData(missingEnrollments)) return error({ message: 'Gruppemedlemskap mangler 😬', raw: systemData, solution: `Rettes i ${systemNames.vis}` })
     return success({ message: 'Har person- og gruppemedlemskap', raw: systemData })
   }),
   test('sds-03', 'Er medlem av SDS-gruppen(e) i Azure AD', 'Sjekker at bruker er medlem av SDS-gruppen(e) i Azure AD', () => {
@@ -31,7 +31,7 @@ module.exports = (systemData, user, allData = false) => ([
     const aadGroups = allData.aad.transitiveMemberOf.map(group => group.mailNickname)
     const sdsGroups = getSdsGroups(systemData)
     const wrongEnrollments = sdsGroups.filter(group => !aadGroups.includes(`Section_${group}`))
-    if (hasData(wrongEnrollments)) return error({ message: `Mangler medlemskap i ${wrongEnrollments.length} ${systemNames.sds} gruppe${wrongEnrollments.length > 1 ? 'r' : ''} i ${systemNames.aad} 🤭`, raw: wrongEnrollments, solution: `Bruker meldes inn i Team(s) fra ${systemNames.aad} / Teams Admin Center` })
+    if (hasData(wrongEnrollments)) return error({ message: `Mangler medlemskap i ${wrongEnrollments.length} ${systemNames.sds} gruppe${wrongEnrollments.length > 1 ? 'r' : ''} i ${systemNames.aad} 😬`, raw: wrongEnrollments, solution: `Bruker meldes inn i Team(s) fra ${systemNames.aad} / Teams Admin Center` })
     else return success({ message: `Har medlemskap i alle sine ${systemNames.sds} grupper i ${systemNames.aad}`, raw: systemData })
   }),
   test('sds-04', 'For mange SDS-grupper i Azure AD', 'Sjekker om bruker er medlem av for mange SDS-grupper i Azure AD', () => {

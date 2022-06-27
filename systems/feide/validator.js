@@ -29,7 +29,7 @@ module.exports = (systemData, user, allData = false) => ([
       norEduPersonNIN: systemData.norEduPersonNIN || null,
       fnr: isValidFnr(systemData.norEduPersonNIN)
     }
-    if (!systemData.norEduPersonNIN) return error({ message: 'Fødselsnummer mangler 🤭', raw: data })
+    if (!systemData.norEduPersonNIN) return error({ message: 'Fødselsnummer mangler 😬', raw: data })
     return data.fnr.valid ? success({ message: `Har gyldig ${data.fnr.type}`, raw: data }) : error({ message: data.fnr.error, raw: data })
   }),
   test('feide-03', 'Brukernavn er likt i AD', 'Sjekker at brukernavnet er likt i AD og FEIDE', () => {
@@ -37,7 +37,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (!allData) return waitForData()
     if (!hasData(allData.ad)) return error(`Mangler ${systemNames.ad}-data`)
 
-    if (!systemData.name) return error({ message: 'Brukernavn mangler 🤭', raw: systemData })
+    if (!systemData.name) return error({ message: 'Brukernavn mangler 😬', raw: systemData })
     const data = {
       feide: {
         name: systemData.name
@@ -57,7 +57,7 @@ module.exports = (systemData, user, allData = false) => ([
     const data = {
       eduPersonOrgUnitDN: systemData.eduPersonOrgUnitDN || null
     }
-    if (!hasData(systemData.eduPersonOrgUnitDN)) return hasData(allData.vis) ? warn({ message: 'Knytning til skole mangler 🤭', raw: data, solution: `Dersom dette er en skoleansatt eller elev, må dette rettes i ${systemNames.vis}` }) : success({ message: `Ingen knytning til skole funnet. Dette er riktig da bruker ikke finnes i ${systemNames.vis}`, raw: data }) // TODO: Må sjekke at data faktisk kommer fra kildesystemet ViS
+    if (!hasData(systemData.eduPersonOrgUnitDN)) return hasData(allData.vis) ? warn({ message: 'Knytning til skole mangler 😬', raw: data, solution: `Dersom dette er en skoleansatt eller elev, må dette rettes i ${systemNames.vis}` }) : success({ message: `Ingen knytning til skole funnet. Dette er riktig da bruker ikke finnes i ${systemNames.vis}`, raw: data }) // TODO: Må sjekke at data faktisk kommer fra kildesystemet ViS
     return success({ message: 'Knytning til skole funnet', raw: data })
   }),
   test('feide-05', 'Har satt opp Feide2Faktor', 'Sjekker at Feide2Faktor er satt opp', () => {
@@ -67,7 +67,7 @@ module.exports = (systemData, user, allData = false) => ([
     const data = {
       norEduPersonAuthnMethod: systemData.norEduPersonAuthnMethod.map(auth => auth.split(' ')[0])
     }
-    if (!hasData(systemData.norEduPersonAuthnMethod)) return user.expectedType === 'employee' ? error({ message: 'Feide2Faktor er ikke satt opp 🤭', raw: data, solution: 'Sett opp Feide2Faktor i vigobas-portal.vtfk.no' }) : success('Feide2Faktor er ikke satt opp, og er heller ikke påkrevd for elever')
+    if (!hasData(systemData.norEduPersonAuthnMethod)) return user.expectedType === 'employee' ? error({ message: 'Feide2Faktor er ikke satt opp 😬', raw: data, solution: 'Sett opp Feide2Faktor i vigobas-portal.vtfk.no' }) : success('Feide2Faktor er ikke satt opp, og er heller ikke påkrevd for elever')
 
     const smsAuth = systemData.norEduPersonAuthnMethod.filter(auth => auth.includes(SYSTEMS.FEIDE.MFA_SMS))
     const gaAuth = systemData.norEduPersonAuthnMethod.filter(auth => auth.includes(SYSTEMS.FEIDE.MFA_GA))
@@ -94,12 +94,12 @@ module.exports = (systemData, user, allData = false) => ([
         activeMemberships
       }
     }
-    if (!hasData(systemData.eduPersonEntitlement)) return hasData(activeMemberships) ? error({ message: 'Grupperettigheter mangler 🤭', raw: data, solution: `Rettes i ${systemNames.vis}` }) : success({ message: `Ingen grupperettigheter funnet. Dette er riktig da bruker ikke har noen grupper i ${systemNames.vis}`, raw: data })
+    if (!hasData(systemData.eduPersonEntitlement)) return hasData(activeMemberships) ? error({ message: 'Grupperettigheter mangler 😬', raw: data, solution: `Rettes i ${systemNames.vis}` }) : success({ message: `Ingen grupperettigheter funnet. Dette er riktig da bruker ikke har noen grupper i ${systemNames.vis}`, raw: data })
     else {
       const missingEntitlements = repackedMemberships.filter(membership => !repackedEntitlements.includes(membership))
       if (hasData(missingEntitlements)) {
         data.missingEntitlements = missingEntitlements
-        return error({ message: `Mangler ${missingEntitlements.length} grupperettighet${missingEntitlements.length > 1 ? 'er' : ''} 🤭`, raw: data, solution: `Rettes i ${systemNames.vis}` })
+        return error({ message: `Mangler ${missingEntitlements.length} grupperettighet${missingEntitlements.length > 1 ? 'er' : ''} 😬`, raw: data, solution: `Rettes i ${systemNames.vis}` })
       } else return success({ message: 'Grupperettigheter er riktig', raw: data })
     }
   }),
