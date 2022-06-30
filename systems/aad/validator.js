@@ -165,10 +165,10 @@ module.exports = (systemData, user, allData = false) => ([
       else return warn({ message: `AzureAD-kontoen vil bli ${allData.ad.enabled ? '' : 'de'}aktivert ved neste synkronisering (innenfor ${aadSyncInMinutes} minutter)`, raw: data, solution: 'Synkronisering utføres snart' })
     } else return noData()
   }),
-  test('aad-10', 'Sjekker medlemskap', 'Brukers gruppemedlemskap', () => {
+  test('aad-10', 'Sjekker direktemedlemskap', 'Brukers direkte gruppemedlemskap', () => {
     if (!dataPresent) return noData()
     if (!hasData(systemData.memberOf)) return error({ message: `Er ikke medlem av noen ${systemNames.aad} grupper 🤔` })
 
-    return success({ message: `Er medlem av ${systemData.memberOf.length} ${systemNames.aad} gruppe${systemData.memberOf.length === 0 || systemData.memberOf.length > 1 ? 'r' : ''}`, raw: systemData.memberOf })
+    return success({ message: `Er direkte medlem av ${systemData.memberOf.length} ${systemNames.aad} gruppe${systemData.memberOf.length === 0 || systemData.memberOf.length > 1 ? 'r' : ''}`, raw: systemData.memberOf })
   })
 ])
