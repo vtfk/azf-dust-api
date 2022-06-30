@@ -164,5 +164,11 @@ module.exports = (systemData, user, allData = false) => ([
       if (!data.isInsideSyncWindow.result) return error({ message: `AzureAD-kontoen er fremdeles ${systemData.accountEnabled ? '' : 'in'}aktiv`, raw: data, solution: 'Synkronisering utføres snart' })
       else return warn({ message: `AzureAD-kontoen vil bli ${allData.ad.enabled ? '' : 'de'}aktivert ved neste synkronisering (innenfor ${aadSyncInMinutes} minutter)`, raw: data, solution: 'Synkronisering utføres snart' })
     } else return noData()
+  }),
+  test('aad-10', 'Sjekker medlemskap', 'Brukers gruppemedlemskap', () => {
+    if (!dataPresent) return noData()
+    if (!hasData(systemData.memberOf)) return error({ message: `Er ikke medlem av noen ${systemNames.aad} grupper 🤔` })
+
+    return success({ message: `Er medlem av ${systemData.memberOf.length} ${systemNames.aad} gruppe${systemData.memberOf.length === 0 || systemData.memberOf.length > 1 ? 'r' : ''}`, raw: systemData.memberOf })
   })
 ])
