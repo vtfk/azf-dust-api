@@ -114,5 +114,13 @@ module.exports = (systemData, user, allData = false) => ([
     }
 
     return warn({ message: `Er medlem av ${data.extensionAttribute4.length} personalrom- og ${data.extensionAttribute4.length === 0 || data.extensionAttribute4.length > 1 ? 'mailinglister' : 'mailingliste'} ekstra`, solution: `extensionAttribute4 fører til medlemskap i personalrom- og mailinglister. Dersom dette ikke er ønskelig fjernes dette fra brukeren i ${systemNames.ad}`, raw: data })
+  }),
+  test('ad-09', 'Sjekker direktemedlemskap', 'Brukers direkte gruppemedlemskap', () => {
+    if (!dataPresent) return noData()
+    if (!hasData(systemData.memberOf)) return error({ message: `Er ikke medlem av noen ${systemNames.ad}-grupper 🤔` })
+
+    const groups = systemData.memberOf.map(member => member.replace('CN=', '').split(',')[0]).sort()
+
+    return success({ message: `Er direkte medlem av ${groups.length} ${systemNames.ad}-gruppe${groups.length === 0 || groups.length > 1 ? 'r' : ''}`, raw: groups })
   })
 ])
