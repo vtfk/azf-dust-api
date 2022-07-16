@@ -27,7 +27,7 @@
   "dependencies": {
     "@vtfk/logger": "4.3.2",
     "axios": "0.27.2",
-    "azure-ad-verify-token": "1.1.2",
+    "azure-ad-verify-token": "2.0.1",
     "durable-functions": "1.5.4",
     "jsonwebtoken": "8.5.1",
     "mongodb": "4.7.0",
