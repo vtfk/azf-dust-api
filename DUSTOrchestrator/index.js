@@ -180,12 +180,14 @@ module.exports = df.orchestrator(function * (context) {
   })
 
   // update request with a finish timestamp and user object
+  const finishedTimestamp = new Date().toISOString()
   const updatedEntry = yield context.df.callActivity('WorkerActivity', {
     type: 'db',
     variant: 'update',
     query: {
       instanceId,
-      timestamp: new Date().toISOString(),
+      timestamp: finishedTimestamp,
+      runtimeRequest: (new Date(finishedTimestamp) - new Date(newEntry.started)) / 1000,
       user
     }
   })
