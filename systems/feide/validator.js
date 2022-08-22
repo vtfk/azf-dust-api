@@ -25,11 +25,29 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('feide-02', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
     if (!dataPresent) return noData()
+    const norEduPersonNIN = hasData(systemData.norEduPersonNIN) ? systemData.norEduPersonNIN : undefined
+    const norEduPersonLIN = hasData(systemData.norEduPersonLIN) ? systemData.norEduPersonLIN : undefined
     const data = {
-      norEduPersonNIN: systemData.norEduPersonNIN || null,
-      fnr: isValidFnr(systemData.norEduPersonNIN)
+      norEduPersonNIN,
+      norEduPersonLIN
     }
-    if (!systemData.norEduPersonNIN) return error({ message: 'Fødselsnummer mangler 😬', raw: data })
+
+    if (!norEduPersonNIN && !norEduPersonLIN) return error({ message: 'Fødselsnummer mangler 😬', raw: data })
+    else if (norEduPersonNIN) {
+      data.fnr = isValidFnr(norEduPersonNIN)
+    } else if (norEduPersonLIN) {
+      /*
+        https://docs.feide.no/reference/schema/info_go/go_attributter_ch05.html#noredupersonlin
+        ID-number issued by the county municipalities described in fellesrutinene can be expressed as:
+          norEduPersonLIN: <organization's feide-realm>:fin:<eleven-digit number>
+      */
+      if (Array.isArray(data.norEduPersonLIN) && data.norEduPersonLIN.length === 1) {
+        const feidePrincipalName = SYSTEMS.FEIDE.PRINCIPAL_NAME.replace('@', '')
+        data.norEduPersonLIN = data.norEduPersonLIN[0].replace(`${feidePrincipalName}:fin:`, '')
+      }
+      data.fnr = isValidFnr(data.norEduPersonLIN)
+    }
+
     return data.fnr.valid ? success({ message: `Har gyldig ${data.fnr.type}`, raw: data }) : error({ message: data.fnr.error, raw: data })
   }),
   test('feide-03', 'Brukernavn er likt i AD', 'Sjekker at brukernavnet er likt i AD og FEIDE', () => {
