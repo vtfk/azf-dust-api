@@ -169,7 +169,7 @@ Get person object(s) and membership(s) for user account
 
 ### `/system/vis`
 
-Get user info from school source system
+Get user info from school source system. Will also get user info from [PIFU](https://github.com/vtfk/azf-pifu-api) to match data together
 
 #### employeeNumber
 ```json
@@ -243,6 +243,8 @@ If account were locked, it will be unlocked and info returned will reflect this
         "PAPERTRAIL_HOST": "https://logs.collector.solarwinds.com/v1/log",
         "PAPERTRAIL_TOKEN": "secret token",
         "PAPERTRAIL_DISABLE_LOGGING": true,
+        "PIFU_URL": "https://pifu.dev/api",
+        "PIFU_JWT_SECRET": "Very very secret secret",
         "RETRY_WAIT": 3000,
         "SCRIPT_SERVICE_URL": "https://localhost/dust/invoke",
         "SOURCE_DATA_SYSTEMS": "ad,vis,visma",

@@ -127,6 +127,18 @@ const getUndervisningsforhold = data => {
       }
     })
 
+    current.kontaktlarergruppe.forEach(kontaktlarergruppe => {
+      if (accumulator.kontaktlarergrupper.find(kg => kg.systemId === kontaktlarergruppe.systemId.identifikatorverdi)) return
+      accumulator.kontaktlarergrupper.push({
+        skole: kontaktlarergruppe.skole.navn,
+        navn: kontaktlarergruppe.navn,
+        systemId: kontaktlarergruppe.systemId.identifikatorverdi
+      })
+      if (!isSchoolAdded(accumulator.skoler, kontaktlarergruppe.skole.navn)) {
+        accumulator.skoler.push(kontaktlarergruppe.skole.navn)
+      }
+    })
+
     current.undervisningsgruppe.forEach(undervisningsgruppe => {
       accumulator.undervisningsgrupper.push({
         skole: undervisningsgruppe.skole.navn,
@@ -138,7 +150,7 @@ const getUndervisningsforhold = data => {
       }
     })
     return accumulator
-  }, { basisgrupper: [], undervisningsgrupper: [], skoler: [] })
+  }, { basisgrupper: [], kontaktlarergrupper: [], undervisningsgrupper: [], skoler: [] })
 }
 
 const getDuplicateGroups = data => {
@@ -163,7 +175,7 @@ let dataPresent = true
 
 module.exports = (systemData, user, allData = false) => ([
   test('vis-01', 'Har data', 'Sjekker at det finnes data her', () => {
-    dataPresent = hasData(systemData) && (!!systemData.person || !!systemData.skoleressurs)
+    dataPresent = hasData(systemData) && hasData(systemData.vis) && (!!systemData.vis.person || !!systemData.vis.skoleressurs)
     if (!dataPresent) {
       if (user.expectedType === 'student') return error({ message: 'Mangler data 😬', raw: systemData, solution: `Rettes i ${systemNames.vis}` })
       else if (isTeacher(user)) return error({ message: 'Mangler data 😬', raw: systemData, solution: `Rettes i ${systemNames.vis}` })
@@ -174,11 +186,11 @@ module.exports = (systemData, user, allData = false) => ([
     if (!dataPresent) return noData()
 
     if (user.expectedType === 'student') {
-      const data = getElevforhold(systemData)
+      const data = getElevforhold(systemData.vis)
       if (data.kontaktlarere.length > 0) return success({ message: `Har ${data.kontaktlarere.length} ${data.kontaktlarere.length > 1 ? 'kontaktlærere' : 'kontaktlærer'}`, raw: data.kontaktlarere })
       else return error({ message: 'Har ikke kontaktlærer(e) 😬', raw: data, solution: `Rettes i ${systemNames.vis}` })
     } else if (user.expectedType === 'employee' && isTeacher(user)) {
-      const data = getUndervisningsforhold(systemData)
+      const data = getUndervisningsforhold(systemData.vis)
       if (data.basisgrupper.length === 0) return success('Er ikke kontaktlærer for noen klasser')
       else return success({ message: `Er kontaktlærer for ${data.basisgrupper.length} ${data.basisgrupper.length > 1 ? 'klasser' : 'klasse'}`, raw: data.basisgrupper })
     }
@@ -187,15 +199,15 @@ module.exports = (systemData, user, allData = false) => ([
     if (!dataPresent) return noData()
 
     if (user.expectedType === 'student') {
-      if (systemData.person.elev && systemData.person.elev.elevforhold && systemData.person.elev.elevforhold.length > 0) {
-        const data = systemData.person.elev.elevforhold.map(elevforhold => ({ skole: elevforhold.skole.navn, hovedskole: elevforhold.hovedskole }))
+      if (systemData.vis.person.elev && systemData.vis.person.elev.elevforhold && systemData.vis.person.elev.elevforhold.length > 0) {
+        const data = systemData.vis.person.elev.elevforhold.map(elevforhold => ({ skole: elevforhold.skole.navn, hovedskole: elevforhold.hovedskole }))
         if (data.length > 1) {
           const primarySchool = data.find(elevforhold => elevforhold.hovedskole === true)
           return primarySchool ? warn({ message: `Har ${data.length} skoleforhold. ${primarySchool.skole} er hovedskole`, raw: data, solution: `Dette er i mange tilfeller korrekt. Dersom det allikevel skulle være feil, må det rettes i ${systemNames.vis}` }) : error({ message: `Har ${data.length} skoleforhold men ingen hovedskole`, raw: data, solution: `Rettes i ${systemNames.vis}` })
         } else return success({ message: 'Har ett skoleforhold', raw: data })
       } else return error({ message: 'Har ingen skoleforhold 😬', raw: systemData })
     } else {
-      const data = getUndervisningsforhold(systemData)
+      const data = getUndervisningsforhold(systemData.vis)
       if (data.skoler.length === 0) return error({ message: 'Har ingen skoleforhold 😬', solution: `Rettes i ${systemNames.vis}` })
       else return success({ message: `Har ${data.skoler.length} skoleforhold`, raw: data })
     }
@@ -203,7 +215,7 @@ module.exports = (systemData, user, allData = false) => ([
   test('vis-04', 'Har basisgruppe(r)', 'Sjekker at bruker har basisgruppe(r)', () => {
     if (!dataPresent || user.expectedType === 'employee') return noData()
 
-    const data = getElevforhold(systemData)
+    const data = getElevforhold(systemData.vis)
     if (data.basisgrupper.length > 0) return success({ message: `Har ${data.basisgrupper.length} ${data.basisgrupper.length > 1 ? 'basisgrupper' : 'basisgruppe'}`, raw: data.basisgrupper })
     else return error({ message: 'Mangler medlemskap i basisgruppe(r) 😬', raw: data, solution: `Rettes i ${systemNames.vis}` })
   }),
@@ -211,19 +223,19 @@ module.exports = (systemData, user, allData = false) => ([
     if (!dataPresent) return noData()
 
     if (user.expectedType === 'student') {
-      const data = getElevforhold(systemData)
+      const data = getElevforhold(systemData.vis)
       if (data.undervisningsgrupper.length > 0) return success({ message: `Har ${data.undervisningsgrupper.length} ${data.undervisningsgrupper.length > 1 ? 'undervisningsgrupper' : 'undervisningsgruppe'}`, raw: data.undervisningsgrupper })
       else return error({ message: 'Mangler medlemskap i undervisningsgruppe(r) 😬', raw: data, solution: `Rettes i ${systemNames.vis}` })
     } else if (user.expectedType === 'employee' && isTeacher(user)) {
-      const data = getUndervisningsforhold(systemData)
+      const data = getUndervisningsforhold(systemData.vis)
       if (data.undervisningsgrupper.length === 0) return warn({ message: 'Mangler medlemskap i undervisningsgruppe(r)', raw: data, solution: `Rettes i ${systemNames.vis}, dersom det savnes noe medlemskap. Hvis det allerede er korrekt i ${systemNames.vis}, meld sak til arbeidsgruppe identitet` })
-      else return success({ message: `Underviser i ${data.undervisningsgrupper.length} ${data.undervisningsgrupper.length > 1 ? 'undervisningsgrupper' : 'undervisningsgruppe'}`, raw: data })
+      else return success({ message: `Underviser i ${data.undervisningsgrupper.length} ${data.undervisningsgrupper.length > 1 ? 'undervisningsgrupper' : 'undervisningsgruppe'}`, raw: data.undervisningsgrupper })
     }
   }),
   test('vis-06', 'Har duplikate kontaktlærergrupper', 'Sjekker om bruker har duplikate kontaktlærergrupper', () => {
     if (!dataPresent || user.expectedType !== 'employee' || !isTeacher(user)) return noData()
 
-    const data = getUndervisningsforhold(systemData)
+    const data = getUndervisningsforhold(systemData.vis)
     const duplicateGroups = getDuplicateGroups(data.basisgrupper)
 
     if (Number.isInteger(duplicateGroups.duplicateGroupCount) && duplicateGroups.duplicateGroupCount > 0) {
@@ -235,7 +247,7 @@ module.exports = (systemData, user, allData = false) => ([
   test('vis-07', 'Har duplikate undervisningsgrupper', 'Sjekker om bruker har duplikate undervisningsgrupper', () => {
     if (!dataPresent || user.expectedType !== 'employee' || !isTeacher(user)) return noData()
 
-    const data = getUndervisningsforhold(systemData)
+    const data = getUndervisningsforhold(systemData.vis)
     const duplicateGroups = getDuplicateGroups(data.undervisningsgrupper)
 
     if (Number.isInteger(duplicateGroups.duplicateGroupCount) && duplicateGroups.duplicateGroupCount > 0) {
@@ -244,21 +256,72 @@ module.exports = (systemData, user, allData = false) => ([
       return warn({ message: `Har ${duplicateGroupCount} ${duplicateGroupCount === 1 ? 'duplikat undervisningsgruppe' : 'duplikate undervisningsgrupper'}`, raw: { duplicateGroups }, solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, meld sak til arbeidsgruppe identitet` })
     } else return noData()
   }),
-  test('vis-08', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
-    if (!dataPresent || (!systemData.person && !systemData.skoleressurs)) return noData()
-    const fnr = systemData.person ? systemData.person.fodselsnummer.identifikatorverdi : systemData.skoleressurs.person.fodselsnummer.identifikatorverdi
+  test('vis-08', 'Basisgrupper i ViS og PIFU', 'Sjekker at det er like basisgrupper i ViS og PIFU', () => {
+    if (!dataPresent || user.expectedType !== 'employee' || !isTeacher(user) || !user.samAccountName) return noData()
+    if (!hasData(systemData.pifu)) return error({ message: 'Bruker finnes ikke i PIFU-basen 😬', solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, meld sak til arbeidsgruppe identitet` })
+
+    const pifuGroups = systemData.pifu.basisgruppeIds
+    const visGroups = getUndervisningsforhold(systemData.vis).basisgrupper.map(basisgruppe => basisgruppe.systemId)
+    const missingGroups = []
+
+    visGroups.forEach(group => {
+      if (!pifuGroups.includes(group)) {
+        missingGroups.push(group)
+      }
+    })
+
+    if (missingGroups.length > 0) return error({ message: `Mangler ${missingGroups.length} ${missingGroups.length === 1 ? 'basisgruppe' : 'basisgrupper'} i PIFU-basen 😬`, raw: missingGroups, solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, meld sak til arbeidsgruppe identitet` })
+    else return noData()
+  }),
+  test('vis-09', 'Kontaktlærergrupper i ViS og PIFU', 'Sjekker at det er like kontaktlærergrupper i ViS og PIFU', () => {
+    if (!dataPresent || user.expectedType !== 'employee' || !isTeacher(user) || !user.samAccountName) return noData()
+    if (!hasData(systemData.pifu)) return error({ message: 'Bruker finnes ikke i PIFU-basen 😬', solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, meld sak til arbeidsgruppe identitet` })
+
+    const pifuGroups = systemData.pifu.kontaktlarergruppeIds
+    const visGroups = getUndervisningsforhold(systemData.vis).kontaktlarergrupper.map(kontaktlarergruppe => kontaktlarergruppe.systemId)
+    const missingGroups = []
+
+    visGroups.forEach(group => {
+      if (!pifuGroups.includes(group)) {
+        missingGroups.push(group)
+      }
+    })
+
+    if (missingGroups.length > 0) return error({ message: `Mangler ${missingGroups.length} ${missingGroups.length === 1 ? 'kontaktlærergruppe' : 'kontaktlærergrupper'} i PIFU-basen 😬`, raw: missingGroups, solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, meld sak til arbeidsgruppe identitet` })
+    else return noData()
+  }),
+  test('vis-10', 'Undervisningsgrupper i ViS og PIFU', 'Sjekker at det er like undervisningsgrupper i ViS og PIFU', () => {
+    if (!dataPresent || user.expectedType !== 'employee' || !isTeacher(user) || !user.samAccountName) return noData()
+    if (!hasData(systemData.pifu)) return error({ message: 'Bruker finnes ikke i PIFU-basen 😬', solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, meld sak til arbeidsgruppe identitet` })
+
+    const pifuGroups = systemData.pifu.undervisningsgruppeIds
+    const visGroups = getUndervisningsforhold(systemData.vis).undervisningsgrupper.map(undervisningsgruppe => undervisningsgruppe.systemId)
+    const missingGroups = []
+
+    visGroups.forEach(group => {
+      if (!pifuGroups.includes(group)) {
+        missingGroups.push(group)
+      }
+    })
+
+    if (missingGroups.length > 0) return error({ message: `Mangler ${missingGroups.length} ${missingGroups.length === 1 ? 'undervisningsgruppe' : 'undervisningsgrupper'} i PIFU-basen 😬`, raw: missingGroups, solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, meld sak til arbeidsgruppe identitet` })
+    else return noData()
+  }),
+  test('vis-11', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
+    if (!dataPresent || (!systemData.vis.person && !systemData.vis.skoleressurs)) return noData()
+    const fnr = systemData.vis.person ? systemData.vis.person.fodselsnummer.identifikatorverdi : systemData.vis.skoleressurs.person.fodselsnummer.identifikatorverdi
     const data = {
       id: fnr,
       fnr: isValidFnr(fnr)
     }
     return data.fnr.valid ? success({ message: `Har gyldig ${data.fnr.type}`, raw: data }) : error({ message: data.fnr.error, raw: data })
   }),
-  test('vis-09', 'Fødselsnummer er likt i AD', 'Sjekker at fødselsnummeret er likt i AD og ViS', () => {
-    if (!dataPresent || (!systemData.person && !systemData.skoleressurs)) return noData()
+  test('vis-12', 'Fødselsnummer er likt i AD', 'Sjekker at fødselsnummeret er likt i AD og ViS', () => {
+    if (!dataPresent || (!systemData.vis.person && !systemData.vis.skoleressurs)) return noData()
     if (!allData) return waitForData()
     if (!hasData(allData.ad)) return error({ message: `Mangler ${systemNames.ad}-data`, raw: allData.ad })
 
-    const fnr = systemData.person ? systemData.person.fodselsnummer.identifikatorverdi : systemData.skoleressurs.person.fodselsnummer.identifikatorverdi
+    const fnr = systemData.vis.person ? systemData.vis.person.fodselsnummer.identifikatorverdi : systemData.vis.skoleressurs.person.fodselsnummer.identifikatorverdi
     const data = {
       vis: {
         id: fnr
