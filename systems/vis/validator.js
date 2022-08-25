@@ -141,6 +141,24 @@ const getUndervisningsforhold = data => {
   }, { basisgrupper: [], undervisningsgrupper: [], skoler: [] })
 }
 
+const getDuplicateGroups = data => {
+  return data.reduce((accumulator, current) => {
+    if (accumulator[current.systemId]) {
+      accumulator[current.systemId].count++
+      if (accumulator.duplicateGroupCount) {
+        accumulator.duplicateGroupCount++
+      } else {
+        accumulator.duplicateGroupCount = 1
+      }
+    } else {
+      accumulator[current.systemId] = { ...current, count: 0 }
+      delete accumulator[current.systemId].elever
+    }
+
+    return accumulator
+  }, {})
+}
+
 let dataPresent = true
 
 module.exports = (systemData, user, allData = false) => ([
@@ -202,7 +220,31 @@ module.exports = (systemData, user, allData = false) => ([
       else return success({ message: `Underviser i ${data.undervisningsgrupper.length} ${data.undervisningsgrupper.length > 1 ? 'undervisningsgrupper' : 'undervisningsgruppe'}`, raw: data })
     }
   }),
-  test('vis-06', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
+  test('vis-06', 'Har duplikate kontaktlærergrupper', 'Sjekker om bruker har duplikate kontaktlærergrupper', () => {
+    if (!dataPresent || user.expectedType !== 'employee' || !isTeacher(user)) return noData()
+
+    const data = getUndervisningsforhold(systemData)
+    const duplicateGroups = getDuplicateGroups(data.basisgrupper)
+
+    if (Number.isInteger(duplicateGroups.duplicateGroupCount) && duplicateGroups.duplicateGroupCount > 0) {
+      const duplicateGroupCount = duplicateGroups.duplicateGroupCount
+      delete duplicateGroups.duplicateGroupCount
+      return warn({ message: `Har ${duplicateGroupCount} ${duplicateGroupCount === 1 ? 'duplikat basisgruppe' : 'duplikate basisgrupper'}`, raw: { duplicateGroups }, solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, meld sak til arbeidsgruppe identitet` })
+    } else return noData()
+  }),
+  test('vis-07', 'Har duplikate undervisningsgrupper', 'Sjekker om bruker har duplikate undervisningsgrupper', () => {
+    if (!dataPresent || user.expectedType !== 'employee' || !isTeacher(user)) return noData()
+
+    const data = getUndervisningsforhold(systemData)
+    const duplicateGroups = getDuplicateGroups(data.undervisningsgrupper)
+
+    if (Number.isInteger(duplicateGroups.duplicateGroupCount) && duplicateGroups.duplicateGroupCount > 0) {
+      const duplicateGroupCount = duplicateGroups.duplicateGroupCount
+      delete duplicateGroups.duplicateGroupCount
+      return warn({ message: `Har ${duplicateGroupCount} ${duplicateGroupCount === 1 ? 'duplikat undervisningsgruppe' : 'duplikate undervisningsgrupper'}`, raw: { duplicateGroups }, solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, meld sak til arbeidsgruppe identitet` })
+    } else return noData()
+  }),
+  test('vis-08', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
     if (!dataPresent || (!systemData.person && !systemData.skoleressurs)) return noData()
     const fnr = systemData.person ? systemData.person.fodselsnummer.identifikatorverdi : systemData.skoleressurs.person.fodselsnummer.identifikatorverdi
     const data = {
@@ -211,7 +253,7 @@ module.exports = (systemData, user, allData = false) => ([
     }
     return data.fnr.valid ? success({ message: `Har gyldig ${data.fnr.type}`, raw: data }) : error({ message: data.fnr.error, raw: data })
   }),
-  test('vis-07', 'Fødselsnummer er likt i AD', 'Sjekker at fødselsnummeret er likt i AD og ViS', () => {
+  test('vis-09', 'Fødselsnummer er likt i AD', 'Sjekker at fødselsnummeret er likt i AD og ViS', () => {
     if (!dataPresent || (!systemData.person && !systemData.skoleressurs)) return noData()
     if (!allData) return waitForData()
     if (!hasData(allData.ad)) return error({ message: `Mangler ${systemNames.ad}-data`, raw: allData.ad })
