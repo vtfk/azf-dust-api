@@ -182,14 +182,14 @@ module.exports = (systemData, user, allData = false) => ([
       else return success({ message: `Har ${data.skoler.length} skoleforhold`, raw: data })
     }
   }),
-  test('vis-04', 'Har basisgruppe', 'Sjekker at bruker har basisgruppe(r)', () => {
+  test('vis-04', 'Har basisgruppe(r)', 'Sjekker at bruker har basisgruppe(r)', () => {
     if (!dataPresent || user.expectedType === 'employee') return noData()
 
     const data = getElevforhold(systemData)
     if (data.basisgrupper.length > 0) return success({ message: `Har ${data.basisgrupper.length} ${data.basisgrupper.length > 1 ? 'basisgrupper' : 'basisgruppe'}`, raw: data.basisgrupper })
     else return error({ message: 'Mangler medlemskap i basisgruppe(r) 😬', raw: data, solution: `Rettes i ${systemNames.vis}` })
   }),
-  test('vis-05', 'Har undervisningsgruppe', 'Sjekker at bruker har undervisningsgruppe(r)', () => {
+  test('vis-05', 'Har undervisningsgruppe(r)', 'Sjekker at bruker har undervisningsgruppe(r)', () => {
     if (!dataPresent) return noData()
 
     if (user.expectedType === 'student') {
