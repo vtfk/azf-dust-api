@@ -1168,6 +1168,14 @@ const mockData = {
       }
     ],
     userSignInErrors: []
+  },
+  equitrac: {
+    AccountStatus: 'Unlocked',
+    Balance: '$0.00',
+    UserFullName: 'Dyktig Tusenfryd',
+    UserEmail: 'dyktig.tusenfryd@vtfk.no',
+    AccountLimit: '$0.00',
+    UserID: 'dyk1212'
   }
 }
 
