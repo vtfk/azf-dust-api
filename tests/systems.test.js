@@ -1176,6 +1176,21 @@ const mockData = {
     UserEmail: 'dyktig.tusenfryd@vtfk.no',
     AccountLimit: '$0.00',
     UserID: 'dyk1212'
+  },
+  vigoot: {
+    fornavn: 'Dyktig',
+    etternavn: 'Tusenfryd',
+    fdato: '12.12.80',
+    fnr: '12128015478',
+    epost: 'dyktig.tusenfryd@vtfk.no',
+    mobilnr: '81549300',
+    tilknytningnr: '38296',
+    tilknytningnavn: 'OT Horten',
+    aktivitetskode: 'OTOV',
+    promrkode: '',
+    promrnavn: '',
+    start: '',
+    slutt: ''
   }
 }
 
