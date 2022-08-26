@@ -1191,6 +1191,22 @@ const mockData = {
     promrnavn: '',
     start: '',
     slutt: ''
+  },
+  vigolaerling: {
+    fornavn: 'Dyktig',
+    etternavn: 'Tusenfryd',
+    fdato: '12.12.80',
+    fnr: '12128015478',
+    sysId: 'DESDGMNHTYUI',
+    epost: 'dyktig.tusenfryd@vtfk.no',
+    mobilnr: '81549300',
+    type: 'L',
+    promrkode: 'SSISF3',
+    promrnavn: 'IKT-servicefaget',
+    bnr: '989164961',
+    bedrnavn: 'OPPLÆRINGSKONTORET FOR OFFENTLIG SEKTOR I TELEMARK',
+    start: '02.08.2021',
+    slutt: '01.08.2023'
   }
 }
 
