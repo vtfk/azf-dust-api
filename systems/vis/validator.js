@@ -342,6 +342,19 @@ module.exports = (systemData, user, allData = false) => ([
       if (systemData.skoleressurs.person.kontaktinformasjon.mobiltelefonnummer) return noData()
       return warn({ message: `Mobiltelefonnummer ikke registrert i ${systemNames.vis}`, raw: systemData.skoleressurs.person.kontaktinformasjon, solution: `Rettes i ${systemNames.vis}` })
     }
+  }),
+  test('vis-14', 'Har feidenavn', 'Sjekker at feidenavn er skrevet tilbake i ViS', () => {
+    if (!dataPresent || (!systemData.person && !systemData.person?.elev && !systemData.skoleressurs)) return noData()
+    if (!allData) return waitForData()
+    if (!hasData(allData.feide)) return error({ message: `Mangler ${systemNames.feide}-data`, raw: allData.feide })
+
+    if (user.expectedType === 'student') {
+      if (systemData.person.elev.feidenavn && systemData.person.elev.feidenavn.identifikatorverdi) return systemData.person.elev.feidenavn.identifikatorverdi === allData.feide.eduPersonPrincipalName ? noData() : error({ message: `${systemNames.feide}-id skrevet tilbake er ikke riktig 😱`, raw: { vis: systemData.person.elev.feidenavn, feide: allData.feide.eduPersonPrincipalName }, solution: 'Meld sak til arbeidsgruppe identitet' })
+      else return error({ message: `${systemNames.feide}-id er ikke skrevet tilbake 😬`, raw: systemData.person.elev.feidenavn, solution: `${systemNames.vis} systemansvarlig må kontakte leverandør da dette må fikses i bakkant!` })
+    } else if (user.expectedType === 'employee' && isTeacher(user)) {
+      if (systemData.skoleressurs.feidenavn && systemData.skoleressurs.feidenavn.identifikatorverdi) return systemData.skoleressurs.feidenavn.identifikatorverdi === allData.feide.eduPersonPrincipalName ? noData() : error({ message: `${systemNames.feide}-id skrevet tilbake er ikke riktig 😱`, raw: { vis: systemData.skoleressurs.feidenavn, feide: allData.feide.eduPersonPrincipalName }, solution: 'Meld sak til arbeidsgruppe identitet' })
+      else return error({ message: `${systemNames.feide}-id er ikke skrevet tilbake 😬`, raw: systemData.skoleressurs.feidenavn, solution: `${systemNames.vis} systemansvarlig må kontakte leverandør da dette må fikses i bakkant!` })
+    }
   })
 ])
 
