@@ -50,6 +50,8 @@ module.exports = async params => {
     else throw error
   }
 
+  if (!isATeacher) return getResponse({ vis, pifu: {} })
+
   try {
     logger('info', ['pifu', 'samAccountName', samAccountName, 'start'])
     pifu = await getPifuData(samAccountName)
