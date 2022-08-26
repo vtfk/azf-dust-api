@@ -331,6 +331,12 @@ module.exports = (systemData, user, allData = false) => ([
       }
     }
     return data.vis.id === data.ad.employeeNumber ? success({ message: `Fødselsnummer er likt i ${systemNames.ad} og ${systemNames.vis}`, raw: data }) : error({ message: `Fødselsnummer er forskjellig i ${systemNames.ad} og ${systemNames.vis}`, raw: data })
+  }),
+  test('vis-13', 'Har mobiltelefonnumer', 'Sjekker at mobiltelefonnummer er registrert i ViS', () => {
+    if (!dataPresent) return noData()
+    if (systemData.person.kontaktinformasjon.mobiltelefonnummer) return noData()
+
+    return warn({ message: `Mobiltelefonnummer ikke registrert i ${systemNames.vis}`, raw: systemData.person.kontaktinformasjon, solution: `Rettes i ${systemNames.vis}` })
   })
 ])
 
