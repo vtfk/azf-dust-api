@@ -448,6 +448,236 @@ const mockData = {
           }
         ]
       }
+    },
+    skoleressurs: {
+      person: {
+        navn: {
+          fornavn: 'Dyktig',
+          mellomnavn: null,
+          etternavn: 'Tusenfryd'
+        },
+        kontaktinformasjon: {
+          epostadresse: 'dyktig.tusenfryd@vtfk.no',
+          mobiltelefonnummer: null
+        },
+        fodselsnummer: {
+          identifikatorverdi: '12128015478'
+        }
+      },
+      feidenavn: {
+        identifikatorverdi: 'dyk1212@vtfk.no'
+      },
+      undervisningsforhold: [
+        {
+          basisgruppe: [
+            {
+              navn: '1STE',
+              periode: [
+                {
+                  start: '2022-08-01T00:00:00Z',
+                  slutt: '2023-07-31T00:00:00Z'
+                }
+              ],
+              skole: {
+                navn: 'Sandefjord videregående skole'
+              },
+              systemId: {
+                identifikatorverdi: '1467070'
+              },
+              elevforhold: [
+                {
+                  elev: {
+                    person: {
+                      navn: {
+                        fornavn: 'Bjarne',
+                        etternavn: 'Betjent'
+                      }
+                    }
+                  }
+                },
+                {
+                  elev: {
+                    person: {
+                      navn: {
+                        fornavn: 'Alfa',
+                        etternavn: 'Alfa'
+                      }
+                    }
+                  }
+                }
+              ]
+            }
+          ],
+          kontaktlarergruppe: [
+            {
+              navn: '1STE',
+              periode: [
+                {
+                  start: '2022-08-01T00:00:00Z',
+                  slutt: '2023-07-31T00:00:00Z'
+                }
+              ],
+              skole: {
+                navn: 'Sandefjord videregående skole'
+              },
+              systemId: {
+                identifikatorverdi: '1467070_665033'
+              }
+            },
+            {
+              navn: '1STE',
+              periode: [
+                {
+                  start: '2022-08-01T00:00:00Z',
+                  slutt: '2023-07-31T00:00:00Z'
+                }
+              ],
+              skole: {
+                navn: 'Sandefjord videregående skole'
+              },
+              systemId: {
+                identifikatorverdi: '1467070_527914'
+              }
+            }
+          ],
+          undervisningsgruppe: [
+            {
+              navn: 'B3/FSP6224-1SPA1-1',
+              periode: [
+                {
+                  start: '2022-08-01T00:00:00Z',
+                  slutt: '2023-07-31T00:00:00Z'
+                }
+              ],
+              skole: {
+                navn: 'Sandefjord videregående skole'
+              },
+              systemId: {
+                identifikatorverdi: '11921411'
+              }
+            },
+            {
+              navn: '1STC/ENG1007',
+              periode: [
+                {
+                  start: '2022-08-01T00:00:00Z',
+                  slutt: '2023-07-31T00:00:00Z'
+                }
+              ],
+              skole: {
+                navn: 'Sandefjord videregående skole'
+              },
+              systemId: {
+                identifikatorverdi: '11921699'
+              }
+            },
+            {
+              navn: '1STE/ENG1007',
+              periode: [
+                {
+                  start: '2022-08-01T00:00:00Z',
+                  slutt: '2023-07-31T00:00:00Z'
+                }
+              ],
+              skole: {
+                navn: 'Sandefjord videregående skole'
+              },
+              systemId: {
+                identifikatorverdi: '11921744'
+              }
+            },
+            {
+              navn: 'B7/FSP6221-1SPA2-2',
+              periode: [
+                {
+                  start: '2022-08-01T00:00:00Z',
+                  slutt: '2023-07-31T00:00:00Z'
+                }
+              ],
+              skole: {
+                navn: 'Sandefjord videregående skole'
+              },
+              systemId: {
+                identifikatorverdi: '11921812'
+              }
+            },
+            {
+              navn: 'YSK-3SSR/SAK1001',
+              periode: [
+                {
+                  start: '2022-08-01T00:00:00Z',
+                  slutt: '2023-07-31T00:00:00Z'
+                }
+              ],
+              skole: {
+                navn: 'Sandefjord videregående skole'
+              },
+              systemId: {
+                identifikatorverdi: '11921570'
+              }
+            },
+            {
+              navn: 'B3/FSP6218-1SPA1-1',
+              periode: [
+                {
+                  start: '2022-08-01T00:00:00Z',
+                  slutt: '2023-07-31T00:00:00Z'
+                }
+              ],
+              skole: {
+                navn: 'Sandefjord videregående skole'
+              },
+              systemId: {
+                identifikatorverdi: '11921789'
+              }
+            },
+            {
+              navn: '1STH1STI/ENG1007',
+              periode: [
+                {
+                  start: '2022-08-01T00:00:00Z',
+                  slutt: '2023-07-31T00:00:00Z'
+                }
+              ],
+              skole: {
+                navn: 'Sandefjord videregående skole'
+              },
+              systemId: {
+                identifikatorverdi: '11921519'
+              }
+            }
+          ]
+        }
+      ],
+      personalressurs: {
+        ansettelsesperiode: {
+          start: '2022-08-01T00:00:00Z',
+          slutt: null
+        },
+        arbeidsforhold: [
+          {
+            ansettelsesprosent: 0,
+            gyldighetsperiode: {
+              start: '2022-08-01T00:00:00Z',
+              slutt: '2023-07-31T23:59:59Z'
+            }
+          },
+          {
+            ansettelsesprosent: 0,
+            gyldighetsperiode: {
+              start: '2022-08-08T00:00:00Z',
+              slutt: '2022-11-14T23:59:59Z'
+            }
+          },
+          {
+            ansettelsesprosent: 4100,
+            gyldighetsperiode: {
+              start: '2022-08-01T00:00:00Z',
+              slutt: null
+            }
+          }
+        ]
+      }
     }
   },
   sds: [

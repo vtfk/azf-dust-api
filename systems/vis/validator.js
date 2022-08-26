@@ -334,9 +334,14 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('vis-13', 'Har mobiltelefonnumer', 'Sjekker at mobiltelefonnummer er registrert i ViS', () => {
     if (!dataPresent) return noData()
-    if (systemData.person.kontaktinformasjon.mobiltelefonnummer) return noData()
 
-    return warn({ message: `Mobiltelefonnummer ikke registrert i ${systemNames.vis}`, raw: systemData.person.kontaktinformasjon, solution: `Rettes i ${systemNames.vis}` })
+    if (user.expectedType === 'student') {
+      if (systemData.person.kontaktinformasjon.mobiltelefonnummer) return noData()
+      return warn({ message: `Mobiltelefonnummer ikke registrert i ${systemNames.vis}`, raw: systemData.person.kontaktinformasjon, solution: `Rettes i ${systemNames.vis}` })
+    } else if (user.expectedType === 'employee' && isTeacher(user)) {
+      if (systemData.skoleressurs.person.kontaktinformasjon.mobiltelefonnummer) return noData()
+      return warn({ message: `Mobiltelefonnummer ikke registrert i ${systemNames.vis}`, raw: systemData.skoleressurs.person.kontaktinformasjon, solution: `Rettes i ${systemNames.vis}` })
+    }
   })
 ])
 
