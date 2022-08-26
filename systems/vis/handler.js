@@ -50,13 +50,13 @@ module.exports = async params => {
     else throw error
   }
 
-  if (!isATeacher) return getResponse({ vis, pifu: {} })
+  if (!isATeacher) return getResponse({ ...vis, pifu: {} })
 
   try {
     logger('info', ['pifu', 'samAccountName', samAccountName, 'start'])
     pifu = await getPifuData(samAccountName)
     logger('info', ['pifu', 'samAccountName', samAccountName, 'finish', 'data received', Array.isArray(pifu) ? pifu.length : 1])
-    return getResponse({ vis, pifu })
+    return getResponse({ ...vis, pifu })
   } catch (error) {
     logger('error', ['pifu', 'samAccountName', samAccountName, error.response.data.message])
     throw error
