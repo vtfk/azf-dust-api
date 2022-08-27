@@ -20,7 +20,7 @@ When all calls are finished, tests across all retrieved data will be executed.
     "visma",
     "equitrac",
     "vigoot",
-    "vigolaerling
+    "vigolaerling"
   ],
   "user": {
     "userPrincipalName": "bjarne.betjent@vtfk.no", // can also be "displayName", "samAccountName" or "employeeNumber"
