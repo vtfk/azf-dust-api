@@ -18,7 +18,9 @@ When all calls are finished, tests across all retrieved data will be executed.
     "sync",
     "vis",
     "visma",
-    "equitrac"
+    "equitrac",
+    "vigoot",
+    "vigolaerling
   ],
   "user": {
     "userPrincipalName": "bjarne.betjent@vtfk.no", // can also be "displayName", "samAccountName" or "employeeNumber"
@@ -203,6 +205,30 @@ If account were locked, it will be unlocked and info returned will reflect this
 ```json
 {
   "samAccountName": "bja0101"
+}
+```
+
+### `/system/vigoot`
+
+Get user info from VIGO OT
+
+#### employeeNumber and title
+```json
+{
+  "employeeNumber": "01010101011",
+  "title": "Elev OT"
+}
+```
+
+### `/system/vigolaerling`
+
+Get user info from VIGO Opplæring (Lærling)
+
+#### employeeNumber and title
+```json
+{
+  "employeeNumber": "01010101011",
+  "title": "Lærling"
 }
 ```
 
