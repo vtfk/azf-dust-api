@@ -249,6 +249,30 @@ const mockData = {
             kontaktlarergruppe: [
               {
                 navn: '1HSC',
+                periode: [
+                  {
+                    start: '2022-08-01T00:00:00Z',
+                    slutt: '2023-07-31T00:00:00Z'
+                  }
+                ],
+                skole: {
+                  navn: 'Hjalmar Johansen videregående skole'
+                },
+                systemId: {
+                  identifikatorverdi: '1472553_422433'
+                },
+                undervisningsforhold: [
+                  {
+                    skoleressurs: {
+                      feidenavn: {
+                        identifikatorverdi: 'bar1212@vtfk.no'
+                      }
+                    }
+                  }
+                ]
+              },
+              {
+                navn: '1HSC',
                 undervisningsforhold: [
                   {
                     skoleressurs: {
@@ -522,7 +546,16 @@ const mockData = {
               },
               systemId: {
                 identifikatorverdi: '1467070_665033'
-              }
+              },
+              undervisningsforhold: [
+                {
+                  skoleressurs: {
+                    feidenavn: {
+                      identifikatorverdi: 'dyk1212@vtfk.no'
+                    }
+                  }
+                }
+              ]
             },
             {
               navn: '1STE',
@@ -537,7 +570,16 @@ const mockData = {
               },
               systemId: {
                 identifikatorverdi: '1467070_527914'
-              }
+              },
+              undervisningsforhold: [
+                {
+                  skoleressurs: {
+                    feidenavn: {
+                      identifikatorverdi: 'ann1403@vtfk.no'
+                    }
+                  }
+                }
+              ]
             }
           ],
           undervisningsgruppe: [

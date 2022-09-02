@@ -129,6 +129,7 @@ const getUndervisningsforhold = data => {
 
     current.kontaktlarergruppe.forEach(kontaktlarergruppe => {
       if (accumulator.kontaktlarergrupper.find(kg => kg.systemId === kontaktlarergruppe.systemId.identifikatorverdi)) return
+      if (!kontaktlarergruppe.undervisningsforhold.find(uh => uh.skoleressurs.feidenavn.identifikatorverdi === data.skoleressurs.feidenavn.identifikatorverdi)) return
       accumulator.kontaktlarergrupper.push({
         skole: kontaktlarergruppe.skole.navn,
         navn: kontaktlarergruppe.navn,
@@ -192,7 +193,7 @@ module.exports = (systemData, user, allData = false) => ([
     } else if (user.expectedType === 'employee' && isTeacher(user)) {
       const data = getUndervisningsforhold(systemData)
       if (data.basisgrupper.length === 0) return success('Er ikke kontaktlærer for noen klasser')
-      else return success({ message: `Er kontaktlærer for ${data.basisgrupper.length} ${data.basisgrupper.length > 1 ? 'klasser' : 'klasse'}`, raw: data.basisgrupper })
+      else return success({ message: `Er kontaktlærer for ${data.kontaktlarergrupper.length} ${data.kontaktlarergrupper.length > 1 ? 'klasser' : 'klasse'}`, raw: data.kontaktlarergrupper })
     }
   }),
   test('vis-03', 'Har skoleforhold', 'Sjekker om bruker har skoleforhold', () => {
