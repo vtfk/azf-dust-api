@@ -1,13 +1,14 @@
 const { logger } = require('@vtfk/logger')
 const getResponse = require('../../lib/get-response-object')
-const { isTeacher } = require('../../lib/helpers/is-type')
+const { isStudent, isTeacher } = require('../../lib/helpers/is-type')
 const getFintData = require('../../lib/get-fint-data')
 const getPifuData = require('../../lib/get-pifu-data')
 const HTTPError = require('../../lib/http-error')
 const { SYSTEMS: { VIS: { FINT_BETA, FINT_TIMEOUT }, FEIDE: { PRINCIPAL_NAME } } } = require('../../config')
 
 module.exports = async params => {
-  const { employeeNumber, samAccountName, feide = false } = params
+  const { employeeNumber, samAccountName, domain, title, feide = false } = params
+  const isAStudent = isStudent({ domain, title })
   const isATeacher = isTeacher({ feide })
 
   if (employeeNumber === undefined && samAccountName === undefined) {
@@ -19,12 +20,12 @@ module.exports = async params => {
         'samAccountName'
       ]
     })
-  } else if (samAccountName && !isATeacher) {
-    logger('info', ['vis', 'no need to query FINT for regular employees'])
+  } else if (!isAStudent && !isATeacher) {
+    logger('info', ['vis', 'no need to query FINT and PIFU for regular employees'])
     return {}
   }
 
-  const template = isATeacher ? 'schoolEmployee' : samAccountName ? 'employee' : 'student'
+  const template = isATeacher ? 'schoolEmployee' : 'student'
   const identity = isATeacher ? `${samAccountName}${PRINCIPAL_NAME}` : employeeNumber
   const query = {
     template,
@@ -50,12 +51,11 @@ module.exports = async params => {
     else throw error
   }
 
-  if (!isATeacher) return getResponse({ ...vis, pifu: {} })
-
   try {
-    logger('info', ['pifu', 'samAccountName', samAccountName, 'start'])
-    pifu = await getPifuData(samAccountName)
-    logger('info', ['pifu', 'samAccountName', samAccountName, 'finish', 'data received', Array.isArray(pifu) ? pifu.length : 1])
+    const type = isATeacher ? 'teacher' : 'student'
+    logger('info', ['pifu', 'samAccountName', type, samAccountName, 'start'])
+    pifu = await getPifuData(samAccountName, type)
+    logger('info', ['pifu', 'samAccountName', type, samAccountName, 'finish', 'data received', Array.isArray(pifu) ? pifu.length : 1])
     return getResponse({ ...vis, pifu })
   } catch (error) {
     logger('error', ['pifu', 'samAccountName', samAccountName, error.response.data.message])

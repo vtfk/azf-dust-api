@@ -1,7 +1,7 @@
 const { test, success, warn, error, waitForData, noData } = require('../../lib/test')
 const { hasData } = require('../../lib/helpers/system-data')
 const isValidFnr = require('../../lib/helpers/is-valid-fnr')
-const { isTeacher } = require('../../lib/helpers/is-type')
+const { isStudent, isTeacher } = require('../../lib/helpers/is-type')
 const systemNames = require('../../lib/data/systems.json')
 
 const getMemberships = (data, expectedType) => {
@@ -80,6 +80,7 @@ const getElevforhold = data => {
       kontaktlarergruppe.undervisningsforhold.forEach(undervisningsforhold => {
         accumulator.kontaktlarere.push({
           navn: kontaktlarergruppe.navn,
+          systemId: kontaktlarergruppe.systemId.identifikatorverdi,
           skole: current.skole.navn,
           fornavn: undervisningsforhold.skoleressurs.person.navn.fornavn,
           etternavn: undervisningsforhold.skoleressurs.person.navn.etternavn,
@@ -172,6 +173,18 @@ const getDuplicateGroups = data => {
   }, {})
 }
 
+const getMissingGroups = (pifuGroups, visGroups) => {
+  const missingGroups = []
+
+  visGroups.forEach(group => {
+    if (!pifuGroups.includes(group.systemId)) {
+      missingGroups.push(group)
+    }
+  })
+
+  return missingGroups
+}
+
 let dataPresent = true
 
 module.exports = (systemData, user, allData = false) => ([
@@ -258,54 +271,45 @@ module.exports = (systemData, user, allData = false) => ([
     } else return noData()
   }),
   test('vis-08', 'Basisgrupper i ViS og PIFU', 'Sjekker at det er like basisgrupper i ViS og PIFU', () => {
-    if (!dataPresent || user.expectedType !== 'employee' || !isTeacher(user) || !user.samAccountName) return noData()
-    if (!hasData(systemData.pifu)) return error({ message: 'Bruker finnes ikke i PIFU-basen 😬', solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, meld sak til arbeidsgruppe identitet` })
+    if (!dataPresent || (!isTeacher(user) && !isStudent(user)) || !user.samAccountName) return noData()
+    if (!hasData(systemData.pifu)) return error({ message: 'Bruker finnes ikke i PIFU-basen 😬', solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, vil dette løse seg imorgen (sync). Er det fremdeles problemer etter 1 dag, meld sak til arbeidsgruppe identitet` })
 
     const pifuGroups = systemData.pifu.basisgruppeIds
-    const visGroups = getUndervisningsforhold(systemData).basisgrupper.map(basisgruppe => basisgruppe.systemId)
-    const missingGroups = []
-
-    visGroups.forEach(group => {
-      if (!pifuGroups.includes(group)) {
-        missingGroups.push(group)
-      }
-    })
-
-    if (missingGroups.length > 0) return error({ message: `Mangler ${missingGroups.length} ${missingGroups.length === 1 ? 'basisgruppe' : 'basisgrupper'} i PIFU-basen 😬`, raw: missingGroups, solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, meld sak til arbeidsgruppe identitet` })
+    const visGroups = user.expectedType === 'employee'
+      ? getUndervisningsforhold(systemData).basisgrupper
+      : user.expectedType === 'student'
+        ? getElevforhold(systemData).basisgrupper
+        : []
+    const missingGroups = getMissingGroups(pifuGroups, visGroups)
+    if (missingGroups.length > 0) return error({ message: `Mangler ${missingGroups.length} ${missingGroups.length === 1 ? 'basisgruppe' : 'basisgrupper'} i PIFU-basen 😬`, raw: missingGroups, solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, vil dette løse seg imorgen (sync). Er det fremdeles problemer etter 1 dag, meld sak til arbeidsgruppe identitet` })
     else return noData()
   }),
   test('vis-09', 'Kontaktlærergrupper i ViS og PIFU', 'Sjekker at det er like kontaktlærergrupper i ViS og PIFU', () => {
-    if (!dataPresent || user.expectedType !== 'employee' || !isTeacher(user) || !user.samAccountName) return noData()
-    if (!hasData(systemData.pifu)) return error({ message: 'Bruker finnes ikke i PIFU-basen 😬', solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, meld sak til arbeidsgruppe identitet` })
+    if (!dataPresent || (!isTeacher(user) && !isStudent(user)) || !user.samAccountName) return noData()
+    if (!hasData(systemData.pifu)) return error({ message: 'Bruker finnes ikke i PIFU-basen 😬', solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, vil dette løse seg imorgen (sync). Er det fremdeles problemer etter 1 dag, meld sak til arbeidsgruppe identitet` })
 
     const pifuGroups = systemData.pifu.kontaktlarergruppeIds
-    const visGroups = getUndervisningsforhold(systemData).kontaktlarergrupper.map(kontaktlarergruppe => kontaktlarergruppe.systemId)
-    const missingGroups = []
-
-    visGroups.forEach(group => {
-      if (!pifuGroups.includes(group)) {
-        missingGroups.push(group)
-      }
-    })
-
-    if (missingGroups.length > 0) return error({ message: `Mangler ${missingGroups.length} ${missingGroups.length === 1 ? 'kontaktlærergruppe' : 'kontaktlærergrupper'} i PIFU-basen 😬`, raw: missingGroups, solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, meld sak til arbeidsgruppe identitet` })
+    const visGroups = user.expectedType === 'employee'
+      ? getUndervisningsforhold(systemData).kontaktlarergrupper
+      : user.expectedType === 'student'
+        ? getElevforhold(systemData).kontaktlarere
+        : []
+    const missingGroups = getMissingGroups(pifuGroups, visGroups)
+    if (missingGroups.length > 0) return error({ message: `Mangler ${missingGroups.length} ${missingGroups.length === 1 ? 'kontaktlærergruppe' : 'kontaktlærergrupper'} i PIFU-basen 😬`, raw: missingGroups, solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, vil dette løse seg imorgen (sync). Er det fremdeles problemer etter 1 dag, meld sak til arbeidsgruppe identitet` })
     else return noData()
   }),
   test('vis-10', 'Undervisningsgrupper i ViS og PIFU', 'Sjekker at det er like undervisningsgrupper i ViS og PIFU', () => {
-    if (!dataPresent || user.expectedType !== 'employee' || !isTeacher(user) || !user.samAccountName) return noData()
-    if (!hasData(systemData.pifu)) return error({ message: 'Bruker finnes ikke i PIFU-basen 😬', solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, meld sak til arbeidsgruppe identitet` })
+    if (!dataPresent || (!isTeacher(user) && !isStudent(user)) || !user.samAccountName) return noData()
+    if (!hasData(systemData.pifu)) return error({ message: 'Bruker finnes ikke i PIFU-basen 😬', solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, vil dette løse seg imorgen (sync). Er det fremdeles problemer etter 1 dag, meld sak til arbeidsgruppe identitet` })
 
     const pifuGroups = systemData.pifu.undervisningsgruppeIds
-    const visGroups = getUndervisningsforhold(systemData).undervisningsgrupper.map(undervisningsgruppe => undervisningsgruppe.systemId)
-    const missingGroups = []
-
-    visGroups.forEach(group => {
-      if (!pifuGroups.includes(group)) {
-        missingGroups.push(group)
-      }
-    })
-
-    if (missingGroups.length > 0) return error({ message: `Mangler ${missingGroups.length} ${missingGroups.length === 1 ? 'undervisningsgruppe' : 'undervisningsgrupper'} i PIFU-basen 😬`, raw: missingGroups, solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, meld sak til arbeidsgruppe identitet` })
+    const visGroups = user.expectedType === 'employee'
+      ? getUndervisningsforhold(systemData).undervisningsgrupper
+      : user.expectedType === 'student'
+        ? getElevforhold(systemData).undervisningsgrupper
+        : []
+    const missingGroups = getMissingGroups(pifuGroups, visGroups)
+    if (missingGroups.length > 0) return error({ message: `Mangler ${missingGroups.length} ${missingGroups.length === 1 ? 'undervisningsgruppe' : 'undervisningsgrupper'} i PIFU-basen 😬`, raw: missingGroups, solution: `Rettes i ${systemNames.vis}. Hvis det allerede er korrekt i ${systemNames.vis}, vil dette løse seg imorgen (sync). Er det fremdeles problemer etter 1 dag, meld sak til arbeidsgruppe identitet` })
     else return noData()
   }),
   test('vis-11', 'Har gyldig fødselsnummer', 'Sjekker at fødselsnummer er gyldig', () => {
