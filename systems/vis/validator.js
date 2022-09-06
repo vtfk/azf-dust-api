@@ -205,7 +205,7 @@ module.exports = (systemData, user, allData = false) => ([
         if (data.length > 1) {
           const primarySchool = data.find(elevforhold => elevforhold.hovedskole === true)
           return primarySchool ? warn({ message: `Har ${data.length} skoleforhold. ${primarySchool.skole} er hovedskole`, raw: data, solution: `Dette er i mange tilfeller korrekt. Dersom det allikevel skulle være feil, må det rettes i ${systemNames.vis}` }) : error({ message: `Har ${data.length} skoleforhold men ingen hovedskole`, raw: data, solution: `Rettes i ${systemNames.vis}` })
-        } else return success({ message: 'Har ett skoleforhold', raw: data })
+        } else return data[0].hovedskole ? success({ message: 'Har ett skoleforhold', raw: data }) : warn({ message: 'Har ett skoleforhold, men dette er ikke satt som hovedskole', raw: data, solution: `Rettes i ${systemNames.vis}` })
       } else return error({ message: 'Har ingen skoleforhold 😬', raw: systemData })
     } else {
       const data = getUndervisningsforhold(systemData)
