@@ -349,7 +349,9 @@ module.exports = (systemData, user, allData = false) => ([
     }
   }),
   test('vis-14', 'Har feidenavn', 'Sjekker at feidenavn er skrevet tilbake i ViS', () => {
-    if (!dataPresent || (!systemData.person && !systemData.person?.elev && !systemData.skoleressurs)) return noData()
+    if (!dataPresent) return noData()
+    if (user.expectedType === 'student' && (!systemData.person || !systemData.person.elev)) return noData()
+    if (user.expectedType === 'employee' && !systemData.skoleressurs) return noData()
     if (!allData) return waitForData()
     if (!hasData(allData.feide)) return error({ message: `Mangler ${systemNames.feide}-data`, raw: allData.feide })
 
