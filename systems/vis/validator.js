@@ -39,11 +39,7 @@ const getActiveData = data => {
     }
     if (data.person.elev) {
       activeData.student = Object.assign(activeData.student, data.person.elev)
-      if (Array.isArray(data.person.elev.elevforhold) && data.person.elev.elevforhold.length > 1) {
-        activeData.student.active = data.person.elev.elevforhold.filter(forhold => forhold.gyldighetsperiode.slutt === null || new Date(forhold.gyldighetsperiode.slutt) > new Date()).length > 0
-      } else if (Array.isArray(data.person.elev.elevforhold) && data.person.elev.elevforhold.length === 1) {
-        activeData.student.active = data.person.elev.elevforhold[0].gyldighetsperiode.slutt === null || new Date(data.person.elev.elevforhold[0].gyldighetsperiode.slutt) > new Date()
-      }
+      activeData.student.active = Array.isArray(data.person.elev.elevforhold) && data.person.elev.elevforhold.length > 0 ? data.person.elev.elevforhold.filter(forhold => forhold.gyldighetsperiode && (forhold.gyldighetsperiode.slutt === null || new Date(forhold.gyldighetsperiode.slutt) > new Date())).length > 0 : false
     }
   } else if (data && data.skoleressurs) {
     activeData.employee = Object.assign(activeData.employee, data.skoleressurs.personalressurs)
