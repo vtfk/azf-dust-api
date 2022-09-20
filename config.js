@@ -58,6 +58,10 @@ module.exports = {
     VISMA: {
       COMPANY_ID: process.env.VISMA_COMPANY_ID || '1',
       CATEGORIES: process.env.VISMA_CATEGORIES || 'O,SE,TK,X,XA,XB,FW'
+    },
+    P360: {
+      P360_URL: process.env.P360_URL || 'en drit',
+      P360_KEY: process.env.P360_KEY || 'en drit'
     }
   },
   SOURCE_DATA_SYSTEMS: (process.env.SOURCE_DATA_SYSTEMS && process.env.SOURCE_DATA_SYSTEMS.split(',')) || [],

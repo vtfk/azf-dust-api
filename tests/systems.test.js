@@ -1479,6 +1479,26 @@ const mockData = {
     bedrnavn: 'OPPLÆRINGSKONTORET FOR OFFENTLIG SEKTOR I TELEMARK',
     start: '02.08.2021',
     slutt: '01.08.2023'
+  },
+  p360: {
+    p360User: [
+      {
+        Login: 'login\\per0101',
+        IsActive: true
+      }
+    ],
+    p360Elevmappe: [
+      {
+        Title: 'Elevmappe ',
+        CaseNumber: '21/27893'
+      }
+    ],
+    p360EmployeeProject: [
+      {
+        Title: 'Personaldokumentasjon - Petter og Vendela',
+        ProjectNumber: '20-2221'
+      }
+    ]
   }
 }
 

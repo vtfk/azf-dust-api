@@ -38,5 +38,9 @@ module.exports = {
   vigolaerling: {
     handle: require('./vigolaerling/handler'),
     validate: require('./vigolaerling/validator')
+  },
+  p360: {
+    handle: require('./p360/handler'),
+    validate: require('./p360/validator')
   }
 }
