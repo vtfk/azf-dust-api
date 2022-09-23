@@ -109,12 +109,28 @@ module.exports = (systemData, user, allData = false) => ([
         else if (isOT(user)) return warn({ message: 'Microsoft 365-lisenser blir satt når konto er blitt aktivert', solution: `Bruker må aktivere sin konto via min-ot-konto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
       }
     } else {
-      const data = systemData.assignedLicenses.map(license => {
+      const data = {
+        licenses: [],
+        hasNecessaryLicenses: false
+      }
+      data.licenses = systemData.assignedLicenses.map(license => {
         const lic = licenses.find(lic => lic.skuId === license.skuId)
-        if (lic) return lic
-        else return { skuId: license.skuId }
+        if (lic) {
+          data.hasNecessaryLicenses = true
+          return lic
+        } else return license
       })
-      return success({ message: 'Har Microsoft 365-lisenser', raw: data })
+      if (data.hasNecessaryLicenses) return success({ message: 'Har Microsoft 365-lisenser', raw: data })
+      else {
+        if (systemData.accountEnabled) {
+          return warn({ message: `Har ${data.licenses.length} ${data.licenses.length > 1 ? 'lisenser' : 'lisens'} men mangler nødvendige lisenser`, raw: data, solution: 'Sjekk at bruker har aktive lisenser på brukerobjektet i Azure AD under Licenses. Hvis noen av lisensene tildelt til bruker ikke er aktive, sjekk at det er lisenser tilgjengelig og deretter kjør en Reprocess i License vinduet. Hvis bruker ikke har noen lisenser tildelt, meld sak til arbeidsgruppe identitet' })
+        } else {
+          if (user.expectedType === 'employee') return warn({ message: 'Microsoft 365-lisenser blir satt når konto er blitt aktivert', solution: `Ansatt må aktivere sin konto via minkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
+          else if (isStudent(user)) return warn({ message: 'Microsoft 365-lisenser blir satt når konto er blitt aktivert', solution: `Eleven må aktivere sin konto via minelevkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
+          else if (isApprentice(user)) return warn({ message: 'Microsoft 365-lisenser blir satt når konto er blitt aktivert', solution: `Bruker må aktivere sin konto via minlarlingkonto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
+          else if (isOT(user)) return warn({ message: 'Microsoft 365-lisenser blir satt når konto er blitt aktivert', solution: `Bruker må aktivere sin konto via min-ot-konto.vtfk.no eller servicedesk kan gjøre det direkte i ${systemNames.ad}. Deretter vent til Azure AD Syncen har kjørt, dette kan ta inntil ${aadSyncInMinutes} minutter` })
+        }
+      }
     }
   }),
   test('aad-07', 'Har satt opp MFA', 'Sjekker at MFA er satt opp', () => {
