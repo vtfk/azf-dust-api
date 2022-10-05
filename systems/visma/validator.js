@@ -210,6 +210,18 @@ module.exports = (systemData, user, allData = false) => ([
     else if (primaryPositions.length > 0 && secondaryPositions.length > 0) return success({ message: `Har ${primaryPositions.length} ${primaryPositions.length > 1 ? 'hovedstillinger' : 'hovedstilling'} og ${secondaryPositions.length} ${secondaryPositions.length > 1 ? 'sekundærstillinger' : 'sekundærstilling'}`, raw: repackedPositions })
     else if (primaryPositions.length > 0 && secondaryPositions.length === 0) return success({ message: `Har ${primaryPositions.length} ${primaryPositions.length > 1 ? 'hovedstillinger' : 'hovedstilling'}`, raw: repackedPositions })
     else return error({ message: 'Dette burde ikke ha skjedd men det skjedde allikevel', raw: repackedPositions, solution: 'Vi legger oss flate og lover å se på rutiner 😝' })
+  }),
+  test('visma-10', 'Slutter bruker snart', 'Slutter bruker snart hos oss?', () => {
+    if (!dataPresent) return noData()
+
+    const employment = getEmployment(getArrayData(systemData))
+    if (!employment) return noData()
+
+    const endDate = employment.endDate
+    if (!endDate) return noData()
+
+    const isWithin = isWithinDaterange(null, endDate)
+    return isWithin ? warn(`Bruker slutter hos oss den ${prettifyDateToLocaleString(new Date(endDate), true)} 👋`) : noData()
   })
 ])
 
