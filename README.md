@@ -208,6 +208,18 @@ If account were locked, it will be unlocked and info returned will reflect this
 }
 ```
 
+### `/systems/p360`
+
+Has user recommended info in Public 360
+
+#### employeeNumber and samAccountName
+```json
+{
+  "employeeNumber": "01010101011",
+  "samAccountName": "bja0101"
+}
+```
+
 ### `/system/vigoot`
 
 Get user info from VIGO OT
@@ -266,6 +278,8 @@ Get user info from VIGO Opplæring (Lærling)
         "MONGODB_COLLECTION_USERS": "user-collection",
         "MONGODB_NAME": "db",
         "MONGODB_NAME_SDS": "sds-db",
+        "P360_KEY": "0000000-0000-0000-0000-000000000000",
+        "P360_URL": "https://360server/Biz/v2/api/call/SI.Data.RPC/SI.Data.RPC",
         "PAPERTRAIL_HOST": "https://logs.collector.solarwinds.com/v1/log",
         "PAPERTRAIL_TOKEN": "secret token",
         "PAPERTRAIL_DISABLE_LOGGING": true,
