@@ -221,7 +221,8 @@ module.exports = (systemData, user, allData = false) => ([
     if (!endDate) return noData()
 
     const isWithin = isWithinDaterange(null, endDate)
-    return isWithin ? warn(`Bruker slutter hos oss den ${prettifyDateToLocaleString(new Date(endDate), true)} 👋`) : noData()
+    const prettyDate = prettifyDateToLocaleString(new Date(endDate), true)
+    return isWithin ? warn(`Bruker slutter dessverre hos oss den ${prettyDate} 👋`) : success(`Bruker sluttet dessverre hos oss den ${prettyDate} 🫡`)
   })
 ])
 
