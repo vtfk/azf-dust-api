@@ -222,7 +222,7 @@ module.exports = (systemData, user, allData = false) => ([
 
     const isWithin = isWithinDaterange(null, endDate)
     const prettyDate = prettifyDateToLocaleString(new Date(endDate), true)
-    return isWithin ? warn(`Bruker slutter dessverre hos oss den ${prettyDate} 👋`) : success(`Bruker sluttet dessverre hos oss den ${prettyDate} 🫡`)
+    return isWithin ? warn(`Bruker slutter dessverre hos oss den ${prettyDate} 👋`) : success({ message: `Bruker sluttet dessverre hos oss den ${prettyDate} 🫡`, raw: { start: prettifyDateToLocaleString(new Date(employment.startDate), true), slutt: prettifyDateToLocaleString(new Date(endDate), true) } })
   })
 ])
 
