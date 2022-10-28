@@ -35,6 +35,7 @@ module.exports = (systemData, user, allData = false) => ([
     if (!norEduPersonNIN && !norEduPersonLIN) return error({ message: 'Fødselsnummer mangler 😬', raw: data })
     else if (norEduPersonNIN) {
       data.fnr = isValidFnr(norEduPersonNIN)
+      return data.fnr.valid ? success({ message: `Har gyldig ${data.fnr.type}`, raw: data }) : error({ message: data.fnr.error, raw: data })
     } else if (norEduPersonLIN) {
       /*
         https://docs.feide.no/reference/schema/info_go/go_attributter_ch05.html#noredupersonlin
@@ -46,9 +47,8 @@ module.exports = (systemData, user, allData = false) => ([
         data.norEduPersonLIN = data.norEduPersonLIN[0].replace(`${feidePrincipalName}:fin:`, '')
       }
       data.fnr = isValidFnr(data.norEduPersonLIN)
+      return data.fnr.valid ? success({ message: `Har gyldig ${data.fnr.type}`, raw: data }) : warn({ message: `${data.fnr.error}. Problemer ved FEIDE-pålogging kan forekomme`, raw: data, solution: 'Fødselsnummeret er lokalgitt av fylket i påvente av et nasjonalt gyldig fødselsnummer. Problemer ved FEIDE-pålogging kan forekomme' })
     }
-
-    return data.fnr.valid ? success({ message: `Har gyldig ${data.fnr.type}`, raw: data }) : error({ message: data.fnr.error, raw: data })
   }),
   test('feide-03', 'Brukernavn er likt i AD', 'Sjekker at brukernavnet er likt i AD og FEIDE', () => {
     if (!dataPresent) return noData()
