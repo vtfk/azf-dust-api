@@ -52,8 +52,9 @@ const getElevforhold = data => {
   if (!data.person || !data.person.elev || !Array.isArray(data.person.elev.elevforhold)) {
     return { basisgrupper: [], undervisningsgrupper: [], kontaktlarere: [], skoler: [] }
   }
-
+  const today = new Date()
   return data.person.elev.elevforhold.reduce((accumulator, current) => {
+    if (!current.gyldighetsperiode?.slutt || new Date(current.gyldighetsperiode.slutt) > today) {
     accumulator.skoler.push(current.skole.navn)
 
     current.basisgruppe.forEach(basisgruppe => {
@@ -84,6 +85,7 @@ const getElevforhold = data => {
         })
       })
     })
+    }
     return accumulator
   }, { basisgrupper: [], undervisningsgrupper: [], kontaktlarere: [], skoler: [] })
 }
@@ -210,7 +212,8 @@ module.exports = (systemData, user, allData = false) => ([
 
     if (user.expectedType === 'student') {
       if (systemData.person.elev && systemData.person.elev.elevforhold && systemData.person.elev.elevforhold.length > 0) {
-        const data = systemData.person.elev.elevforhold.map(elevforhold => ({ skole: elevforhold.skole.navn, hovedskole: elevforhold.hovedskole }))
+        let data = systemData.person.elev.elevforhold.filter(elevforhold => (!elevforhold.gyldighetsperiode?.slutt || new Date(elevforhold.gyldighetsperiode.slutt) > new Date()))
+        data = data.map(elevforhold => ({ skole: elevforhold.skole.navn, hovedskole: elevforhold.hovedskole }))
         if (data.length > 1) {
           const primarySchool = data.find(elevforhold => elevforhold.hovedskole === true)
           return primarySchool ? warn({ message: `Har ${data.length} skoleforhold. ${primarySchool.skole} er hovedskole`, raw: data, solution: `Dette er i mange tilfeller korrekt. Dersom det allikevel skulle være feil, må det rettes i ${systemNames.vis}` }) : error({ message: `Har ${data.length} skoleforhold men ingen hovedskole`, raw: data, solution: `Rettes i ${systemNames.vis}` })
