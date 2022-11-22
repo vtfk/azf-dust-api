@@ -55,36 +55,36 @@ const getElevforhold = data => {
   const today = new Date()
   return data.person.elev.elevforhold.reduce((accumulator, current) => {
     if (!current.gyldighetsperiode?.slutt || new Date(current.gyldighetsperiode.slutt) > today) {
-    accumulator.skoler.push(current.skole.navn)
+      accumulator.skoler.push(current.skole.navn)
 
-    current.basisgruppe.forEach(basisgruppe => {
-      accumulator.basisgrupper.push({
-        skole: current.skole.navn,
-        navn: basisgruppe.navn,
-        systemId: basisgruppe.systemId.identifikatorverdi
-      })
-    })
-
-    current.undervisningsgruppe.forEach(undervisningsgruppe => {
-      accumulator.undervisningsgrupper.push({
-        skole: current.skole.navn,
-        navn: undervisningsgruppe.navn,
-        systemId: undervisningsgruppe.systemId.identifikatorverdi
-      })
-    })
-
-    current.kontaktlarergruppe.forEach(kontaktlarergruppe => {
-      kontaktlarergruppe.undervisningsforhold.forEach(undervisningsforhold => {
-        accumulator.kontaktlarere.push({
-          navn: kontaktlarergruppe.navn,
-          systemId: kontaktlarergruppe.systemId.identifikatorverdi,
+      current.basisgruppe.forEach(basisgruppe => {
+        accumulator.basisgrupper.push({
           skole: current.skole.navn,
-          fornavn: undervisningsforhold.skoleressurs.person.navn.fornavn,
-          etternavn: undervisningsforhold.skoleressurs.person.navn.etternavn,
-          epostadresse: undervisningsforhold.skoleressurs.person.kontaktinformasjon.epostadresse
+          navn: basisgruppe.navn,
+          systemId: basisgruppe.systemId.identifikatorverdi
         })
       })
-    })
+
+      current.undervisningsgruppe.forEach(undervisningsgruppe => {
+        accumulator.undervisningsgrupper.push({
+          skole: current.skole.navn,
+          navn: undervisningsgruppe.navn,
+          systemId: undervisningsgruppe.systemId.identifikatorverdi
+        })
+      })
+
+      current.kontaktlarergruppe.forEach(kontaktlarergruppe => {
+        kontaktlarergruppe.undervisningsforhold.forEach(undervisningsforhold => {
+          accumulator.kontaktlarere.push({
+            navn: kontaktlarergruppe.navn,
+            systemId: kontaktlarergruppe.systemId.identifikatorverdi,
+            skole: current.skole.navn,
+            fornavn: undervisningsforhold.skoleressurs.person.navn.fornavn,
+            etternavn: undervisningsforhold.skoleressurs.person.navn.etternavn,
+            epostadresse: undervisningsforhold.skoleressurs.person.kontaktinformasjon.epostadresse
+          })
+        })
+      })
     }
     return accumulator
   }, { basisgrupper: [], undervisningsgrupper: [], kontaktlarere: [], skoler: [] })
@@ -360,6 +360,22 @@ module.exports = (systemData, user, allData = false) => ([
     } else if (user.expectedType === 'employee' && isTeacher(user)) {
       if (systemData.skoleressurs.feidenavn && systemData.skoleressurs.feidenavn.identifikatorverdi) return systemData.skoleressurs.feidenavn.identifikatorverdi === allData.feide.eduPersonPrincipalName ? success({ message: `${systemNames.feide}-navn er skrevet tilbake til ${systemNames.vis}`, raw: { vis: systemData.skoleressurs.feidenavn.identifikatorverdi, feide: allData.feide.eduPersonPrincipalName } }) : error({ message: `${systemNames.feide}-id skrevet tilbake er ikke riktig 😱`, raw: { vis: systemData.skoleressurs.feidenavn, feide: allData.feide.eduPersonPrincipalName }, solution: 'Meld sak til arbeidsgruppe identitet' })
       else return error({ message: `${systemNames.feide}-id er ikke skrevet tilbake 😬`, raw: systemData.skoleressurs.feidenavn, solution: `${systemNames.vis} systemansvarlig må kontakte leverandør da dette må fikses i bakkant!` })
+    }
+  }),
+  test('vis-15', 'Har utgått elevforhold', 'Sjekker om bruker har utgåtte elevforhold', () => {
+    if (!dataPresent) return noData()
+
+    if (user.expectedType === 'student') {
+      if (systemData.person.elev && systemData.person.elev.elevforhold && systemData.person.elev.elevforhold.length > 0) {
+        let data = systemData.person.elev.elevforhold.filter(elevforhold => (elevforhold.gyldighetsperiode?.slutt && new Date(elevforhold.gyldighetsperiode.slutt) < new Date()))
+        data = data.map(elevforhold => ({ skole: elevforhold.skole.navn, hovedskole: elevforhold.hovedskole, gyldighetsperiode: elevforhold.gyldighetsperiode }))
+        if (data.length > 0) {
+          if (data.length === 1) return warn({ message: `Har utgått skoleforhold ved skole: ${data.map(forhold => forhold.skole).join(', ')}.`, raw: data, solution: `Dette er i de fleste tilfeller korrekt. Dersom det allikevel skulle være feil, må det rettes i ${systemNames.vis}` })
+          return warn({ message: `Har utgåtte skoleforhold ved skoler: ${data.map(forhold => forhold.skole).join(', ')}.`, raw: data, solution: `Dette er i de fleste tilfeller korrekt. Dersom det allikevel skulle være feil, må det rettes i ${systemNames.vis}` })
+        } else return noData()
+      } else return error({ message: 'Har ingen elevforhold 😬', raw: systemData })
+    } else {
+      return noData()
     }
   })
 ])
