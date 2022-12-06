@@ -15,7 +15,7 @@ module.exports = async (params) => {
   const graphUserOptions = getGraphOptions(params)
   const graphUserGroupsOptions = getGraphOptions({
     ...params,
-    subQuery: 'transitiveMemberOf',
+    subQuery: 'transitiveMemberOf?$top=999',
     properties: undefined
   })
   const graphUserAuthOptions = getGraphOptions({

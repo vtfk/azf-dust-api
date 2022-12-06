@@ -183,8 +183,9 @@ module.exports = (systemData, user, allData = false) => ([
   }),
   test('aad-10', 'Sjekker direktemedlemskap', 'Brukers direkte gruppemedlemskap', () => {
     if (!dataPresent) return noData()
+    const groupWarningLimit = 200
     if (!hasData(systemData.memberOf)) return error({ message: `Er ikke medlem av noen ${systemNames.aad} grupper 🤔` })
-
+    if (systemData.memberOf.length > groupWarningLimit) return warn({ message: `Er direkte medlem av ${systemData.memberOf.length} ${systemNames.aad} grupper 😵`, solution: 'Det kan hende brukeren trenger å være medlem av alle disse gruppene, men om du tror det er et problem, meld en sak til arbeidsgruppe identitet', raw: systemData.memberOf })
     return success({ message: `Er direkte medlem av ${systemData.memberOf.length} ${systemNames.aad} gruppe${systemData.memberOf.length === 0 || systemData.memberOf.length > 1 ? 'r' : ''}`, raw: systemData.memberOf })
   })
 ])
