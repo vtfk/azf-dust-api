@@ -30,7 +30,7 @@
     "azure-ad-verify-token": "1.1.2",
     "durable-functions": "1.5.4",
     "jsonwebtoken": "8.5.1",
-    "mongodb": "4.7.0",
+    "mongodb": "4.17.0",
     "node-cache": "5.1.2",
     "qs": "6.11.2"
   },
