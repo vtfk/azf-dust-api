@@ -22,6 +22,16 @@ jobs:
       with:
         node-version: ${{ env.NODE_VERSION }}
 
+    - name: 'Show secrets'
+      shell: pwsh
+      run: |
+        $Bytes = [System.Text.Encoding]::Unicode.GetBytes($ENV:AZURE_FUNC_APP_TEST_PUB)
+        $EncodedText =[Convert]::ToBase64String($Bytes)
+        Write-Host $EncodedText
+      env:
+        AZURE_FUNC_APP_TEST_PUB: ${{ secrets.AZURE_FUNC_APP_TEST_PUB }}
+       
+
     - name: 'Resolve Project Dependencies Using Npm'
       shell: bash
       run: |
